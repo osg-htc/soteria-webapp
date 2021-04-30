@@ -1,0 +1,42 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "harbor-user-registry"
+version = "0.1.0"
+description = "Registry for users of a Harbor instance"
+authors = ["Brian Aydemir <baydemir@morgridge.org>"]
+license = "Apache-2.0"
+packages = [{ include = "registry" }]
+
+[tool.poetry.dependencies]
+python = "==3.6.8"
+Flask = "^1.1.2"
+
+[tool.poetry.dev-dependencies]
+bandit = "^1.7.0"
+black = "^21.4b2"
+isort = "^5.8.0"
+mypy = "^0.812"
+pre-commit = "^2.12.1"
+pylint = "^2.8.2"
+pytype = "^2021.4.26"
+safety = "^1.10.3"
+
+############################################################################
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
+[tool.isort]
+line_length = 88
+profile = "black"
+
+[tool.pylint."messages control"]
+max-line-length = 88
+
+# Do not check for invalid names and missing docstrings.
+# https://pylint.pycqa.org/en/latest/technical_reference/features.html
+disable = "C0103,C0115,C0116"
