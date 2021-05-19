@@ -23,7 +23,7 @@ isort = "^5.8.0"
 mypy = "^0.812"
 pre-commit = "^2.12.1"
 pylint = "^2.8.2"
-pytype = "^2021.5.11"
+pytype = "^2021.5.14"
 safety = "^1.10.3"
 
 # See https://github.com/psf/black for more information.
