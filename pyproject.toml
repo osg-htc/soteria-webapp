@@ -14,7 +14,7 @@ packages = [{ include = "registry" }]
 
 [tool.poetry.dependencies]
 python = ">=3.6.8,<3.7"
-Flask = "^2.0.0"
+Flask = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
@@ -23,7 +23,7 @@ isort = "^5.8.0"
 mypy = "^0.812"
 pre-commit = "^2.12.1"
 pylint = "^2.8.2"
-pytype = "^2021.5.14"
+pytype = "^2021.5.19"
 safety = "^1.10.3"
 
 # See https://github.com/psf/black for more information.
