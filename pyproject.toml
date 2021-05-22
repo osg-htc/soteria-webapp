@@ -1,7 +1,20 @@
-# See https://python-poetry.org for more information.
+# This project is managed by Poetry.
+#
+# References:
+# - https://www.python.org/dev/peps/pep-0518/
+# - https://python-poetry.org
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py36"]
+
+[tool.isort]
+line_length = 88
+profile = "black"
 
 [tool.poetry]
 name = "harbor_user_registry"
@@ -21,22 +34,11 @@ bandit = "^1.7.0"
 black = "^21.5b1"
 isort = "^5.8.0"
 mypy = "^0.812"
-pre-commit = "^2.12.1"
+pre-commit = "^2.13.0"
 pylint = "^2.8.2"
 pytype = "^2021.5.19"
 safety = "^1.10.3"
 
-# See https://github.com/psf/black for more information.
-[tool.black]
-line-length = 88
-target-version = ["py36"]
-
-# See https://pycqa.github.io/isort for more information.
-[tool.isort]
-line_length = 88
-profile = "black"
-
-# See https://www.pylint.org for more information.
 [tool.pylint.messages-control]
 max-line-length = 88
 disable = "C0103,C0115,C0116"  # invalid names and missing docstrings
