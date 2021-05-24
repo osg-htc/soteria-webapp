@@ -17,7 +17,7 @@ RUN yum update -y \
     #
     && python3 -m pip install --no-cache-dir -U pip setuptools wheel
 
-COPY etc/supervisord.d/* /etc/supervisord.d/
+COPY etc /etc/
 
 
 # Install the Flask and WSGI applications.
@@ -28,3 +28,5 @@ RUN python3 -m pip install --no-cache-dir -r /srv/requirements.txt
 
 COPY run.sh wsgi.py /srv/
 COPY registry /srv/registry/
+
+RUN mkdir /srv/instance/ && chown apache:apache /srv/instance/
