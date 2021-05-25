@@ -12,10 +12,12 @@ ENV PYTHONUNBUFFERED=1
 
 RUN yum update -y \
     && yum install -y httpd mod_auth_openidc mod_ssl python3-pip python3-mod_wsgi \
+    && yum install -y --enablerepo=devops-itb osg-ca-generator \
     && yum clean all \
     && rm -rf /var/cache/yum \
     #
-    && python3 -m pip install --no-cache-dir -U pip setuptools wheel
+    && python3 -m pip install --no-cache-dir -U pip setuptools wheel \
+    && osg-ca-generator --host
 
 COPY etc /etc/
 
