@@ -1,8 +1,4 @@
-# This project is managed by Poetry.
-#
-# References:
-# - https://www.python.org/dev/peps/pep-0518/
-# - https://python-poetry.org
+# This project uses Poetry <https://python-poetry.org/>.
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -31,15 +27,15 @@ Flask = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
-black = "^21.5b1"
+black = "^21.5b2"
 docutils = "^0.17.1"
 isort = "^5.8.0"
 mypy = "^0.812"
 pre-commit = "^2.13.0"
-pylint = "^2.8.2"
-pytype = "^2021.5.19"
+pylint = "^2.8.3"
+pytype = "^2021.5.25"
 safety = "^1.10.3"
 
 [tool.pylint.messages-control]
 max-line-length = 88
-disable = "C0103,C0115,C0116"  # invalid names and missing docstrings
+disable = "invalid-name,missing-class-docstring,missing-function-docstring"
