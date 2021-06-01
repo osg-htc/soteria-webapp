@@ -21,11 +21,36 @@ Configuration
 Quickstart: Development
 -----------------------
 
-<to be written>
+1. Install `Poetry <https://python-poetry.org/>`_.
+
+2. Install dependencies::
+
+     poetry install
 
 
-Quickstart: Testing
--------------------
+Quickstart: Testing on localhost
+--------------------------------
+
+1. Create the Flask application's instance directory::
+
+     mkdir instance
+
+2. Copy ``examples/config.py`` to ``instance/config.py``.
+
+3. Edit ``instance/config.py``.
+
+4. Run the Flask application using a local development server::
+
+     poetry run ./run.sh
+
+
+Quickstart: Testing on Docker
+-----------------------------
+
+The steps below are useful mainly for testing the Docker image itself. To
+configure the web application, you can create the instance directory, as
+when testing on localhost (see above), and then modify the ``Dockerfile`` to
+copy the instance directory into the image.
 
 1. Build the image::
 
@@ -37,15 +62,11 @@ Quickstart: Testing
 
 3. Visit `<https://localhost:8443/>`_.
 
-4. Stop the container::
+4. To debug errors, review the log files in:
+
+   * ``/var/log/httpd/``
+   * ``/srv/instance/log/``
+
+5. Stop the container::
 
      docker stop <NAME>
-
-
-Quickstart: Debugging
----------------------
-
-Review the log files in:
-
-* ``/var/log/httpd/``
-* ``/srv/instance/log/``
