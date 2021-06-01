@@ -3,7 +3,128 @@
 {% block title %}Open Science Container User Registry{% endblock %}
 
 {% block body %}
-    <p>Hello, world!</p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2">
+        <h2>Open Science Container User Registry</h2>
+    </nav>
 
-    <p>Visit <a href="/account">/account</a> for next steps.</p>
+    <h2 class="mb-1">Registration Checklist</h2>
+    <div class="accordion" id="accordionPanelsStayOpenExample">
+        <div id="hub-verification" class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                    <div class="row justify-content-between w-100 mr-1">
+                        <div class="col-6">Verify With Hub</div>
+                        <div class="col-1 status-icon">
+                            <div class="loading" hidden >
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="failed" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="success" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    <p>Example Description Example Description Example Description Example Description Example Description Example Description Example Description</p>
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <a class="btn btn-primary">Link</a>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-primary mr-2 check">Check</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="orc-id-verification" class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    <div class="row justify-content-between w-100 mr-1">
+                        <div class="col-6">Link ORC ID</div>
+                        <div class="col-1 status-icon">
+                            <div class="loading" hidden >
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="failed" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="success" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                <div class="accordion-body">
+                    <p>Example Description Example Description Example Description Example Description Example Description Example Description Example Description</p>
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <a class="btn btn-primary">Link</a>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-primary mr-2 check">Check</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="provision-verification" class="accordion-item">
+            <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                    <div class="row justify-content-between w-100 mr-1">
+                        <div class="col-6">Provision Project</div>
+                        <div class="col-1 status-icon">
+                            <div class="loading" hidden >
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="failed" >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/>
+                                </svg>
+                            </div>
+                            <div class="success" hidden>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                    <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                <div class="accordion-body">
+                    <p>Example Description Example Description Example Description Example Description Example Description Example Description Example Description</p>
+                    <div class="row justify-content-end">
+                        <div class="col-auto">
+                            <a class="btn btn-primary">Link</a>
+                        </div>
+                        <div class="col-auto">
+                            <a class="btn btn-primary mr-2 check">Check</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
