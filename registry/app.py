@@ -1,22 +1,22 @@
 """
-The Harbor User Registry Flask application.
+Web application for managing the users of a Harbor instance.
 """
 
 from flask import Flask
 
+from .account import account_bp
+from .api.v1 import api_bp
 from .index import index_bp
 
 __all__ = ["create_app"]
-
-BLUEPRINTS = [index_bp]
 
 
 def create_app() -> Flask:
     app = Flask(__name__, instance_relative_config=True)
 
-    with app.app_context():
-        for bp in BLUEPRINTS:
-            app.register_blueprint(bp)
+    app.register_blueprint(index_bp, url_prefix="/")
+    app.register_blueprint(account_bp, url_prefix="/account")
+    app.register_blueprint(api_bp, url_prefix="/api/v1")
 
     app.logger.debug("Created!")
 
