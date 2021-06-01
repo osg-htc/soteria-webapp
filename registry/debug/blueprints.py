@@ -3,7 +3,6 @@ Blueprints for debugging the application.
 """
 
 import json
-import os
 
 from flask import Blueprint, make_response, request
 
@@ -17,9 +16,6 @@ def environ():
     """
     Returns environment variables that are available to the current request.
     """
-    data = {}
-
-    for k in request.environ:
-        data[k] = str(request.environ[k])
+    data = {k: str(request.environ[k]) for k in request.environ}
 
     return make_response(json.dumps(data, indent=2, sort_keys=True))
