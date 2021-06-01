@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 """
-WSGI application.
+WSGI application for the `registry` Flask application.
 
-Log files are placed in the underlying Flask application's instance directory.
+Log files will be placed in the Flask application's instance directory.
 """
 
 import logging.config

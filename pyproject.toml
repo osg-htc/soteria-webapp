@@ -15,7 +15,7 @@ profile = "black"
 [tool.poetry]
 name = "harbor_user_registry"
 version = "0.1.0"
-description = "Registry for users of a Harbor instance"
+description = "Web application for managing the users of a Harbor instance"
 authors = ["Brian Aydemir <baydemir@morgridge.org>"]
 maintainers = ["OSG Software <support@opensciencegrid.org>"]
 license = "Apache-2.0"
