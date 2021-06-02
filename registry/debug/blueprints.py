@@ -3,8 +3,11 @@ Blueprints for debugging the application.
 """
 
 import json
+import os
 
 from flask import Blueprint, current_app, make_response, request
+
+from ..harbor import HarborAPI
 
 __all__ = ["debugging_bp"]
 
@@ -21,3 +24,12 @@ def environ():
     current_app.logger.debug(json.dumps(env, indent=2, sort_keys=True))
 
     return make_response({"status": "ok", "data": None})
+
+
+@debugging_bp.route("/arbitrary")
+def arbitrary():
+    api_server = current_app.config["HARBOR_API"]
+
+    api = HarborAPI(api_server, token=request.environ["OIDC_access_token"])
+
+    return api._get("/users/current")
