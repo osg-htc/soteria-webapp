@@ -16,6 +16,8 @@ def environ():
     """
     Logs the request's environment, and returns nothing.
     """
-    current_app.logger.debug(request.environ)
+    env = {k: str(request.environ[k]) for k in request.environ}
+
+    current_app.logger.debug(json.dumps(env, indent=2, sort_keys=True))
 
     return make_response({"status": "ok", "data": None})
