@@ -15,7 +15,9 @@ Overview
 Configuration
 -------------
 
-<to be written>
+See `<examples/config.py>`_.
+
+<additional details to be written>
 
 
 Quickstart: Development
