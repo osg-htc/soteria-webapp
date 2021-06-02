@@ -50,7 +50,7 @@ Quickstart: Testing on Docker
 The steps below are useful mainly for testing the Docker image itself. To
 configure the web application, you can create the instance directory, as
 when testing on localhost (see above), and then modify the ``Dockerfile`` to
-copy the instance directory into the image.
+``COPY instance /srv/instance/`` as its last step.
 
 1. Build the image::
 
