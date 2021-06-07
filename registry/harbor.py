@@ -40,15 +40,14 @@ class RestAPI:
         library's `request` method. If an HTTP error occurs, an exception
         is raised.
         """
-        current_app.logger.info("%s %s %s", method.upper(), url, kwargs)
+        current_app.logger.info("%s %s", method.upper(), url)
 
         try:
             r = self._session.request(method, url, **kwargs)
             r.raise_for_status()
-        except requests.RequestException:
-            current_app.logger.exception("%s %s %s", method, url, kwargs)
-            raise
-        else:
+        except requests.RequestException as exn:
+            current_app.logger.exception(exn)
+        finally:
             return r
 
     def _get(self, route, **kwargs):
