@@ -4,10 +4,9 @@ Blueprints for the API's routes.
 
 from typing import Any, List
 
-import requests
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, request
 
-from ...util import get_orcid, get_user_harbor_api
+from ... import util
 
 __all__ = ["api_bp"]
 
@@ -21,7 +20,7 @@ def api_response(ok: bool, data: Any = None, errors: List[str] = None):
         body["data"] = data
 
     if errors:
-        body["errors"] = errors
+        body["errors"] = errors  # type: ignore[assignment]
 
     return make_response(body)
 
@@ -39,15 +38,21 @@ def verify_harbor_account():
     """
     Verifies that the current user has created an account in Harbor.
     """
-    api = get_user_harbor_api()
+    api = util.get_admin_harbor_api()
 
-    if api:
-        try:
-            r = api.current_user()
-        except requests.RequestException:
-            r = None
+    subiss = request.environ.get("OIDC_CLAIM_sub", "") + request.environ.get(
+        "OIDC_CLAIM_ISS", ""
+    )
+    username = None
 
-    data = {"verified": bool(r)}
+    for user in api.all_users():
+        details = api.user(user["user_id"])
+
+        if subiss == details["oidc_user_meta"]["subiss"]:
+            username = details["username"]
+            break
+
+    data = {"verified": bool(username), "username": username}
 
     return api_response(True, data)
 
@@ -57,7 +62,7 @@ def verify_orcid():
     """
     Verifies that the current user has an ORCID.
     """
-    orcid = get_orcid()
+    orcid = util.get_orcid()
 
     data = {"verified": bool(orcid), "orcid": orcid}
 
