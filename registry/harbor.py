@@ -6,7 +6,6 @@ import logging
 from typing import Tuple
 
 import requests
-from flask import current_app
 
 __all__ = ["HarborAPI"]
 
@@ -40,15 +39,15 @@ class RestAPI:
         library's `request` method. If an HTTP error occurs, an exception
         is raised.
         """
-        current_app.logger.info("%s %s", method.upper(), url)
+        self._log.info("%s %s", method.upper(), url)
 
         try:
             r = self._session.request(method, url, **kwargs)
             r.raise_for_status()
         except requests.RequestException as exn:
-            current_app.logger.exception(exn)
-        finally:
-            return r
+            self._log.exception(exn)
+
+        return r
 
     def _get(self, route, **kwargs):
         """

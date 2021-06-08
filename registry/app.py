@@ -2,7 +2,7 @@
 Web application for managing the users of a Harbor instance.
 """
 
-import logging
+import logging.config
 import os
 from pathlib import Path
 
@@ -16,7 +16,7 @@ from .index import index_bp
 __all__ = ["create_app"]
 
 THIS_FILE = Path(__file__)
-INSTANCE_DIR = THIS_FILE.parent / "instance"
+INSTANCE_DIR = THIS_FILE.parent.parent / "instance"
 LOG_DIR = INSTANCE_DIR / "log"
 
 LOG_FORMAT = "[%(asctime)s] [%(levelname)s] %(module)s:%(lineno)s ~ %(message)s"
