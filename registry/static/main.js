@@ -43,7 +43,7 @@ function provisionProject(){
 /////////////
 
 function getHubVerification(){
-    $().ajax({
+    $.ajax({
         "url": "/api/v1/verify_harbor_account",
     })
         .success(reportStatusHub)
@@ -51,7 +51,7 @@ function getHubVerification(){
 }
 
 function getORCIDVerification(){
-    $().ajax({
+    $.ajax({
         "url": "/api/v1/verify_orcid",
     })
         .success(reportStatusORCID)
@@ -59,7 +59,7 @@ function getORCIDVerification(){
 }
 
 function getProvisionVerification(){
-    // $().ajax({
+    // $.ajax({
     //     "url": "/path",
     //     "method": "GET",
     //     "dataType":"json",
