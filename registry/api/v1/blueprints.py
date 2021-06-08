@@ -40,9 +40,7 @@ def verify_harbor_account():
     """
     api = util.get_admin_harbor_api()
 
-    subiss = request.environ.get("OIDC_CLAIM_sub", "") + request.environ.get(
-        "OIDC_CLAIM_iss", ""
-    )
+    subiss = util.get_subiss()
     username = None
 
     for user in api.all_users():
