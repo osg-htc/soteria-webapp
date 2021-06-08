@@ -43,29 +43,19 @@ function provisionProject(){
 /////////////
 
 function getHubVerification(){
-    // $().ajax({
-    //     "url": "/path",
-    //     "method": "GET",
-    //     "dataType":"json",
-    //     "data": {
-    //         "passthrough": "data"
-    //     },
-    // })
-    //     .success(reportStatusHub)
-    //     .error(showErrorHub);
+    $().ajax({
+        "url": "/api/v1/verify_harbor_account",
+    })
+        .success(reportStatusHub)
+        .error(showErrorHub);
 }
 
 function getORCIDVerification(){
-    // $().ajax({
-    //     "url": "/path",
-    //     "method": "GET",
-    //     "dataType":"json",
-    //     "data": {
-    //         "passthrough": "data"
-    //     },
-    // })
-    //     .success(reportStatusORCID)
-    //     .error(showErrorORCID);
+    $().ajax({
+        "url": "/api/v1/verify_orcid",
+    })
+        .success(reportStatusORCID)
+        .error(showErrorORCID);
 }
 
 function getProvisionVerification(){
