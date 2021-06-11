@@ -1,16 +1,37 @@
 # This project uses Poetry <https://python-poetry.org/>.
 
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
 
 [tool.black]
 line-length = 88
 target-version = ["py36"]
 
+
 [tool.isort]
 line_length = 88
 profile = "black"
+
+
+[tool.mypy]
+incremental = true
+cache_dir = "~/.cache/mypy"
+show_error_codes = true
+show_error_context = true
+
+check_untyped_defs = true
+strict_optional = true
+no_implicit_optional = false
+
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_ignores = true
+
 
 [tool.poetry]
 name = "harbor_user_registry"
@@ -21,21 +42,25 @@ maintainers = ["OSG Software <support@opensciencegrid.org>"]
 license = "Apache-2.0"
 packages = [{ include = "registry" }]
 
+
 [tool.poetry.dependencies]
 python = ">=3.6.8,<3.7"
 Flask = "^2.0.1"
 requests = "^2.25.1"
 
+
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
-black = "^21.5b2"
+black = "^21.6b0"
 docutils = "^0.17.1"
 isort = "^5.8.0"
-mypy = "^0.812"
+mypy = "^0.902"
 pre-commit = "^2.13.0"
 pylint = "^2.8.3"
 pytype = "^2021.5.25"
 safety = "^1.10.3"
+types-requests = "^0.1.10"
+
 
 [tool.pylint.messages-control]
 max-line-length = 88
