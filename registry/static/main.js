@@ -45,30 +45,25 @@ function provisionProject(){
 function getHubVerification(){
     $.ajax({
         "url": "/api/v1/verify_harbor_account",
+        "success" : reportStatusHub,
+        "error" : showErrorHub
     })
-        .success(reportStatusHub)
-        .error(showErrorHub);
 }
 
 function getORCIDVerification(){
     $.ajax({
         "url": "/api/v1/verify_orcid",
+        "success" : reportStatusORCID,
+        "error" : showErrorORCID
     })
-        .success(reportStatusORCID)
-        .error(showErrorORCID);
 }
 
 function getProvisionVerification(){
-    // $.ajax({
-    //     "url": "/path",
-    //     "method": "GET",
-    //     "dataType":"json",
-    //     "data": {
-    //         "passthrough": "data"
-    //     },
-    // })
-    //     .success(reportStatusProvision)
-    //     .error(showErrorProvision);
+    $.ajax({
+        "url": "/api/v1/create_harbor_project",
+        "success" : reportStatusProvision,
+        "error" : showErrorProvision
+    })
 }
 
 /////////////
@@ -92,20 +87,23 @@ function reportStatusProvision(data, textStatus, jqXHR){
 /////////////
 
 function showErrorHub(jqXHR, textStatus, errorThrown){
-    showMessage("hub-verification", textStatus, true)
+    showMessage("hub-verification", errorThrown, true)
+    endVerification( "hub-verification", false );
 }
 
 function showErrorORCID(jqXHR, textStatus, errorThrown){
-    showMessage("orc-id-verification", textStatus, true)
+    showMessage("orc-id-verification", errorThrown, true)
+    endVerification( "orc-id-verification", false );
 }
 
 function showErrorProvision(jqXHR, textStatus, errorThrown){
-    showMessage("provision-verification", textStatus, true)
+    showMessage("provision-verification", errorThrown, true)
+    endVerification( "provision-verification", false );
 }
 
 function isVerified( status ){
     try {
-        return provision_status.data.verified;
+        return status.data.verified;
     }
     catch(err){
         return false
@@ -143,7 +141,7 @@ function showMessage( element_id, message, error=false ){
 
     // Add the message
     message = message === undefined ? "" : message;
-    $("#" + element_id + " .message-area").innerHTML(message);
+    $("#" + element_id + " .message-area").text(message);
 
 }
 
@@ -157,8 +155,9 @@ function reportStatus( element_id, status ){
     if( isVerified(status) ){
         showMessage( element_id, status.message );
         endVerification( element_id, true );
+        $(element_id).trigger("click");
     } else {
-        showMessage( element_id, "You have not completed the verification process.");
+        showMessage( element_id, "You have not completed the verification process.", true);
         endVerification( element_id, false );
     }
 }

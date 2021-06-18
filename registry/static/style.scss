@@ -1,0 +1,22 @@
+$primary: #00364d;
+$secondary: #4aaed9;
+$light: #e6f4fa;
+
+@import "bootstrap/bootstrap-grid";
+@import "bootstrap/bootstrap";
+@import "variables";
+@import "bootswatch";
+
+div.col-12:not(:last-child){
+  margin-bottom: 1rem;
+}
+
+.footer {
+  box-shadow: 0 -1px 2px #b3b3b3;
+  margin-top: 4rem;
+  background-color: $light;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  height: 4rem;
+}
