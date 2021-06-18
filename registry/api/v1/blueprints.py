@@ -72,4 +72,8 @@ def create_harbor_project():
     """
     Creates a "starter" project in Harbor for the current user.
     """
+
+    data = {"verified": bool(True)}
+
+    return api_response(True, data)
     raise NotImplementedError
