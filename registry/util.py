@@ -16,11 +16,36 @@ __all__ = [
 ]
 
 
+def update_request_environ() -> None:
+    """
+    Add mock data to the current request's environment if debugging is enabled.
+    """
+    if current_app.config.get("REGISTRY_DEBUG"):
+        request.environ.update(current_app.config.get("FAKE_USER", {}))
+
+
 def get_orcid() -> Optional[str]:
     """
-    Returns the current user's ORCID, if available.
+    Returns the current user's ORCID.
     """
+    update_request_environ()
+
     return request.environ.get("OIDC_CLAIM_orcid")
+
+
+def get_subiss() -> Optional[str]:
+    """
+    Returns the concatenation of the current user's `sub` and `iss`.
+    """
+    update_request_environ()
+
+    sub = request.environ.get("OIDC_CLAIM_sub")
+    iss = request.environ.get("OIDC_CLAIM_iss")
+
+    if sub and iss:
+        return sub + iss
+
+    return None
 
 
 def get_admin_harbor_api() -> HarborAPI:
