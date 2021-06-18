@@ -4,14 +4,11 @@ Web application for managing the users of a Harbor instance.
 
 import logging.config
 import os
-import glob
 from pathlib import Path
 
 from flask import Flask
-from flask_assets import Environment, Bundle
 
 from .account import account_bp
-from .api.test import api_bp_test
 from .api.v1 import api_bp
 from .debug import debugging_bp
 from .index import index_bp
@@ -77,31 +74,10 @@ def create_app() -> Flask:
 
     app = Flask(__name__, instance_relative_config=True)
 
-    # Compile the static files
-    assets = Environment(app)
-    assets.url = app.static_url_path
-
-    # Set-up compression based on env
-    if app.config["DEBUG"]:
-        assets.config["LIBSASS_STYLE"] = "nested"
-        js = Bundle('main.js', output='gen/packed.js')
-    else:
-        assets.config["LIBSASS_STYLE"] = "compressed"
-        js = Bundle('main.js', filters="jsmin", output='gen/packed.js')
-
-    #Scss
-    assets.config['LIBSASS_INCLUDES'] = glob.glob("./registry/static/*/**")
-    scss = Bundle('style.scss', filters='libsass',  output='gen/style.css')
-    assets.register('scss_all', scss)
-
-    #js
-    assets.register('js_all', js)
-
     load_config(app)
 
     app.register_blueprint(index_bp, url_prefix="/")
     app.register_blueprint(account_bp, url_prefix="/account")
-    app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
     if app.config.get("REGISTRY_DEBUG"):

@@ -45,74 +45,46 @@ function provisionProject(){
 function getHubVerification(){
     $.ajax({
         "url": "/api/v1/verify_harbor_account",
-        "success" : reportStatusHub,
-        "error" : showErrorHub
     })
+        .success(reportStatusHub)
+        .error(showErrorHub);
 }
 
 function getORCIDVerification(){
     $.ajax({
         "url": "/api/v1/verify_orcid",
-        "success" : reportStatusORCID,
-        "error" : showErrorORCID
     })
+        .success(reportStatusORCID)
+        .error(showErrorORCID);
 }
 
 function getProvisionVerification(){
-    $.ajax({
-        "url": "/api/v1/create_harbor_project",
-        "success" : reportStatusProvision,
-        "error" : showErrorProvision
-    })
+    // $.ajax({
+    //     "url": "/path",
+    //     "method": "GET",
+    //     "dataType":"json",
+    //     "data": {
+    //         "passthrough": "data"
+    //     },
+    // })
+    //     .success(reportStatusProvision)
+    //     .error(showErrorProvision);
 }
 
 /////////////
 //  Verification specific wrappers for reportStatus
 /////////////
 
-function reportStatusHub(status, textStatus, jqXHR){
-    data = status.data
-    elementId = "hub-verification"
-
-    if(data.verified == true){
-        message = "You currently have an account at the Hub with username: " + data["username"]
-    } else {
-        message = "To gain the affiliate status, you need to follow the attached link to the Hub" +
-            " website and create an account using the same login as this webpage."
-    }
-
-    showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+function reportStatusHub(data, textStatus, jqXHR){
+    reportStatus("hub-verification", data)
 }
 
-function reportStatusORCID(status, textStatus, jqXHR){
-    data = status.data
-    elementId = "orc-id-verification"
-
-    if(data.verified == true){
-        message = "This account is currently linked with ORC ID: " + data["orc_id"]
-    } else {
-        message = "To gain the affiliate status, you need to follow the attached link and" +
-            " link your ORC ID with your account"
-    }
-
-    showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+function reportStatusORCID(data, textStatus, jqXHR){
+    reportStatus("orc-id-verification", data)
 }
 
-function reportStatusProvision(status, textStatus, jqXHR){
-    data = status.data
-    elementId = "provision-verification"
-
-    if(data.verified == true){
-        message = "This account has a project already provisioned, go to your " +
-            "Account Page to view"
-    } else {
-        message = "Click Provision to provision a project under this account"
-    }
-
-    showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+function reportStatusProvision(data, textStatus, jqXHR){
+    reportStatus("provision-verification", data)
 }
 
 /////////////
@@ -120,23 +92,20 @@ function reportStatusProvision(status, textStatus, jqXHR){
 /////////////
 
 function showErrorHub(jqXHR, textStatus, errorThrown){
-    showSubMessage("hub-verification", errorThrown, true)
-    endVerification( "hub-verification", false );
+    showMessage("hub-verification", textStatus, true)
 }
 
 function showErrorORCID(jqXHR, textStatus, errorThrown){
-    showSubMessage("orc-id-verification", errorThrown, true)
-    endVerification( "orc-id-verification", false );
+    showMessage("orc-id-verification", textStatus, true)
 }
 
 function showErrorProvision(jqXHR, textStatus, errorThrown){
-    showSubMessage("provision-verification", errorThrown, true)
-    endVerification( "provision-verification", false );
+    showMessage("provision-verification", textStatus, true)
 }
 
 function isVerified( status ){
     try {
-        return status.data.verified;
+        return provision_status.data.verified;
     }
     catch(err){
         return false
@@ -145,43 +114,51 @@ function isVerified( status ){
 
 // Visual Handlers
 function startVerification( element_id ){
-
-    showMessage(element_id, "")
     // Start Loading Spinner
+    $("#" + element_id + " .status-icon>.loading").attr("hidden", false);
     $("#" + element_id + " .status-icon>.failed").attr("hidden", true);
     $("#" + element_id + " .status-icon>.success").attr("hidden", true);
-    $("#" + element_id + " .status-icon>.loading").attr("hidden", false);
 }
 
 function endVerification( element_id, verified ){
     // End Loading Spinner
-    $("#" + element_id + " .status-icon>.loading").attr("hidden", true);
+    $("#" + element_id + " .status-icon>.loading").attr("hidden", true);;
     if( verified ){
-        // Add check mark
-        $("#" + element_id + " .status-icon>.success").attr("hidden", false);
+        // Close box and open next one - Add check mark
+        $("#" + element_id + " .status-icon>.success").attr("hidden", false);;
     } else {
-        // Add X indicator
-        $("#" + element_id + " .status-icon>.failed").attr("hidden", false);
+        // Keep box open and add X indicator
+        $("#" + element_id + " .status-icon>.failed").attr("hidden", false);;
     }
 }
 
-function showMessage( element_id, message ){
-    // Add the message
-    message = message === undefined ? "" : message;
-    $("#" + element_id + " .main-message").text(message);
-}
-
-
-function showSubMessage( element_id, message, error=false ){
+function showMessage( element_id, message, error=false ){
 
     // Adjust the color
     if( error ){
-        $("#" + element_id + " .sub-message").addClass("error");
+        $("#" + element_id + " .message-area").addClass("error-message");
+    } else {
+        $("#" + element_id + " .message-area").removeClass("error-message");
     }
 
     // Add the message
     message = message === undefined ? "" : message;
-    $("#" + element_id + " .sub-message").text(message);
+    $("#" + element_id + " .message-area").innerHTML(message);
 
 }
 
+function reportStatus( element_id, status ){
+
+    if( status["error"] ){
+        showMessage( element_id, status.error.map(x => x.status + ": " + x.title).join("\n"), true);
+        endVerification( element_id, false );
+    }
+
+    if( isVerified(status) ){
+        showMessage( element_id, status.message );
+        endVerification( element_id, true );
+    } else {
+        showMessage( element_id, "You have not completed the verification process.");
+        endVerification( element_id, false );
+    }
+}
