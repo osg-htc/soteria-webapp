@@ -36,7 +36,7 @@ def ping():
 @api_bp.route("/verify_harbor_account")
 def verify_harbor_account():
     """
-    Verifies that the current user has created an account in Harbor.
+    Verifies that the current user has created an registration in Harbor.
     """
     api = util.get_admin_harbor_api()
 

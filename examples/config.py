@@ -7,7 +7,7 @@ HARBOR_WEBSITE = "https://harbor.example.com/"
 # The Harbor instance's API's base URL.
 HARBOR_API = "https://harbor.example.com/api/v2.0"
 
-# The username and password of the robot account to use with the API.
+# The username and password of the robot registration to use with the API.
 # Environment variables of the same name will override the values set here.
 HARBOR_ROBOT_USERNAME = "robot"
 HARBOR_ROBOT_PASSWORD = "password"

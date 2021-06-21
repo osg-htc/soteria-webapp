@@ -1,27 +1,21 @@
-{% from "macros/registration.html" import card with context %}
+
 {% from "macros/general.html" import page_header with context %}
 {% extends "base.html" %}
 
 {% block title %}Open Science Container User Registry{% endblock %}
 
 {% block body %}
-    {{ page_header("User Registration Page") }}
+    {{ page_header("User Account") }}
 
     <div class="row">
         <div class="col-12 col-lg-10 col-xl-8">
             <div class="row mb-2">
                 <div class="col">
                     <p>
-                        Before accessing the resources in the container repository, you need to complete several steps to gain affiliate status and create a new project for your use
+                        This is the location to put user name, ORCID, and Projects
                     </p>
                 </div>
             </div>
-            <div class="row">
-                {{ card("1. Verify With Hub", "hub-verification") }}
-                {{ card("2. Link ORC ID", "orc-id-verification") }}
-                {{ card("3. Provision Project", "provision-verification") }}
-            </div>
         </div>
     </div>
-
 {% endblock %}

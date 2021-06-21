@@ -75,10 +75,10 @@ function reportStatusHub(status, textStatus, jqXHR){
     elementId = "hub-verification"
 
     if(data.verified == true){
-        message = "You currently have an account at the Hub with username: " + data["username"]
+        message = "You currently have an registration at the Hub with username: " + data["username"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link to the Hub" +
-            " website and create an account using the same login as this webpage."
+            " website and create an registration using the same login as this webpage."
     }
 
     showMessage(elementId, message)
@@ -90,10 +90,10 @@ function reportStatusORCID(status, textStatus, jqXHR){
     elementId = "orc-id-verification"
 
     if(data.verified == true){
-        message = "This account is currently linked with ORC ID: " + data["orc_id"]
+        message = "This registration is currently linked with ORC ID: " + data["orc_id"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link and" +
-            " link your ORC ID with your account"
+            " link your ORC ID with your registration"
     }
 
     showMessage(elementId, message)
@@ -105,10 +105,10 @@ function reportStatusProvision(status, textStatus, jqXHR){
     elementId = "provision-verification"
 
     if(data.verified == true){
-        message = "This account has a project already provisioned, go to your " +
+        message = "This registration has a project already provisioned, go to your " +
             "Account Page to view"
     } else {
-        message = "Click Provision to provision a project under this account"
+        message = "Click Provision to provision a project under this registration"
     }
 
     showMessage(elementId, message)

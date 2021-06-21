@@ -10,6 +10,7 @@ from pathlib import Path
 from flask import Flask
 from flask_assets import Environment, Bundle
 
+from .registration import registration_bp
 from .account import account_bp
 from .api.test import api_bp_test
 from .api.v1 import api_bp
@@ -101,6 +102,7 @@ def create_app() -> Flask:
 
     app.register_blueprint(index_bp, url_prefix="/")
     app.register_blueprint(account_bp, url_prefix="/account")
+    app.register_blueprint(registration_bp, url_prefix="/registration")
     app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
