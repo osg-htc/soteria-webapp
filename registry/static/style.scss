@@ -21,10 +21,8 @@ div.col-12:not(:last-child){
   height: 4rem;
 }
 
-.sub-message {
-  .error {
+.sub-message.error {
     color: red;
-  }
 }
 
 .status-icon>.failed{
