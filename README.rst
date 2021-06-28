@@ -44,27 +44,37 @@ Note that this mock data contains only enough information for the web
 application to function successfully.
 
 
-Quickstart: Development
------------------------
+Quickstart: Development Environment
+-----------------------------------
 
-The project's dependencies are managed using Poetry_. If you are doing
-significant development on the project's Python code, it might be worthwhile
-to use Poetry to install the project's "dev" dependencies and tools.
+This project uses Poetry for packaging and dependency management.
+
+1. Install `Poetry`_.
+
+2. Create a virtual environment using pyenv. This is more convenient than
+   letting Poetry create the virtual environment, because with pyenv, there
+   is no need for explicitly activating and deactivating the environment.
+
+   a. Install `pyenv`_ and `pyenv-virtualenv`_.
+
+   b. Create the virtual environment::
+
+        pyenv install 3.6.8  # for EL7
+        pyenv virtualenv 3.6.8 harbor-user-registry
+        pyenv rehash
+        pyenv local harbor-user-registry
+
+   c. Ensure that ``pip`` and friends are up to date::
+
+        python3 -m pip install -U pip setuptools wheel
+
+3. Install the project's dependencies and development tools::
+
+     poetry install --remove-untracked
+     pyenv rehash
+     pre-commit install
 
 .. _Poetry: https://python-poetry.org/
-
-1. Create a virtual environment with pyenv_ and pyenv-virtualenv_::
-
-     pyenv install 3.6.8
-     pyenv virtualenv 3.6.8 harbor-user-registry
-     pyenv local harbor-user-registry
-
-2. Install the project's dependencies::
-
-     python3 -m pip install -U pip setuptools wheel
-     python3 -m pip install -U -r requirements.txt
-     pyenv rehash
-
 .. _pyenv: https://github.com/pyenv/pyenv
 .. _pyenv-virtualenv: https://github.com/pyenv/pyenv-virtualenv
 
