@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-"""
-Web application for managing the users of a Harbor instance.
-"""
+"""SOTERIA registry web application."""
 
 import registry
 
