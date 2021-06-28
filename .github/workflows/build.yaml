@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  docker:
+  docker-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,6 +19,7 @@ jobs:
         with:
           images: |
             brianaydemir/harbor-user-registry
+            brianaydemir/soteria-registry
           tags: |
             type=ref,event=branch
             type=ref,event=pr
