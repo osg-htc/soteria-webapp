@@ -16,8 +16,8 @@ HARBOR_ROBOT_PASSWORD = "password"
 # Optional Configuration
 # ======================
 
-# Controls whether debugging routes are enabled.
-# Set to `True` to enable, and `False` to disable.
+# Controls whether debugging functionality is enabled.
+# The default is `False` (disabled). Set to `True` to enable.
 REGISTRY_DEBUG = False
 
 
