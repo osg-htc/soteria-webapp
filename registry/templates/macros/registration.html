@@ -1,4 +1,4 @@
-{% macro card(title, id) %}
+{% macro card(title, id, link_url) %}
 <div class="col-12">
     <div  id="{{ id }}" class="card">
         <div class="card-header">
@@ -40,7 +40,7 @@
                 <div class="col-auto">
                     <div class="row">
                         <div class="col-auto">
-                            <a class="btn btn-secondary">Link</a>
+                            <a href="{{ link_url }}" class="btn btn-secondary">Link</a>
                         </div>
                         <div class="col-auto">
                             <a class="btn btn-secondary mr-2 check">Check</a>
