@@ -105,7 +105,8 @@ function reportStatusProvision(status, textStatus, jqXHR){
     elementId = "provision-verification"
 
     if(data.verified == true){
-        message = "This registration has a project already provisioned at this url:" + data["url"]
+        message = "This registration has a project already provisioned at this url: " +
+            "<a href='" + data["url"] + "'> " + data['url'] + "</a>"
     } else {
         message = "Click Provision to provision a project under this registration"
     }
@@ -167,7 +168,7 @@ function endVerification( element_id, verified ){
 function showMessage( element_id, message ){
     // Add the message
     message = message === undefined ? "" : message;
-    $("#" + element_id + " .main-message").text(message);
+    $("#" + element_id + " .main-message").html(message);
 }
 
 
