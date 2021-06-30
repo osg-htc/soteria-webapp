@@ -11,14 +11,16 @@ div.col-12:not(:last-child){
   margin-bottom: 1rem;
 }
 
-.footer {
+footer {
+  .row{
+    align-content: center;
+  }
   box-shadow: 0 -1px 2px #b3b3b3;
   margin-top: 2rem;
   background-color: $light;
   display: flex;
-  align-content: center;
-  justify-content: center;
   height: 4rem;
+  justify-content: center;
 }
 
 .sub-message.error {
