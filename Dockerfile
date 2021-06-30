@@ -26,7 +26,7 @@ COPY etc /etc/
 COPY poetry.lock pyproject.toml requirements.txt /srv/
 RUN python3 -m pip install --no-cache-dir -r /srv/requirements.txt
 
-COPY run.sh wsgi.py /srv/
+COPY run_local.sh wsgi.py /srv/
 COPY registry /srv/registry/
 
 RUN mkdir /srv/instance/ && chown apache:apache /srv/instance/

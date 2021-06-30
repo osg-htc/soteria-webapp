@@ -1,9 +1,10 @@
-# This project uses Poetry <https://python-poetry.org/>.
+# This project uses Poetry for packaging and dependency management.
+# See https://python-poetry.org/ for more information.
 
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
 
 
 [tool.black]
@@ -34,33 +35,33 @@ warn_unused_ignores = true
 
 
 [tool.poetry]
-name = "harbor_user_registry"
+name = "soteria_registry"
 version = "0.1.0"
-description = "Web application for managing the users of a Harbor instance"
+description = "SOTERIA registry web application"
+license = "Apache-2.0"
 authors = ["Brian Aydemir <baydemir@morgridge.org>"]
 maintainers = ["OSG Software <support@opensciencegrid.org>"]
-license = "Apache-2.0"
 packages = [{ include = "registry" }]
 
 
 [tool.poetry.dependencies]
 python = ">=3.6.8,<3.7"
 Flask = "^2.0.1"
-requests = "^2.25.1"
 Flask-Assets = "^2.0"
+requests = "^2.25.1"
 
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
 black = "^21.6b0"
 docutils = "^0.17.1"
-isort = "^5.8.0"
-mypy = "^0.902"
+isort = "^5.9.1"
+mypy = "^0.910"
 pre-commit = "^2.13.0"
 pylint = "^2.8.3"
-pytype = "^2021.5.25"
+pytype = "^2021.6.17"
 safety = "^1.10.3"
-types-requests = "^0.1.10"
+types-requests = "^2.25.0"
 
 
 [tool.pylint.messages-control]
