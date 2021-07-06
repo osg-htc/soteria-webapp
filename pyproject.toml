@@ -40,12 +40,11 @@ version = "0.1.0"
 description = "SOTERIA registry web application"
 license = "Apache-2.0"
 authors = ["Brian Aydemir <baydemir@morgridge.org>"]
-maintainers = ["OSG Software <support@opensciencegrid.org>"]
 packages = [{ include = "registry" }]
 
 
 [tool.poetry.dependencies]
-python = ">=3.6.8,<3.7"
+python = ">=3.6.8,<3.10"
 Flask = "^2.0.1"
 Flask-Assets = "^2.0"
 requests = "^2.25.1"
@@ -58,7 +57,7 @@ docutils = "^0.17.1"
 isort = "^5.9.1"
 mypy = "^0.910"
 pre-commit = "^2.13.0"
-pylint = "^2.8.3"
+pylint = "^2.9.3"
 pytype = "^2021.6.17"
 safety = "^1.10.3"
 types-requests = "^2.25.0"
