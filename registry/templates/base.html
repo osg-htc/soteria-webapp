@@ -19,7 +19,7 @@
     {% endblock %}
 </head>
 
-<body class="d-flex flex-column">
+<body class="d-flex flex-column {% block page_class %}{% endblock %}">
     {{ navbar() }}
     <div class="container mb-auto">
        {% block body %}{% endblock %}

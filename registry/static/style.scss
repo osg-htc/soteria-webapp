@@ -1,6 +1,6 @@
 $primary: #00364d;
 $secondary: #4aaed9;
-$light: #e6f4fa;
+$light: lighten($secondary, 40%);
 
 @import "bootstrap/bootstrap-grid";
 @import "bootstrap/bootstrap";
@@ -37,4 +37,12 @@ footer {
 
 body{
   min-height: 100vh;
+}
+
+body.home {
+  background: linear-gradient(165deg, lighten($secondary, 20%) 50%, #fff 50%);
+}
+
+body.subpage {
+  background: linear-gradient(165deg, lighten($secondary, 35%) 50%, #fff 50%);
 }

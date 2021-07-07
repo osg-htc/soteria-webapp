@@ -1,5 +1,5 @@
 {%  macro navbar() %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">OSG Container Registry</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,10 +17,11 @@
 {% endmacro %}
 
 {% macro footer() %}
-<footer>
+<footer class="bg-primary">
     <div class="row">
-        <div class="col-12 text-center">
-            For all user support, questions, and comments: <a href="mailto:null">harbor@support.todo</a>
+        <div class="col-12 text-center text-light">
+            For all user support, questions, and comments:
+            <a class="text-secondary" href="mailto:null">harbor@support.todo</a>
         </div>
     </div>
 </footer>
