@@ -26,7 +26,11 @@ COPY etc /etc/
 COPY poetry.lock pyproject.toml requirements.txt /srv/
 RUN python3 -m pip install --no-cache-dir -r /srv/requirements.txt
 
-COPY run_local.sh wsgi.py /srv/
+COPY wsgi.py /srv/
 COPY registry /srv/registry/
 
-RUN mkdir /srv/instance/ && chown apache:apache /srv/instance/
+RUN (cd /srv/registry/ && flask assets build) \
+    && find /srv/ -name ".*" -exec rm -rf {} \; -prune \
+    #
+    && rm -rf /srv/instance/* \
+    && chown -R apache:apache /srv/instance/
