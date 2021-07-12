@@ -1,2 +1,4 @@
 **/.git*
-instance
+instance/
+registry/static/.webassets-cache/
+registry/static/gen/
