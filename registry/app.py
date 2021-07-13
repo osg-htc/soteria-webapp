@@ -88,7 +88,7 @@ def create_app() -> Flask:
         js = Bundle('main.js', 'bootstrap.js', output='gen/packed.js')
     else:
         assets.config["LIBSASS_STYLE"] = "compressed"
-        js = Bundle('main.js', 'bootstrap.js', filters="jsmin", output='gen/packed.js')
+        js = Bundle("main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js")
 
     #Scss
     assets.config['LIBSASS_INCLUDES'] = glob.glob("./registry/static/*/**")
