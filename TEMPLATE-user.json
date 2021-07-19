@@ -1,0 +1,16 @@
+{
+  "name": "First Last",
+  "ORCID": 11235813,
+  "account_type": "Affiliate/Member/Researcher",
+  "account_status": "Days Left (int)",
+  "projects": [{
+    "name": "Project Name_0",
+    "url": "https://www.projecturl.com_0",
+    "permissions": "Read/Write/Delete_0"
+  },
+  {
+    "name": "Project Name_1",
+    "url": "https://www.projecturl.com_1",
+    "permissions": "Read/Write/Delete_1"
+  }]
+}

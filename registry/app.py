@@ -10,12 +10,12 @@ from pathlib import Path
 from flask import Flask
 from flask_assets import Environment, Bundle
 
-from .registration import registration_bp
-from .account import account_bp
-from .api.test import api_bp_test
-from .api.v1 import api_bp
-from .debug import debugging_bp
-from .index import index_bp
+from registry.registration import registration_bp
+from registry.account import account_bp
+from registry.api.test import api_bp_test
+from registry.api.v1 import api_bp
+from registry.debug import debugging_bp
+from registry.index import index_bp
 
 __all__ = ["create_app"]
 
@@ -112,3 +112,6 @@ def create_app() -> Flask:
     app.logger.debug("Created!")
 
     return app
+
+if __name__ == '__main__':
+    create_app().run(port=5000, debug=True)

@@ -43,9 +43,9 @@ body{
 }
 
 body.home {
-  background: linear-gradient(165deg, lighten($secondary, 20%) 50%, #fff 50%);
+  background: linear-gradient(165deg, lighten($secondary, 35%) 50%, #fff 50%);
 }
 
 body.subpage {
-  background: linear-gradient(165deg, lighten($secondary, 35%) 50%, #fff 50%);
+  background-color: lighten($secondary, 35%);
 }

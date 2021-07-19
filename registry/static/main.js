@@ -105,8 +105,8 @@ function reportStatusProvision(status, textStatus, jqXHR){
     elementId = "provision-verification"
 
     if(data.verified == true){
-        message = "This registration has a project already provisioned at this url: " +
-            "<a href='" + data["url"] + "'> " + data['url'] + "</a>"
+        message = "This registration has a project already provisioned, go to you " +
+            "<a href='/account'>Account Page</a> to view"
     } else {
         message = "Click Provision to provision a project under this registration"
     }
