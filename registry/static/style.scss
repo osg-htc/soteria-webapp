@@ -2,6 +2,9 @@ $primary: #00364d;
 $secondary: #4aaed9;
 $light: lighten($secondary, 40%);
 
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+$font-family-base: 'Titillium Web', sans-serif;
+
 @import "bootstrap/bootstrap-grid";
 @import "bootstrap/bootstrap";
 @import "variables";
@@ -40,9 +43,9 @@ body{
 }
 
 body.home {
-  background: linear-gradient(165deg, lighten($secondary, 20%) 50%, #fff 50%);
+  background: linear-gradient(165deg, lighten($secondary, 35%) 50%, #fff 50%);
 }
 
 body.subpage {
-  background: linear-gradient(165deg, lighten($secondary, 35%) 50%, #fff 50%);
+  background-color: lighten($secondary, 35%);
 }
