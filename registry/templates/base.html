@@ -1,4 +1,5 @@
-{% from "macros/general.html" import navbar, footer with context %}
+{% from "macros/layout/navbar.html" import navbar with context %}
+{% from "macros/layout/footer.html" import footer with context %}
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
@@ -21,7 +22,7 @@
 
 <body class="d-flex flex-column {% block page_class %}{% endblock %}">
     {{ navbar() }}
-    <div class="container mb-auto">
+    <div class="{% block body_container %}container mb-auto{% endblock %}">
        {% block body %}{% endblock %}
     </div>
     {{ footer() }}

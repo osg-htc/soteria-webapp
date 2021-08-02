@@ -70,6 +70,6 @@ def verify_orcid():
 @api_bp.route("/create_harbor_project")
 def create_harbor_project():
     """
-    Creates a "starter" project in Harbor for the current user.
+    Creates a "starter" repositories in Harbor for the current user.
     """
     raise NotImplementedError

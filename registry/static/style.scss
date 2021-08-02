@@ -49,3 +49,9 @@ body.home {
 body.subpage {
   background-color: lighten($secondary, 35%);
 }
+
+.project-card {
+  a {
+    text-decoration: none;
+  }
+}
