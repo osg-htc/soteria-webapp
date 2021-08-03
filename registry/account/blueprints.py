@@ -15,7 +15,7 @@ def index():
     Returns a page where the current user can manage their registration.
     """
 
-    with open("TEMPLATE-user.json") as json_file:
+    with open("../data-templates/TEMPLATE-user.json") as json_file:
         user = json.load(json_file)
 
     return make_response(render_template("account.html", user=user))
