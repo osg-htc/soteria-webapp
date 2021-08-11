@@ -2,63 +2,35 @@
 Web application for managing the users of a Harbor instance.
 """
 
-import logging.config
 import os
-import glob
-from pathlib import Path
+import pathlib
 
 from flask import Flask
-from flask_assets import Environment, Bundle
+from flask_assets import Bundle, Environment  # type: ignore[import]
 
-from registry.registration import registration_bp
-from registry.repositories import repositories_bp
-from registry.repository import repository_bp
+import registry.logging
 from registry.account import account_bp
 from registry.api.test import api_bp_test
 from registry.api.v1 import api_bp
 from registry.debug import debugging_bp
 from registry.index import index_bp
+from registry.registration import registration_bp
+from registry.repositories import repositories_bp
+from registry.repository import repository_bp
 
 __all__ = ["create_app"]
 
-THIS_FILE = Path(__file__)
+THIS_FILE = pathlib.Path(__file__)
 INSTANCE_DIR = THIS_FILE.parent.parent / "instance"
 LOG_DIR = INSTANCE_DIR / "log"
 
-LOG_FORMAT = "[%(asctime)s] [%(levelname)s] %(module)s:%(lineno)s ~ %(message)s"
-
-
-def setup_logging() -> None:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-
-    logging.config.dictConfig(
-        {
-            "version": 1,
-            "formatters": {
-                "default": {"format": LOG_FORMAT},
-            },
-            "handlers": {
-                "stream": {
-                    "class": "logging.StreamHandler",
-                    "level": "DEBUG",
-                    "formatter": "default",
-                },
-                "file": {
-                    "class": "logging.handlers.RotatingFileHandler",
-                    "level": "DEBUG",
-                    "formatter": "default",
-                    "filename": LOG_DIR / "wsgi.log",
-                    "backupCount": 5,
-                    "maxBytes": 10 * 1024 * 1024,  # 10 MiB
-                },
-            },
-            "root": {"level": "DEBUG", "handlers": ["stream", "file"]},
-        }
-    )
-
 
 def load_config(app: Flask) -> None:
-    pyfiles = Path(app.instance_path).glob("*.py")
+    """
+    Loads the application's configuration.
+    """
+
+    pyfiles = pathlib.Path(app.instance_path).glob("*.py")
 
     for p in sorted(pyfiles):
         app.config.from_pyfile(p)
@@ -71,36 +43,14 @@ def load_config(app: Flask) -> None:
     ]:
         val = os.environ.get(key)
 
-        if val:
+        if val is not None:
             app.config[key] = val
 
 
-def create_app() -> Flask:
-    setup_logging()
-
-    app = Flask(__name__, instance_relative_config=True)
-
-    # Compile the static files
-    assets = Environment(app)
-    assets.url = app.static_url_path
-
-    # Set-up compression based on env
-    if app.config["DEBUG"]:
-        assets.config["LIBSASS_STYLE"] = "nested"
-        js = Bundle('main.js', 'bootstrap.js', output='gen/packed.js')
-    else:
-        assets.config["LIBSASS_STYLE"] = "compressed"
-        js = Bundle("main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js")
-
-    #Scss
-    assets.config['LIBSASS_INCLUDES'] = glob.glob("./registry/static/*/**")
-    scss = Bundle('style.scss', filters='libsass',  output='gen/style.css')
-    assets.register('scss_all', scss)
-
-    #js
-    assets.register('js_all', js)
-
-    load_config(app)
+def register_blueprints(app: Flask) -> None:
+    """
+    Registers the application's blueprints.
+    """
 
     app.register_blueprint(index_bp, url_prefix="/")
     app.register_blueprint(account_bp, url_prefix="/account")
@@ -113,9 +63,51 @@ def create_app() -> Flask:
     if app.config.get("REGISTRY_DEBUG"):
         app.register_blueprint(debugging_bp, url_prefix="/debug")
 
-    app.logger.debug("Created!")
+
+def define_assets(app: Flask) -> None:
+    """
+    Defines the application's CSS and JavaScript assets.
+    """
+
+    assets = Environment(app)
+    assets.url = app.static_url_path
+
+    if app.config["DEBUG"]:
+        assets.config["LIBSASS_STYLE"] = "nested"
+        js = Bundle("main.js", "bootstrap.js", output="gen/packed.js")
+    else:
+        ## Assume that a production webserver cannot write these files.
+
+        assets.auto_build = False
+        assets.cache = False
+        assets.manifest = False
+
+        assets.config["LIBSASS_STYLE"] = "compressed"
+        js = Bundle("main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js")
+
+    scss = Bundle("style.scss", filters="libsass", output="gen/style.css")
+
+    assets.register("js_all", js)
+    assets.register("scss_all", scss)
+
+
+def create_app() -> Flask:
+    """
+    Creates the main application.
+    """
+
+    registry.logging.init(LOG_DIR / "soteria.log")
+
+    app = Flask(
+        __name__.split(".", maxsplit=1)[0],
+        instance_path=INSTANCE_DIR,
+        instance_relative_config=True,
+    )
+
+    load_config(app)
+    register_blueprints(app)
+    define_assets(app)
+
+    app.logger.debug("Created app!")
 
     return app
-
-if __name__ == '__main__':
-    create_app().run(port=5000, debug=True)
