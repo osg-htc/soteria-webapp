@@ -1,0 +1,23 @@
+{%  macro tag_card_advanced(tag) %}
+<div class="card mb-2 project-card">
+    <div class="card-body">
+        <div class="row justify-content-between">
+            <div class="col">
+                <h5>{{ tag['name'] }}</h5>
+            </div>
+            <div class="col">
+                {{ tag['OS'] }}
+            </div>
+            <div class="col">
+                {{ tag['pulled'] }}
+            </div>
+            <div class="col">
+                {{ tag['pushed'] }}
+            </div>
+            <div class="col">
+                {{ tag['size'] }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,17 @@
+{%  macro user_card(user) %}
+<div class="card mb-2 project-card">
+    <div class="card-body">
+        <div class="row justify-content-between">
+            <div class="col-12 col-md-4">
+                {{ user['name'] }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ user['ORCID'] }}
+            </div>
+            <div class="col-12 col-md-4">
+                {{ user['account_type'] }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

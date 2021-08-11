@@ -1,5 +1,11 @@
+*.html
 *.swp
 /.python-version
 /instance/
 /registry/static/.webassets-cache/
 /registry/static/gen/
+.python-version
+instance/
+venv
+.idea
+boo

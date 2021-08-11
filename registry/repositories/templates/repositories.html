@@ -1,0 +1,21 @@
+{% from "macros/page-header.html" import page_header with context %}
+{% from "macros/project-card.html" import project_card with context %}
+{% extends "base.html" %}
+
+{% block title %}Repositories{% endblock %}
+{% block page_class %}subpage{% endblock %}
+
+{% block body %}
+    {{ page_header("Repositories") }}
+    <div class="row">
+        <div class="col-12 ">
+            <div class="row">
+                <div class="col-12">
+                    {% for project in projects %}
+                        {{ project_card( project ) }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
