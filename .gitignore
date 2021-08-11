@@ -2,3 +2,6 @@
 *.swp
 .python-version
 instance/
+venv
+.idea
+boo
