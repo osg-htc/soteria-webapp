@@ -20,7 +20,7 @@ jobs:
           images: |
             docker.io/brianaydemir/soteria-registry
             docker.io/brianaydemir/harbor-user-registry
-            hub.osgdev.chtc.io/soteria/registry-webapp
+            hub.opensciencegrid.org/brian.aydemir/soteria-webapp
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -36,10 +36,10 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Log into OSG Hub (Development Instance)
+      - name: Log into OSG Hub
         uses: docker/login-action@v1
         with:
-          registry: hub.osgdev.chtc.io
+          registry: hub.opensciencegrid.org
           username: ${{ secrets.HUB_USERNAME }}
           password: ${{ secrets.HUB_TOKEN }}
 
