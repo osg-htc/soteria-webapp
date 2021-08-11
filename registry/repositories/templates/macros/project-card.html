@@ -1,0 +1,24 @@
+{%  macro project_card(project) %}
+<div class="card mb-2 project-card">
+    <a href="{{ "/repository/" + project.provisioner + "/" + project.name }}">
+        <div class="card-body">
+            <div class="row justify-content-between">
+                <div class="col-4">
+                    <h5 id="projects" class="card-title">{{ project.name }}</h5>
+                    <span class="text-muted">Updated: {{ project.updated }}</span>
+                </div>
+                <div class="col-auto">
+                    <div class="row h-100 align-content-center">
+                        <div class="col-auto">
+                            <img alt="Key" src="/static/images/key.svg" />
+                        </div>
+                        <div class="col-auto">
+                            <span>{{ project.privacy }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+{% endmacro %}
