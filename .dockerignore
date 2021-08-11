@@ -1,4 +1,4 @@
-**/.git*
-instance/
-registry/static/.webassets-cache/
-registry/static/gen/
+/.*
+/instance/
+/registry/static/.webassets-cache/
+/registry/static/gen/

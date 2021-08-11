@@ -1,4 +1,5 @@
-*.html
 *.swp
-.python-version
-instance/
+/.python-version
+/instance/
+/registry/static/.webassets-cache/
+/registry/static/gen/
