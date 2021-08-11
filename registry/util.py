@@ -9,7 +9,7 @@ from flask import current_app, request
 from .harbor import HarborAPI
 
 __all__ = [
-    "get_orcid",
+    "get_orcid_id",
     #
     "get_admin_harbor_api",
     "get_robot_harbor_api",
@@ -24,7 +24,7 @@ def update_request_environ() -> None:
         request.environ.update(current_app.config.get("FAKE_USER", {}))
 
 
-def get_orcid() -> Optional[str]:
+def get_orcid_id() -> Optional[str]:
     """
     Returns the current user's ORCID.
     """

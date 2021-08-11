@@ -55,14 +55,14 @@ def verify_harbor_account():
     return api_response(True, data)
 
 
-@api_bp.route("/verify_orcid")
+@api_bp.route("/verify_orcid_id")
 def verify_orcid():
     """
-    Verifies that the current user has an ORCID.
+    Verifies that the current user has an ORCID iD.
     """
-    orcid = util.get_orcid()
+    orcid_id = util.get_orcid_id()
 
-    data = {"verified": bool(orcid), "orcid": orcid}
+    data = {"verified": bool(orcid_id), "orcid_id": orcid_id}
 
     return api_response(True, data)
 
