@@ -3,7 +3,7 @@ Wrapper for Harbor's API.
 """
 
 import logging
-from typing import Tuple
+from typing import Any, List, Tuple, Union
 
 import requests
 
@@ -43,24 +43,30 @@ class RestAPI:
         self._log.info("%s %s", method.upper(), url)
 
         try:
-            r = self._session.request(method, url, **kwargs)
+            r = requests.request(method, url, **kwargs)
         except requests.RequestException as exn:
             self._log.exception(exn)
             raise
 
         return r
 
-    def _head(self, route, **kwargs):
+    def _delete(self, route, **kwargs):
         """
         Logs and sends an HTTP GET request for the given route.
         """
-        return self._request("HEAD", f"{self._api_base_url}{route}", **kwargs)
+        return self._request("DELETE", f"{self._api_base_url}{route}", **kwargs)
 
     def _get(self, route, **kwargs):
         """
         Logs and sends an HTTP GET request for the given route.
         """
         return self._request("GET", f"{self._api_base_url}{route}", **kwargs)
+
+    def _head(self, route, **kwargs):
+        """
+        Logs and sends an HTTP GET request for the given route.
+        """
+        return self._request("HEAD", f"{self._api_base_url}{route}", **kwargs)
 
     def _post(self, route, **kwargs):
         """
@@ -106,14 +112,69 @@ class HarborAPI(RestAPI):
 
         return r
 
-    def user(self, user_id):
+    def get_all_users(self):
+        """
+        Get all users.
+        """
+        return self._get("/users").json()
+
+    def get_user(self, user_id):
         """
         Get a user's profile.
         """
         return self._get(f"/users/{user_id}").json()
 
-    def all_users(self):
+    def create_project(self, name: str, *, storage_limit: int = 5368709120):
         """
-        Get all registered users.
+        Create a new private project, with the given user as an administrator.
         """
-        return self._get("/users").json()
+        payload = {
+            "project_name": name,
+            "public": False,
+            "storage_limit": storage_limit,
+        }
+
+        r = self._post("/projects", json=payload)
+
+        if not r.ok:
+            return r.json()
+        return self.get_project(name)
+
+    def get_project(self, project_name_or_id: Union[int, str]):
+        """
+        Get a new project, either by name or by ID.
+        """
+        return self._get(f"/projects/{project_name_or_id}").json()
+
+    def add_project_member(self, project_id: int, username: str, role_id: int = 2):
+        payload = {
+            "role_id": role_id,
+            "member_user": {"username": username},
+        }
+
+        r = self._post(f"/projects/{project_id}/members", json=payload)
+
+        if not r.ok:
+            return r.json()
+        return self.get_project_member(project_id, username)
+
+    def get_project_member(self, project_id: int, username: str):
+        params = {"entityname": username}
+
+        r = self._get(f"/projects/{project_id}/members", params=params).json()
+
+        for member in r:
+            if member["entity_name"] == username:
+                return member
+
+        raise NotImplementedError
+
+    def delete_project_member(self, project_id: int, username: str):
+        member = self.get_project_member(project_id, username)
+
+        r = self._delete(f"/projects/{project_id}/members/{member['id']}")
+
+        if not r.ok:
+            return r.json()
+
+        return {}

@@ -5,7 +5,7 @@ Assorted helper functions.
 import logging
 import logging.handlers
 import pathlib
-from typing import Optional
+from typing import Any, Optional
 
 from flask import current_app, request
 
@@ -14,6 +14,7 @@ from .harbor import HarborAPI
 __all__ = [
     "configure_logging",
     #
+    "get_harbor_user",
     "get_orcid_id",
     #
     "get_admin_harbor_api",
@@ -59,9 +60,26 @@ def update_request_environ() -> None:
         request.environ.update(current_app.config.get("FAKE_USER", {}))
 
 
+def get_harbor_user() -> Any:
+    """
+    Returns the current users's Harbor account.
+    """
+    api = get_admin_harbor_api()
+
+    subiss = get_subiss()
+
+    for user in api.get_all_users():
+        details = api.get_user(user["user_id"])
+
+        if subiss == details["oidc_user_meta"]["subiss"]:
+            return details
+
+    return None
+
+
 def get_orcid_id() -> Optional[str]:
     """
-    Returns the current user's ORCID.
+    Returns the current user's ORCID iD.
     """
     update_request_environ()
 

@@ -2,18 +2,18 @@
 Blueprints for the API's routes.
 """
 
-from typing import Any, List
+from typing import Any, Dict, List
 
-from flask import Blueprint, make_response, request
+from flask import Blueprint, current_app, make_response
 
-from ... import util
+import registry.util
 
 __all__ = ["api_bp"]
 
 api_bp = Blueprint("api", __name__)
 
 
-def api_response(ok: bool, data: Any = None, errors: List[str] = None):
+def api_response(ok: bool, data: Any = None, errors: List[Dict[str, str]] = None):
     body = {"status": "ok" if ok else "error"}
 
     if data:
@@ -25,7 +25,7 @@ def api_response(ok: bool, data: Any = None, errors: List[str] = None):
     return make_response(body)
 
 
-@api_bp.route("/ping", methods=["GET", "POST", "PUT", "DELETE"])
+@api_bp.route("/ping", methods=["HEAD", "GET", "POST", "PUT", "DELETE"])
 def ping():
     """
     Confirms that the API is functioning at some minimal level.
@@ -38,17 +38,9 @@ def verify_harbor_account():
     """
     Verifies that the current user has created an registration in Harbor.
     """
-    api = util.get_admin_harbor_api()
+    harbor_user = registry.util.get_harbor_user()
 
-    subiss = util.get_subiss()
-    username = None
-
-    for user in api.all_users():
-        details = api.user(user["user_id"])
-
-        if subiss == details["oidc_user_meta"]["subiss"]:
-            username = details["username"]
-            break
+    username = harbor_user["username"] if harbor_user else None
 
     data = {"verified": bool(username), "username": username}
 
@@ -60,7 +52,7 @@ def verify_orcid():
     """
     Verifies that the current user has an ORCID iD.
     """
-    orcid_id = util.get_orcid_id()
+    orcid_id = registry.util.get_orcid_id()
 
     data = {"verified": bool(orcid_id), "orcid_id": orcid_id}
 
@@ -72,4 +64,37 @@ def create_harbor_project():
     """
     Creates a "starter" repositories in Harbor for the current user.
     """
-    raise NotImplementedError
+    api = registry.util.get_admin_harbor_api()
+    whoami = current_app.config["HARBOR_ADMIN_USERNAME"]
+    errors = []
+
+    orcid_id = registry.util.get_orcid_id()
+    harbor_user = registry.util.get_harbor_user()
+
+    if not orcid_id:
+        errors.append({"code": "PREREQUISITE", "message": "Missing ORCID iD"})
+    if not harbor_user:
+        errors.append({"code": "PREREQUISITE", "message": "Missing Harbor user"})
+    if errors:
+        return api_response(False, errors=errors)
+
+    username = harbor_user["username"]
+
+    project = api.create_project(username)
+
+    if "errors" in project:
+        return api_response(False, errors=project["errors"])
+
+    project_id = project["project_id"]
+
+    response = api.add_project_member(project_id, username)
+
+    if "errors" in response:
+        return api_response(False, errors=response["errors"])
+
+    response = api.delete_project_member(project_id, whoami)
+
+    if "errors" in response:
+        return api_response(False, errors=response["errors"])
+
+    return api_response(True, data={"project_name": project["name"]})
