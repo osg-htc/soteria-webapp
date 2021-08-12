@@ -90,7 +90,7 @@ function reportStatusORCID(status, textStatus, jqXHR){
         message = "This registration is currently linked with ORCID iD: " + status.data["orcid_id"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link and" +
-            " link your ORC ID with your registration"
+            " link your ORCID iD with your registration"
     }
 
     showMessage(elementId, message)
