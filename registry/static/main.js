@@ -51,7 +51,7 @@ function getHubVerification(){
 
 function getORCIDVerification(){
     $.ajax({
-        "url": "/api/v1/verify_orcid",
+        "url": "/api/v1/verify_orcid_id",
         "success" : reportStatusORCID,
         "error" : showErrorORCID
     })
@@ -87,7 +87,7 @@ function reportStatusORCID(status, textStatus, jqXHR){
     elementId = "orc-id-verification"
 
     if(isVerified(status)){
-        message = "This registration is currently linked with ORC ID: " + status.data["orc_id"]
+        message = "This registration is currently linked with ORCID iD: " + status.data["orcid_id"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link and" +
             " link your ORC ID with your registration"
@@ -135,8 +135,6 @@ function showErrorProvision(jqXHR, textStatus, errorThrown){
     showSubMessage("provision-verification", errorThrown, true)
     endVerification( "provision-verification", false );
 }
-
-// Util
 
 function isVerified( status ){
     try {

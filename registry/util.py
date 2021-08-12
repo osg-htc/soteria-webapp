@@ -2,6 +2,9 @@
 Assorted helper functions.
 """
 
+import logging
+import logging.handlers
+import pathlib
 from typing import Optional
 
 from flask import current_app, request
@@ -9,11 +12,43 @@ from flask import current_app, request
 from .harbor import HarborAPI
 
 __all__ = [
-    "get_orcid",
+    "configure_logging",
+    #
+    "get_orcid_id",
     #
     "get_admin_harbor_api",
     "get_robot_harbor_api",
 ]
+
+
+def configure_logging(
+    filename: pathlib.Path,
+    *,
+    level: int = logging.DEBUG,
+    fmt: str = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s",
+    datefmt: str = "%Y-%m-%d %H:%M:%S",
+    maxBytes: int = 10 * 1024 * 1024,
+    backupCount: int = 4,  # plus the current log file -> 50 MiB total
+) -> None:
+    """
+    Adds a stream handler and a rotating file handler to the root logger.
+    """
+
+    filename.parent.mkdir(parents=True, exist_ok=True)
+
+    logger = logging.getLogger()
+    formatter = logging.Formatter(fmt, datefmt=datefmt)
+
+    for handler in [
+        logging.StreamHandler(),
+        logging.handlers.RotatingFileHandler(
+            filename, maxBytes=maxBytes, backupCount=backupCount
+        ),
+    ]:
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    logger.setLevel(level)
 
 
 def update_request_environ() -> None:
@@ -24,7 +59,7 @@ def update_request_environ() -> None:
         request.environ.update(current_app.config.get("FAKE_USER", {}))
 
 
-def get_orcid() -> Optional[str]:
+def get_orcid_id() -> Optional[str]:
     """
     Returns the current user's ORCID.
     """
