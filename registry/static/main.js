@@ -105,7 +105,7 @@ function reportStatusProvision(status, textStatus, jqXHR){
 
     if(status.status == 'ok'){
         message = "You have been provisioned a repository! Navigate to the repositories page under 'Account Details' or follow the link " +
-            "<a href='" + data['url'] + "'>Repository Page</a> to view your repository."
+            "to view your <a href='/repositories'>Repositories</a>"
     } else {
         let error_titles = status.errors.map(error => error.title)
         sub_message = error_titles.join("<br>")

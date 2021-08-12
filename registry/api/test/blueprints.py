@@ -60,8 +60,7 @@ def verify_orcid():
 
 @api_bp_test.route("/create_harbor_project")
 def create_harbor_project():
-
-    errors = [{"status": "200","title": "String to show to user"},{"status": "201","title": "This is bad"}]
+    data = createResponse(True, {"orc_id":"23462456456"})
     #data = createResponse(False, {"url":"https://takingdrake.com"})
 
-    return api_response(False, errors=errors)
+    return api_response(True, data, errors=errors)
