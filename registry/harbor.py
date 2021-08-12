@@ -35,25 +35,38 @@ class RestAPI:
         """
         Logs and sends an HTTP request.
 
-        Keyword arguments are passed through unmodified to the `requests`
-        library's `request` method. If an HTTP error occurs, an exception
-        is raised.
+        Keyword arguments are passed through unmodified to the ``requests``
+        library's ``request`` method. If the response contains a status code
+        indicating failure, the response is still returned. Other failures
+        result in an exception being raised.
         """
         self._log.info("%s %s", method.upper(), url)
 
         try:
             r = self._session.request(method, url, **kwargs)
-            r.raise_for_status()
         except requests.RequestException as exn:
             self._log.exception(exn)
+            raise
 
         return r
+
+    def _head(self, route, **kwargs):
+        """
+        Logs and sends an HTTP GET request for the given route.
+        """
+        return self._request("HEAD", f"{self._api_base_url}{route}", **kwargs)
 
     def _get(self, route, **kwargs):
         """
         Logs and sends an HTTP GET request for the given route.
         """
         return self._request("GET", f"{self._api_base_url}{route}", **kwargs)
+
+    def _post(self, route, **kwargs):
+        """
+        Logs and sends an HTTP GET request for the given route.
+        """
+        return self._request("POST", f"{self._api_base_url}{route}", **kwargs)
 
 
 class HarborAPI(RestAPI):
@@ -67,7 +80,6 @@ class HarborAPI(RestAPI):
         self,
         api_base_url: str,
         basic_auth: Tuple[str, str] = None,
-        bearer_token: str = None,
         session: requests.Session = None,
     ):
         """
@@ -75,28 +87,24 @@ class HarborAPI(RestAPI):
 
         If a username and password are provided via `basic_auth`, API calls
         will be made using Basic authentication.
-
-        If an OIDC **ID** token is provided via `bearer_token`, API calls
-        will be made using Bearer authentication. (NOTE: Normal practice is
-        to provide an access token. Harbor's API works differently.)
         """
         super().__init__(api_base_url, session=session)
 
         self._basic_auth = basic_auth
-        self._bearer_token = bearer_token
 
     def _request(self, *args, **kwargs):
         if self._basic_auth:
             if "auth" not in kwargs:
                 kwargs["auth"] = self._basic_auth
 
-        if self._bearer_token:
-            if "headers" not in kwargs:
-                kwargs["headers"] = {}
-            if "authorization" not in kwargs["headers"]:
-                kwargs["headers"]["authorization"] = f"Bearer {self._bearer_token}"
+        r = super()._request(*args, **kwargs)
 
-        return super()._request(*args, **kwargs)
+        try:
+            r.raise_for_status()
+        except requests.HTTPError as exn:
+            self._log.debug(exn)
+
+        return r
 
     def user(self, user_id):
         """
@@ -109,9 +117,3 @@ class HarborAPI(RestAPI):
         Get all registered users.
         """
         return self._get("/users").json()
-
-    def current_user(self):
-        """
-        Get the current user's profile.
-        """
-        return self._get("/users/current").json()
