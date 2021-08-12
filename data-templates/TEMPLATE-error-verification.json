@@ -1,0 +1,7 @@
+{
+  "status": "error",
+  "errors": [{
+    "code": "200",
+    "title": "String to show to user"
+  }]
+}

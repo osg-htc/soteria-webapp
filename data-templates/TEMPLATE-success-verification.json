@@ -1,0 +1,7 @@
+{
+  "status": "ok",
+  "data": {
+    "verified": "true|false",
+    "url/orcid_id/username": "String Related to verification"
+  }
+}
