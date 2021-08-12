@@ -14,8 +14,16 @@ def index():
     """
     Returns a page where the current user can manage their registration.
     """
+    try:
+        with open("../data-templates/TEMPLATE-user.json") as json_file:
+            user = json.load(json_file)
+    except:
+        user = {
+          "name": "First Last",
+          "ORCID": 11235813,
+          "account_type": "Affiliate/Member/Researcher",
+          "account_status": "Days Left (int)"
+        }
 
-    with open("../data-templates/TEMPLATE-user.json") as json_file:
-        user = json.load(json_file)
 
     return make_response(render_template("account.html", user=user))

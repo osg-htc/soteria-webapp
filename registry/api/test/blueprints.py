@@ -15,11 +15,10 @@ __all__ = ["api_bp_test"]
 
 api_bp_test = Blueprint("api_test", __name__)
 
-def createResponse(verified, info={}):
+def createResponse(verified=True, info={}):
     time.sleep(random.random()*2)
     base = info
-    if verified:
-        base.update({"verified":verified})
+    base.update({"verified":verified})
 
     return base
 
@@ -62,7 +61,7 @@ def verify_orcid():
 @api_bp_test.route("/create_harbor_project")
 def create_harbor_project():
 
-    data = createResponse(True, {"url":"https://takingdrake.org"})
+    errors = [{"status": "200","title": "String to show to user"},{"status": "201","title": "This is bad"}]
     #data = createResponse(False, {"url":"https://takingdrake.com"})
 
-    return api_response(True, data)
+    return api_response(False, errors=errors)
