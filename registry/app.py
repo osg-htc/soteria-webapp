@@ -8,7 +8,7 @@ import pathlib
 from flask import Flask
 from flask_assets import Bundle, Environment  # type: ignore[import]
 
-import registry.logging
+import registry.util
 from registry.account import account_bp
 from registry.api.test import api_bp_test
 from registry.api.v1 import api_bp
@@ -96,7 +96,7 @@ def create_app() -> Flask:
     Creates the main application.
     """
 
-    registry.logging.init(LOG_DIR / "soteria.log")
+    registry.util.configure_logging(LOG_DIR / "soteria.log")
 
     app = Flask(
         __name__.split(".", maxsplit=1)[0],
