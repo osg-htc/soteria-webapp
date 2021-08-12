@@ -5,7 +5,6 @@ function onReady(){
     $("#hub-verification a.check").click(checkHubVerification);
     $("#orc-id-verification a.check").click(checkORCIDLink);
     $("#provision-verification a.check").click(provisionProject);
-    checkAll();
 }
 
 /**
@@ -71,48 +70,51 @@ function getProvisionVerification(){
 /////////////
 
 function reportStatusHub(status, textStatus, jqXHR){
-    data = status.data
     elementId = "hub-verification"
 
-    if(data.verified == true){
-        message = "You currently have an registration at the Hub with username: " + data["username"]
+    if(isVerified(status)){
+        message = "You currently have an registration at the Hub with username: " + status.data["username"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link to the Hub" +
             " website and create an registration using the same login as this webpage."
     }
 
     showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+    endVerification(elementId, isVerified(status))
 }
 
 function reportStatusORCID(status, textStatus, jqXHR){
-    data = status.data
     elementId = "orc-id-verification"
 
-    if(data.verified == true){
-        message = "This registration is currently linked with ORC ID: " + data["orc_id"]
+    if(isVerified(status)){
+        message = "This registration is currently linked with ORC ID: " + status.data["orc_id"]
     } else {
         message = "To gain the affiliate status, you need to follow the attached link and" +
             " link your ORC ID with your registration"
     }
 
     showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+    endVerification(elementId, isVerified(status))
 }
 
 function reportStatusProvision(status, textStatus, jqXHR){
-    data = status.data
-    elementId = "provision-verification"
+    let data = status.data
+    let elementId = "provision-verification"
+    let sub_message = ""
+    let message = ""
 
-    if(data.verified == true){
-        message = "This registration has a repositories already provisioned, go to you " +
-            "<a href='/account'>Account Page</a> to view"
+    if(status.status == 'ok'){
+        message = "You have been provisioned a repository! Navigate to the repositories page under 'Account Details' or follow the link " +
+            "<a href='" + data['url'] + "'>Repository Page</a> to view your repository."
     } else {
-        message = "Click Provision to provision a repositories under this registration"
+        let error_titles = status.errors.map(error => error.title)
+        sub_message = error_titles.join("<br>")
+        message = "Click Provision to provision a repository under this registration"
     }
 
     showMessage(elementId, message)
-    endVerification(elementId, data.verified)
+    showSubMessage(elementId, sub_message, true)
+    endVerification(elementId, isVerified(status))
 }
 
 /////////////
@@ -134,6 +136,8 @@ function showErrorProvision(jqXHR, textStatus, errorThrown){
     endVerification( "provision-verification", false );
 }
 
+// Util
+
 function isVerified( status ){
     try {
         return status.data.verified;
@@ -146,7 +150,6 @@ function isVerified( status ){
 // Visual Handlers
 function startVerification( element_id ){
 
-    showMessage(element_id, "")
     // Start Loading Spinner
     $("#" + element_id + " .status-icon>.failed").attr("hidden", true);
     $("#" + element_id + " .status-icon>.success").attr("hidden", true);
@@ -167,10 +170,10 @@ function endVerification( element_id, verified ){
 
 function showMessage( element_id, message ){
     // Add the message
-    message = message === undefined ? "" : message;
-    $("#" + element_id + " .main-message").html(message);
+    if( message !== undefined ){
+        $("#" + element_id + " .main-message").html(message);
+    }
 }
-
 
 function showSubMessage( element_id, message, error=false ){
 
@@ -181,7 +184,7 @@ function showSubMessage( element_id, message, error=false ){
 
     // Add the message
     message = message === undefined ? "" : message;
-    $("#" + element_id + " .sub-message").text(message);
+    $("#" + element_id + " .sub-message").html(message);
 
 }
 
