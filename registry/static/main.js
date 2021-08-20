@@ -4,7 +4,8 @@
 function onReady(){
     $("#hub-verification a.check").click(checkHubVerification);
     $("#orc-id-verification a.check").click(checkORCIDLink);
-    $("#provision-verification a.check").click(provisionProject);
+
+    checkAll()
 }
 
 /**
@@ -13,28 +14,16 @@ function onReady(){
 function checkAll(){
     checkHubVerification();
     checkORCIDLink();
-    provisionProject();
 }
 
 function checkHubVerification(){
-    console.log("Hub Check")
-
     startVerification("hub-verification");
     getHubVerification();
 }
 
 function checkORCIDLink(){
-    console.log("ORC ID Check")
-
     startVerification("orc-id-verification");
     getORCIDVerification();
-}
-
-function provisionProject(){
-    console.log("Provision Check")
-
-    startVerification("provision-verification");
-    getProvisionVerification();
 }
 
 /////////////
@@ -57,26 +46,16 @@ function getORCIDVerification(){
     })
 }
 
-function getProvisionVerification(){
-    $.ajax({
-        "url": "/api/v1/create_harbor_project",
-        "success" : reportStatusProvision,
-        "error" : showErrorProvision
-    })
-}
-
 /////////////
 //  Verification specific wrappers for reportStatus
 /////////////
 
 function reportStatusHub(status, textStatus, jqXHR){
-    elementId = "hub-verification"
+    let message
+    let elementId = "hub-verification"
 
     if(isVerified(status)){
         message = "You currently have an registration at the Hub with username: " + status.data["username"]
-    } else {
-        message = "To gain the affiliate status, you need to follow the attached link to the Hub" +
-            " website and create an registration using the same login as this webpage."
     }
 
     showMessage(elementId, message)
@@ -84,36 +63,14 @@ function reportStatusHub(status, textStatus, jqXHR){
 }
 
 function reportStatusORCID(status, textStatus, jqXHR){
-    elementId = "orc-id-verification"
+    let message
+    let elementId = "orc-id-verification"
 
     if(isVerified(status)){
         message = "This registration is currently linked with ORCID iD: " + status.data["orcid_id"]
-    } else {
-        message = "To gain the affiliate status, you need to follow the attached link and" +
-            " link your ORCID iD with your registration"
     }
 
     showMessage(elementId, message)
-    endVerification(elementId, isVerified(status))
-}
-
-function reportStatusProvision(status, textStatus, jqXHR){
-    let data = status.data
-    let elementId = "provision-verification"
-    let sub_message = ""
-    let message = ""
-
-    if(status.status == 'ok'){
-        message = "You have been provisioned a repository! Navigate to the repositories page under 'Account Details' or follow the link " +
-            "to view your <a href='/repositories'>Repositories</a>"
-    } else {
-        let error_titles = status.errors.map(error => error.message)
-        sub_message = error_titles.join("<br>")
-        message = "Click Provision to provision a repository under this registration"
-    }
-
-    showMessage(elementId, message)
-    showSubMessage(elementId, sub_message, true)
     endVerification(elementId, isVerified(status))
 }
 
@@ -131,10 +88,6 @@ function showErrorORCID(jqXHR, textStatus, errorThrown){
     endVerification( "orc-id-verification", false );
 }
 
-function showErrorProvision(jqXHR, textStatus, errorThrown){
-    showSubMessage("provision-verification", errorThrown, true)
-    endVerification( "provision-verification", false );
-}
 
 function isVerified( status ){
     try {
@@ -160,6 +113,8 @@ function endVerification( element_id, verified ){
     if( verified ){
         // Add check mark
         $("#" + element_id + " .status-icon>.success").attr("hidden", false);
+        // Remove Button
+        $("#" + element_id + " a.check").hide()
     } else {
         // Add X indicator
         $("#" + element_id + " .status-icon>.failed").attr("hidden", false);
@@ -185,4 +140,3 @@ function showSubMessage( element_id, message, error=false ){
     $("#" + element_id + " .sub-message").html(message);
 
 }
-
