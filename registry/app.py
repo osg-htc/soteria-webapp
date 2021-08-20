@@ -5,7 +5,7 @@ Web application for managing the users of a Harbor instance.
 import os
 import pathlib
 
-from flask import Flask
+from flask import Flask, app, request
 from flask_assets import Bundle, Environment  # type: ignore[import]
 
 import registry.util
@@ -46,6 +46,13 @@ def load_config(app: Flask) -> None:
         if val is not None:
             app.config[key] = val
 
+def add_context(app: app):
+
+    @app.context_processor
+    def utility_processor() -> str:
+        def get_path():
+            return request.url_root + "callback?logout=" + request.url_root
+        return dict(get_path=get_path)
 
 def register_blueprints(app: Flask) -> None:
     """
@@ -107,6 +114,7 @@ def create_app() -> Flask:
     load_config(app)
     register_blueprints(app)
     define_assets(app)
+    add_context(app)
 
     app.logger.debug("Created app!")
 

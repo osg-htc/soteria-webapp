@@ -1,15 +1,15 @@
 {%  macro navbar() %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">OSG Container Registry</a>
+        <a class="navbar-brand d-flex ms-3" href="/">
+            <img src="../../../static/images/wreath.svg" height="50px" alt="Wreath">
+            <h1 class="ms-2 mt-auto mb-auto">Soteria</h1>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                  <a class="nav-link" aria-current="page" href="/registration">Registration</a>
-                </li>
             </ul>
             <ul class="navbar-nav me-3">
                 <li class="nav-item dropdown">
@@ -19,7 +19,13 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="/account">Account</a></li>
                         <li><a class="dropdown-item" href="/repositories">Repositories</a></li>
+                        <li><a class="dropdown-item" href="{{ get_path() }}">Logout</a></li>
                     </ul>
+                </li>
+                <li id="registration" class="nav-item d-flex ms-2">
+                    <a class="nav-link btn btn-secondary text-dark pt-2 pb-2 mt-auto mb-auto" href="/registration" aria-expanded="false">
+                        <span class="ms-3 me-3">Register</span>
+                    </a>
                 </li>
             </ul>
         </div>
