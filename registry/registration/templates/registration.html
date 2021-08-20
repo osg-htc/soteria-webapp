@@ -30,13 +30,13 @@
                         {{ card_header_check("1. Create an OSG Hub Account") }}
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <div class="main-message">
                                         <p>
-                                            Follow the link to <a href="{{ config.HARBOR_HOMEPAGE }}" target='_blank' >OSG Hub</a>
+                                            Go to <a href="{{ config.HARBOR_HOMEPAGE }}" target='_blank' >OSG Hub</a>
                                             and create an account using the same identity provider that you used to
-                                            login with Soteria. If you would like to change identity providers you can
-                                            logout and come back to this page to restart the registration workflow.
+                                            login with Soteria. Upon account creation return here and click 'Check for OSG
+                                            Hub Account' and continue to the next step.
                                         </p>
                                     </div>
                                 </div>
@@ -61,19 +61,20 @@
                         {{ card_header_check("2. Link ORCID iD with COmanage") }}
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-12">
+                                <div class="col-12 mb-2">
                                     <div class="main-message">
                                         <b>If do not have a ORCID iD</b>
                                         <p>
-                                            Follow the link to register at <a href='https://orcid.org/register' target='_blank'>ORCID.org</a>
+                                            Register at <a href='https://orcid.org/register' target='_blank'>ORCID.org</a>
                                             and then proceed with the step below.
                                         </p>
                                         <b>If you have a ORCID iD</b>
                                         <p>
-                                            Follow the link to <a href="{{ config.HARBOR_HOMEPAGE }}" target='_blank' >COmanage</a> and
+                                            Go to <a href="{{ config.ORCID_ID_ENROLLMENT_PAGE }}" target='_blank' >COmanage</a> and
                                             link your ORCID iD to your account. Then return and click the 'Check for ORCID iD Link'
                                             button below.
                                         </p>
+                                        <p>After your ORDIC iD is linked you can click 'Check for ORCID iD Link' and continue to the next step.</p>
                                     </div>
                                 </div>
                             </div>
