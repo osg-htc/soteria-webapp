@@ -10,6 +10,7 @@ from flask_assets import Bundle, Environment  # type: ignore[import]
 
 import registry.util
 from registry.account import account_bp
+from registry.about import about_bp
 from registry.api.test import api_bp_test
 from registry.api.v1 import api_bp
 from registry.debug import debugging_bp
@@ -61,6 +62,7 @@ def register_blueprints(app: Flask) -> None:
 
     app.register_blueprint(index_bp, url_prefix="/")
     app.register_blueprint(account_bp, url_prefix="/account")
+    app.register_blueprint(about_bp, url_prefix="/about")
     app.register_blueprint(registration_bp, url_prefix="/registration")
     app.register_blueprint(repositories_bp, url_prefix="/repositories")
     app.register_blueprint(repository_bp, url_prefix="/repository")
