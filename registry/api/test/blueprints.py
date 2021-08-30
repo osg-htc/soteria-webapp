@@ -50,7 +50,7 @@ def verify_harbor_account():
     return api_response(True, data)
 
 
-@api_bp_test.route("/verify_orcid")
+@api_bp_test.route("/verify_orcid_id")
 def verify_orcid():
     data = createResponse(True, {"orc_id":"23462456456"})
     #data = createResponse(False, {"orc_id":"345634563456"})
