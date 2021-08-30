@@ -1,0 +1,142 @@
+{% from "macros/page-header.html" import page_header with context %}
+{% from "macros/card.html" import card with context %}
+{% extends "base.html" %}
+
+{% block title %}About Page{% endblock %}
+{%  block page_class %}subpage{% endblock %}
+{% block body_container %}mb-auto{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    {{ page_header("About") }}
+    <div class="row">
+        <div class="col-12 col-xl-7 col-lg-8 col-md-10">
+            <p>
+                Soteria is a container ‘registry’ and distribution network available to any US-based
+                researcher and their collaborators. Containers registered on Soteria have three primary
+                advantages: Discoverablity, Visibility and Traceability.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light pt-3 pb-3 mb-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Discoverability
+                        </h4>
+                        <div>
+                            <ul>
+                                <li>Easy to cite Images</li>
+                                <li>Generation of Metadata for creation of DOIs and archival</li>
+                                <ul>
+                                    <li>Funding Agencies</li>
+                                    <li>Grant Numbers</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Visibility
+                        </h4>
+                        <div>
+                            <ul>
+                                <li>Effectively communicate container contents</li>
+                                <li>Advertise the discovered software</li>
+                                <ul>
+                                    <li>System RPMs</li>
+                                    <li>Known vulnerabilities</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Traceability
+                        </h4>
+                        <p>For security reasons, can we find the containers used at specific NSF resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 id="status-privileges" class="pb-2">Status Privileges</h2>
+            <table class="table">
+                <thead class="table-light">
+                    <tr>
+                        <td></td>
+                        <th><h5 class="mb-0">Base</h5></th>
+                        <th><h5 class="mb-0">Affiliate</h5></th>
+                        <th><h5 class="mb-0">Member</h5></th>
+                        <th><h5 class="mb-0">Researcher</h5></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Details</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Expiration Timeline</td>
+                        <td>Always applicable</td>
+                        <td>30 Days</td>
+                        <td>12 months</td>
+                        <td>12 months</td>
+                    </tr>
+                    <tr>
+                        <th>Projects</th>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Private</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>0 (Can access Researchers)</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <td>Public</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0 (Can access Researchers)</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Size per project (GB)</td>
+                        <td>NA</td>
+                        <td>5 GB</td>
+                        <td>NA</td>
+                        <td>100 GB </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
