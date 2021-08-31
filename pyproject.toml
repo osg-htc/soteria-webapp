@@ -48,20 +48,20 @@ python = ">=3.6.8,<3.10"
 Flask = "^2.0.1"
 Flask-Assets = "^2.0"
 libsass = "^0.21.0"
-requests = "^2.25.1"
+requests = "^2.26.0"
 
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
-black = "^21.6b0"
+black = "^21.8b0"
 docutils = "^0.17.1"
-isort = "^5.9.1"
+isort = "^5.9.3"
 mypy = "^0.910"
-pre-commit = "^2.13.0"
-pylint = "^2.9.3"
-pytype = "^2021.6.17"
+pre-commit = "^2.14.1"
+pylint = "^2.10.2"
+pytype = "^2021.8.24"
 safety = "^1.10.3"
-types-requests = "^2.25.0"
+types-requests = "^2.25.6"
 
 
 [tool.pylint.messages-control]
