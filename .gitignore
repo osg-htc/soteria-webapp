@@ -1,11 +1,19 @@
-*.html
+## Temporary files created by vim.
 *.swp
+
+## Cache directories created by the eponymous tools.
+/.mypy/
+/.pylint/
+/.pytype/
+
+## Local configuration file for pyenv.
 /.python-version
+
+## Other dynamically generated artifacts.
 /instance/
 /registry/static/.webassets-cache/
 /registry/static/gen/
-.python-version
-instance/
+
 venv
 .idea
 boo

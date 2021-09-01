@@ -1,10 +1,9 @@
-# This project uses Poetry for packaging and dependency management.
-# See https://python-poetry.org/ for more information.
+## Project requirements (PEP 518, https://python-poetry.org/).
 
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 
 [tool.black]
@@ -19,13 +18,14 @@ profile = "black"
 
 [tool.mypy]
 incremental = true
-cache_dir = "~/.cache/mypy"
+cache_dir = ".mypy"
+pretty = true
 show_error_codes = true
 show_error_context = true
 
 check_untyped_defs = true
 strict_optional = true
-no_implicit_optional = false
+no_implicit_optional = true
 
 warn_no_return = true
 warn_redundant_casts = true
@@ -37,7 +37,7 @@ warn_unused_ignores = true
 [tool.poetry]
 name = "soteria_registry"
 version = "0.1.0"
-description = "SOTERIA registry web application"
+description = "SOTERIA web application"
 license = "Apache-2.0"
 authors = ["Brian Aydemir <baydemir@morgridge.org>"]
 packages = [{ include = "registry" }]
