@@ -130,6 +130,17 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "configobj"
+version = "5.0.6"
+description = "Config file reading, writing and validation."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "dataclasses"
 version = "0.8"
 description = "A backport of the dataclasses module for Python 3.6"
@@ -240,7 +251,7 @@ typing-extensions = {version = ">=3.7.4.3", markers = "python_version < \"3.10\"
 
 [[package]]
 name = "identify"
-version = "2.2.13"
+version = "2.2.14"
 description = "File identification library for Python"
 category = "dev"
 optional = false
@@ -498,7 +509,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 
 [[package]]
 name = "pre-commit"
-version = "2.14.1"
+version = "2.15.0"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 category = "dev"
 optional = false
@@ -539,8 +550,19 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "python-dateutil"
+version = "2.8.2"
+description = "Extensions to the standard Python datetime module"
+category = "dev"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "pytype"
-version = "2021.8.24"
+version = "2021.9.9"
 description = "Python type inferencer"
 category = "dev"
 optional = false
@@ -591,6 +613,71 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
+
+[[package]]
+name = "ruamel.std.argparse"
+version = "0.8.3"
+description = "Enhancements to argparse: extra actions, subparser aliases, smart formatter, a decorator based wrapper"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "ruamel.yaml"
+version = "0.17.16"
+description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
+category = "dev"
+optional = false
+python-versions = ">=3"
+
+[package.dependencies]
+"ruamel.yaml.clib" = {version = ">=0.1.2", markers = "platform_python_implementation == \"CPython\" and python_version < \"3.10\""}
+
+[package.extras]
+docs = ["ryd"]
+jinja2 = ["ruamel.yaml.jinja2 (>=0.2)"]
+
+[[package]]
+name = "ruamel.yaml.clib"
+version = "0.2.6"
+description = "C version of reader, parser and emitter for ruamel.yaml derived from libyaml"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "ruamel.yaml.cmd"
+version = "0.5.7"
+description = "commandline utility to manipulate YAML files"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+configobj = "*"
+"ruamel.std.argparse" = ">=0.8"
+"ruamel.yaml" = ">=0.16.1"
+"ruamel.yaml.convert" = ">=0.3"
+
+[package.extras]
+configobj = ["configobj"]
+
+[[package]]
+name = "ruamel.yaml.convert"
+version = "0.3.2"
+description = "data format conversion routines to/from YAML"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+python-dateutil = "*"
+"ruamel.yaml" = ">=0.16.1"
+
+[package.extras]
+all = ["beautifulsoup4", "python-dateutil"]
+csv = ["python-dateutil"]
+html = ["beautifulsoup4"]
 
 [[package]]
 name = "safety"
@@ -776,7 +863,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.8,<3.10"
-content-hash = "3d22b27e7276c570ddfc46175a0eb10a39000e4cc80d54ee4c1ce6870a8cbe94"
+content-hash = "7ad64829cbeebf52d903e2243b85a81422e7cda6d675dcf4fc9152075cc4c101"
 
 [metadata.files]
 astroid = [
@@ -819,6 +906,9 @@ colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
 ]
+configobj = [
+    {file = "configobj-5.0.6.tar.gz", hash = "sha256:a2f5650770e1c87fb335af19a9b7eb73fc05ccf22144eb68db7d00cd2bcb0902"},
+]
 dataclasses = [
     {file = "dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf"},
     {file = "dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97"},
@@ -860,8 +950,8 @@ gitpython = [
     {file = "GitPython-3.1.20.tar.gz", hash = "sha256:df0e072a200703a65387b0cfdf0466e3bab729c0458cf6b7349d0e9877636519"},
 ]
 identify = [
-    {file = "identify-2.2.13-py2.py3-none-any.whl", hash = "sha256:7199679b5be13a6b40e6e19ea473e789b11b4e3b60986499b1f589ffb03c217c"},
-    {file = "identify-2.2.13.tar.gz", hash = "sha256:7bc6e829392bd017236531963d2d937d66fc27cadc643ac0aba2ce9f26157c79"},
+    {file = "identify-2.2.14-py2.py3-none-any.whl", hash = "sha256:113a76a6ba614d2a3dd408b3504446bcfac0370da5995aa6a17fd7c6dffde02d"},
+    {file = "identify-2.2.14.tar.gz", hash = "sha256:32f465f3c48083f345ad29a9df8419a4ce0674bf4a8c3245191d65c83634bdbf"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
@@ -1034,8 +1124,8 @@ platformdirs = [
     {file = "platformdirs-2.3.0.tar.gz", hash = "sha256:15b056538719b1c94bdaccb29e5f81879c7f7f0f4a153f46086d155dffcd4f0f"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.14.1-py2.py3-none-any.whl", hash = "sha256:a22d12a02da4d8df314187dfe7a61bda6291d57992060522feed30c8cd658b68"},
-    {file = "pre_commit-2.14.1.tar.gz", hash = "sha256:7977a3103927932d4823178cbe4719ab55bb336f42a9f3bb2776cff99007a117"},
+    {file = "pre_commit-2.15.0-py2.py3-none-any.whl", hash = "sha256:a4ed01000afcb484d9eb8d504272e642c4c4099bbad3a6b27e519bd6a3e928a6"},
+    {file = "pre_commit-2.15.0.tar.gz", hash = "sha256:3c25add78dbdfb6a28a651780d5c311ac40dd17f160eb3954a0c59da40a505a7"},
 ]
 pylint = [
     {file = "pylint-2.10.2-py3-none-any.whl", hash = "sha256:e178e96b6ba171f8ef51fbce9ca30931e6acbea4a155074d80cc081596c9e852"},
@@ -1045,16 +1135,20 @@ pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
+python-dateutil = [
+    {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
+    {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
+]
 pytype = [
-    {file = "pytype-2021.8.24-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:eed766a0bc6a0697d46041c7e3f710bc6ecebc97b60131def542585a3291f0d5"},
-    {file = "pytype-2021.8.24-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8a0393c099cbca5b89558d567b924389d6ee3a8f3812b4c213e88d672a3b5698"},
-    {file = "pytype-2021.8.24-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:b9b551982a452f39c02eef9d3603fb736cc0800f38714db85794c44fbaf3b9ae"},
-    {file = "pytype-2021.8.24-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4b23b226536d64f7e195ceca788e27a58a7aa140526a828d12e1dafb8813a593"},
-    {file = "pytype-2021.8.24-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:e0270f8aab986d4ce7ccb0841c259eb2824057faa0e0eaf8d531c5c0bd6b51eb"},
-    {file = "pytype-2021.8.24-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ce157ca550181b6f32c4f047abc61a50f4c79da6f6b99bc455a97c1a3b3bb831"},
-    {file = "pytype-2021.8.24-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:af27996b3d96be05ed13790e0ae426509a971dce539f95395e7713185892bee0"},
-    {file = "pytype-2021.8.24-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:feb74e331f82023eca14f6c87bb9602ad9cce042afe2742d076c9f6d0f45ba3b"},
-    {file = "pytype-2021.8.24.tar.gz", hash = "sha256:0fa007ab0f2c856b5a60fb0c611a59868e0c075b9c8ae7463b2ec36feb34e9a3"},
+    {file = "pytype-2021.9.9-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:0bc149f60be39632e913ca11dd553a8b73a9699c60d52f105200379ade430dbb"},
+    {file = "pytype-2021.9.9-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:df325e76b919d8101b7fc4c624dc4aa974f8acd0758e4e6248c54f73e9e1dbc2"},
+    {file = "pytype-2021.9.9-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:e2cc2ca6b8dc775c25e50afecefa1c36f164bb6833ae34e73acbb9a7ba4ec4f6"},
+    {file = "pytype-2021.9.9-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cb0f3048284cdd68a83852e85662c55408bba1df0fd19bcc4aea3b24efb248c0"},
+    {file = "pytype-2021.9.9-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:34fffaafdf4a106b48458398745047b4f114d1b8db3f2ac2f8d4a2268b4576d8"},
+    {file = "pytype-2021.9.9-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:809a20782138cff68067a4d94f8a5d89139142ec0e37b0f41bdb715db694ad1c"},
+    {file = "pytype-2021.9.9-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:5ead3277d9bdbd324c9765e769c4511d871667ceb439efb456a6ff1b39746362"},
+    {file = "pytype-2021.9.9-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e0c1ffe99cb33ce5a8f7ddd405c1e6b46237c30ea9f3b2c55c643f4360443f15"},
+    {file = "pytype-2021.9.9.tar.gz", hash = "sha256:4d63d3e84d9a0a979025724aa948a4309981389e4cefd6234578470708558d74"},
 ]
 pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3b2b1824fe7112845700f815ff6a489360226a5609b96ec2190a45e62a9fc922"},
@@ -1133,6 +1227,45 @@ regex = [
 requests = [
     {file = "requests-2.26.0-py2.py3-none-any.whl", hash = "sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24"},
     {file = "requests-2.26.0.tar.gz", hash = "sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7"},
+]
+"ruamel.std.argparse" = [
+    {file = "ruamel.std.argparse-0.8.3-py2.py3-none-any.whl", hash = "sha256:130b5f7e98ef7dcf6b5a1106d238b01e04a141ce5c284415d6defe1f30d8c920"},
+    {file = "ruamel.std.argparse-0.8.3.tar.gz", hash = "sha256:d167c9f1a32fe779703e543b2811cfa44257d72d6174cd8cf8cafb2ccd233b6b"},
+]
+"ruamel.yaml" = [
+    {file = "ruamel.yaml-0.17.16-py3-none-any.whl", hash = "sha256:ea21da1198c4b41b8e7a259301cc9710d3b972bf8ba52f06218478e6802dd1f1"},
+    {file = "ruamel.yaml-0.17.16.tar.gz", hash = "sha256:1a771fc92d3823682b7f0893ad56cb5a5c87c48e62b5399d6f42c8759a583b33"},
+]
+"ruamel.yaml.clib" = [
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:cfdb9389d888c5b74af297e51ce357b800dd844898af9d4a547ffc143fa56751"},
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:7b2927e92feb51d830f531de4ccb11b320255ee95e791022555971c466af4527"},
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win32.whl", hash = "sha256:ada3f400d9923a190ea8b59c8f60680c4ef8a4b0dfae134d2f2ff68429adfab5"},
+    {file = "ruamel.yaml.clib-0.2.6-cp35-cp35m-win_amd64.whl", hash = "sha256:de9c6b8a1ba52919ae919f3ae96abb72b994dd0350226e28f3686cb4f142165c"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:d67f273097c368265a7b81e152e07fb90ed395df6e552b9fa858c6d2c9f42502"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:72a2b8b2ff0a627496aad76f37a652bcef400fd861721744201ef1b45199ab78"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win32.whl", hash = "sha256:9efef4aab5353387b07f6b22ace0867032b900d8e91674b5d8ea9150db5cae94"},
+    {file = "ruamel.yaml.clib-0.2.6-cp36-cp36m-win_amd64.whl", hash = "sha256:846fc8336443106fe23f9b6d6b8c14a53d38cef9a375149d61f99d78782ea468"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0847201b767447fc33b9c235780d3aa90357d20dd6108b92be544427bea197dd"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:78988ed190206672da0f5d50c61afef8f67daa718d614377dcd5e3ed85ab4a99"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win32.whl", hash = "sha256:a49e0161897901d1ac9c4a79984b8410f450565bbad64dbfcbf76152743a0cdb"},
+    {file = "ruamel.yaml.clib-0.2.6-cp37-cp37m-win_amd64.whl", hash = "sha256:bf75d28fa071645c529b5474a550a44686821decebdd00e21127ef1fd566eabe"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:a32f8d81ea0c6173ab1b3da956869114cae53ba1e9f72374032e33ba3118c233"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:7f7ecb53ae6848f959db6ae93bdff1740e651809780822270eab111500842a84"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win32.whl", hash = "sha256:89221ec6d6026f8ae859c09b9718799fea22c0e8da8b766b0b2c9a9ba2db326b"},
+    {file = "ruamel.yaml.clib-0.2.6-cp38-cp38-win_amd64.whl", hash = "sha256:31ea73e564a7b5fbbe8188ab8b334393e06d997914a4e184975348f204790277"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:dc6a613d6c74eef5a14a214d433d06291526145431c3b964f5e16529b1842bed"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:1866cf2c284a03b9524a5cc00daca56d80057c5ce3cdc86a52020f4c720856f0"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win32.whl", hash = "sha256:3fb9575a5acd13031c57a62cc7823e5d2ff8bc3835ba4d94b921b4e6ee664104"},
+    {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win_amd64.whl", hash = "sha256:825d5fccef6da42f3c8eccd4281af399f21c02b32d98e113dbc631ea6a6ecbc7"},
+    {file = "ruamel.yaml.clib-0.2.6.tar.gz", hash = "sha256:4ff604ce439abb20794f05613c374759ce10e3595d1867764dd1ae675b85acbd"},
+]
+"ruamel.yaml.cmd" = [
+    {file = "ruamel.yaml.cmd-0.5.7-py2.py3-none-any.whl", hash = "sha256:550a3f754c368eea744a83092a9d0724547640ba9beefb1fc8fa7a04b710ad9a"},
+    {file = "ruamel.yaml.cmd-0.5.7.tar.gz", hash = "sha256:d9b02c73ec689d7ba321ee57b1879cc72a602f2f15fbfe34e61aca3d3555d970"},
+]
+"ruamel.yaml.convert" = [
+    {file = "ruamel.yaml.convert-0.3.2-py2.py3-none-any.whl", hash = "sha256:1f6aaaf3bba65e6244b0965a341c997526a9b31f6ad5942267c4997a7bb7a868"},
+    {file = "ruamel.yaml.convert-0.3.2.tar.gz", hash = "sha256:065ed9492a3189291d5bc0256709afc0231b52e4a01376fc91cf1757560ac9c4"},
 ]
 safety = [
     {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
