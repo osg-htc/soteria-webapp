@@ -1,12 +1,18 @@
-.PHONY: all clean
+.PHONY: all check format
 
-all: README.html requirements.txt
+PY_FILES := wsgi.py registry/
 
-clean:
-	rm -f README.html
+all: format check
 
-requirements.txt: pyproject.toml
+check:
+	-poetry run bandit -qr $(PY_FILES)
+	-poetry run mypy $(PY_FILES)
+	-poetry run pytype -j auto -k $(PY_FILES)
+	-poetry run pylint $(PY_FILES)
+
+format:
+	poetry run isort $(PY_FILES)
+	poetry run black $(PY_FILES)
+
+requirements.txt: poetry.lock
 	poetry export > requirements.txt
-
-%.html: %.rst
-	poetry run rst2html.py $< $@

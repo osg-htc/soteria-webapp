@@ -1,10 +1,9 @@
-# This project uses Poetry for packaging and dependency management.
-# See https://python-poetry.org/ for more information.
+## Project requirements (PEP 518, https://python-poetry.org/).
 
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 
 [tool.black]
@@ -19,13 +18,14 @@ profile = "black"
 
 [tool.mypy]
 incremental = true
-cache_dir = "~/.cache/mypy"
+cache_dir = ".mypy"
+pretty = true
 show_error_codes = true
 show_error_context = true
 
 check_untyped_defs = true
 strict_optional = true
-no_implicit_optional = false
+no_implicit_optional = true
 
 warn_no_return = true
 warn_redundant_casts = true
@@ -37,7 +37,7 @@ warn_unused_ignores = true
 [tool.poetry]
 name = "soteria_registry"
 version = "0.1.0"
-description = "SOTERIA registry web application"
+description = "SOTERIA web application"
 license = "Apache-2.0"
 authors = ["Brian Aydemir <baydemir@morgridge.org>"]
 packages = [{ include = "registry" }]
@@ -48,20 +48,21 @@ python = ">=3.6.8,<3.10"
 Flask = "^2.0.1"
 Flask-Assets = "^2.0"
 libsass = "^0.21.0"
-requests = "^2.25.1"
+requests = "^2.26.0"
 
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
-black = "^21.6b0"
+black = "^21.8b0"
 docutils = "^0.17.1"
-isort = "^5.9.1"
+isort = "^5.9.3"
 mypy = "^0.910"
-pre-commit = "^2.13.0"
-pylint = "^2.9.3"
-pytype = "^2021.6.17"
+pre-commit = "^2.15.0"
+pylint = "^2.10.2"
+pytype = "^2021.9.9"
+"ruamel.yaml.cmd" = "^0.5.7"
 safety = "^1.10.3"
-types-requests = "^2.25.0"
+types-requests = "^2.25.6"
 
 
 [tool.pylint.messages-control]
