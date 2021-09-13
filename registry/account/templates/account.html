@@ -3,40 +3,128 @@
 {% extends "base.html" %}
 
 {% block title %}Account Page{% endblock %}
-{%  block page_class %}subpage{% endblock %}
+{% block page_class %}subpage{% endblock %}
 
 {% block body %}
-{{ page_header("Account Page") }}
+{{ page_header("Account") }}
 
-<div class="row">
-    <div class="col-12 col-lg-10 col-xl-8">
-        <div class="row">
-            <div class="col-12">
-                {% call card(title="User") %}
-                <hr>
-                <div class="card-text">
-                    <div class="row mb-2">
-                        <div class="col-12 col-sm-6">
-                            <h5>Name</h5>
-                            {{ user.name }}
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <h5>ORC I.D.</h5>
-                            {{ user.ORCID }}
-                        </div>
+<nav id="navigation" class="card mb-4">
+    <ul class="nav flex-row">
+      <li class="nav-item">
+        <a class="nav-link" href="#details">Details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#actions">Actions</a>
+      </li>
+    </ul>
+</nav>
+
+
+<div class="row mb-3">
+    <div class="col-12">
+        <h2 id="details">Details</h2>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-text m-3">
+                <div class="row mb-2">
+                    <div class="col-12 col-sm-6">
+                        <h5>Name</h5>
+                        {{ user.name }}
                     </div>
-                    <div class="row">
-                        <div class="col-12 col-sm-6">
-                            <h5>Account Type</h5>
-                            {{ user.account_type }}
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <h5>Account Status</h5>
-                            {{ user.account_status }} Days Remaining
-                        </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>ORCID I.D.</h5>
+                        {{ user.orcid_id }}
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>Status</h5>
+                        {{ user.status }}
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>Email</h5>
+                        {{ user.email }}
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>Days Remaining</h5>
+                        {{ user.days_remaining }}
                     </div>
                 </div>
-                {% endcall %}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="actions" class="row">
+    <div class="col-12">
+        <h2 id="actions">Actions</h2>
+    </div>
+    <div id="researcher-registration" class="affiliate-member-action col-12 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h4>Register For Researcher Status</h4>
+                </div>
+                <p>
+                    All Affiliates/Members that meet the <a href="{{ config.DOCS_URL }}users/researcher/#requirements">requirements</a>
+                    can apply to become a Researcher on Soteria. Researchers are given more advanced
+                    <a href="{{ config.DOCS_URL }}users/researcher/#allocation">project allotments</a> and
+                    <a href="{{ config.DOCS_URL }}users/researcher/#permissions">permissions</a>
+                </p>
+                <p>
+                    The button below will take you to the Registration guide on our documentation page.
+                </p>
+                <p>
+                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#registration">Docs - Researcher Registration</a>
+                </p>
+                <p>
+                    If you are familiar with the process you can follow the button below to be taken to the form.
+                </p>
+                <p>
+                    <a class="btn btn-primary" href="TODO - Brian">COmanage - Researcher Registration</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="sponsor-affiliate" class="researcher-action col-12 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h4>Sponsor a Soteria User</h4>
+                </div>
+                <p>
+                    All Soteria Researchers can sponsor an Affiliate, giving them Member Status.
+                </p>
+                <p>
+                    If this is your <b>first time</b>, you can click the button below which will take to
+                    to the Sponsorship Guide.
+                </p>
+                <p>
+                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#sponsor-a-soteria-member">Docs - Affiliate Sponsorship</a>
+                </p>
+                <p>
+                    If you have <b>done this before</b>, you can find the COmanage form here.
+                </p>
+                <a class="btn btn-primary" href="TODO - Brian">COmanage - Sponsorship Form</a>
+            </div>
+        </div>
+    </div>
+    <div id="request-additional-project" class="researcher-action col-12 col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h4>Request Additional Project</h4>
+                </div>
+                <p>
+                    All Soteria Researchers can request additional projects, which will be granted on the
+                    discretion of the Soteria Staff.
+                </p>
+                <p>
+                    The details of this action can be found in the
+                    <a href="{{ config.DOCS_URL }}users/researcher/#request-additional-project-allocation">Soteria Docs</a>
+                </p>
+                <p>
+                    The COmanage form can be found here.
+                </p>
+                <a class="btn btn-primary" href="TODO - Brian">COmanage - Project Request</a>
             </div>
         </div>
     </div>

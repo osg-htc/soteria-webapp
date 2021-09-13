@@ -2,14 +2,15 @@
 Blueprints for pages where the current user can manage their registration.
 """
 
-from flask import Blueprint, make_response, render_template
+from flask import Blueprint, make_response, render_template, request
+from registry.forms import ResearcherApplication
 import json
 
 __all__ = ["account_bp"]
 
 account_bp = Blueprint("account", __name__, template_folder="templates")
 
-@account_bp.route("/")
+@account_bp.route("/", methods=["GET", "POST"])
 def index():
     """
     Returns a page where the current user can manage their registration.
@@ -20,9 +21,10 @@ def index():
     except:
         user = {
           "name": "First Last",
-          "ORCID": 11235813,
-          "account_type": "Affiliate/Member/Researcher",
-          "account_status": "Days Left (int)"
+          "orcid_id": 11235813,
+          "status": "Affiliate/Member/Researcher",
+          "email": "hello@world.org",
+          "days_remaining": "Days Left (int)"
         }
 
 

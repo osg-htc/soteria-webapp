@@ -46,6 +46,14 @@ function getORCIDVerification(){
     })
 }
 
+function getProvisionVerification(){
+    $.ajax({
+        "url": "/api/v1/create_harbor_project",
+        "success" : reportStatusProvision,
+        "error" : showErrorProvision
+    })
+}
+
 /////////////
 //  Verification specific wrappers for reportStatus
 /////////////
@@ -68,6 +76,23 @@ function reportStatusORCID(status, textStatus, jqXHR){
 
     if(isVerified(status)){
         message = "This registration is currently linked with ORCID iD: " + status.data["orcid_id"]
+    }
+
+    showMessage(elementId, message)
+    endVerification(elementId, isVerified(status))
+}
+
+function reportStatusProvision(status, textStatus, jqXHR){
+    let message
+    let elementId = "provision-verification"
+
+    if(isVerified(status)){
+        message = "You are now a registered " +
+            "<a href='{{ config.DOCS_URL }}/users/affiliates'>Affiliate</a>!" +
+            " You can view your project on " +
+            "<a href=\"${status.data['url']}\">Harbor</a>" +
+            " or project details on the " +
+            "<a href='/projects'>Project Page</a>."
     }
 
     showMessage(elementId, message)
