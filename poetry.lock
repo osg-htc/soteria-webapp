@@ -757,6 +757,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-dataclasses"
+version = "0.1.7"
+description = "Typing stubs for dataclasses"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-requests"
 version = "2.25.6"
 description = "Typing stubs for requests"
@@ -862,8 +870,8 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 
 [metadata]
 lock-version = "1.1"
-python-versions = ">=3.6.8,<3.10"
-content-hash = "7ad64829cbeebf52d903e2243b85a81422e7cda6d675dcf4fc9152075cc4c101"
+python-versions = ">=3.6.8,<3.7"
+content-hash = "45b9fd1fbfe7d8ad78ef0825fd29feac8cc1b030230f6a252c457603f39531fc"
 
 [metadata.files]
 astroid = [
@@ -1326,6 +1334,10 @@ typed-ast = [
     {file = "typed_ast-1.4.3-cp39-cp39-win32.whl", hash = "sha256:209596a4ec71d990d71d5e0d312ac935d86930e6eecff6ccc7007fe54d703808"},
     {file = "typed_ast-1.4.3-cp39-cp39-win_amd64.whl", hash = "sha256:9c6d1a54552b5330bc657b7ef0eae25d00ba7ffe85d9ea8ae6540d2197a3788c"},
     {file = "typed_ast-1.4.3.tar.gz", hash = "sha256:fb1bbeac803adea29cedd70781399c99138358c26d05fcbd23c13016b7f5ec65"},
+]
+types-dataclasses = [
+    {file = "types-dataclasses-0.1.7.tar.gz", hash = "sha256:248075d093d8f7c1541ce515594df7ae40233d1340afde11ce7125368c5209b8"},
+    {file = "types_dataclasses-0.1.7-py3-none-any.whl", hash = "sha256:fc372bb68b878ac7a68fd04230d923d4a6303a137ecb0b9700b90630bdfcbfc9"},
 ]
 types-requests = [
     {file = "types-requests-2.25.6.tar.gz", hash = "sha256:e21541c0f55c066c491a639309159556dd8c5833e49fcde929c4c47bdb0002ee"},

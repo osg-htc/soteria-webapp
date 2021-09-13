@@ -44,11 +44,13 @@ packages = [{ include = "registry" }]
 
 
 [tool.poetry.dependencies]
-python = ">=3.6.8,<3.10"
+python = ">=3.6.8,<3.7"
+dataclasses = "^0.8"
 Flask = "^2.0.1"
 Flask-Assets = "^2.0"
 libsass = "^0.21.0"
 requests = "^2.26.0"
+typing-extensions = "^3.10.0"
 
 
 [tool.poetry.dev-dependencies]
@@ -62,6 +64,7 @@ pylint = "^2.10.2"
 pytype = "^2021.9.9"
 "ruamel.yaml.cmd" = "^0.5.7"
 safety = "^1.10.3"
+types-dataclasses = "^0.1.7"
 types-requests = "^2.25.6"
 
 
