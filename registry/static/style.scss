@@ -55,3 +55,13 @@ body.subpage {
     text-decoration: none;
   }
 }
+
+#registration {
+  display: none;
+}
+
+.home {
+  #registration {
+    display: flex;
+  }
+}

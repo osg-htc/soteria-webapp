@@ -20,9 +20,10 @@ def index():
     except:
         user = {
           "name": "First Last",
-          "ORCID": 11235813,
-          "account_type": "Affiliate/Member/Researcher",
-          "account_status": "Days Left (int)"
+          "orcid_id": 11235813,
+          "status": "Affiliate/Member/Researcher",
+          "email": "hello@world.org",
+          "days_remaining": "Days Left (int)"
         }
 
 

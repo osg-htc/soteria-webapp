@@ -20,6 +20,9 @@ HARBOR_API = "https://harbor.example.com/api/v2.0"
 HARBOR_ROBOT_USERNAME = "robot"
 HARBOR_ROBOT_PASSWORD = "keep this a secret!"
 
+## Docs URL
+
+DOCS_URL = "https://cannonlock.github.io/Soteria-Docs"
 
 # Optional Configuration
 # ======================

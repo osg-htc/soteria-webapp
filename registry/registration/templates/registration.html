@@ -57,8 +57,39 @@
                     </div>
                 </div>
                 <div class="col-12">
+                    <div  id="hub-verification" class="card">
+                        {{ card_header_check("2. Create an OSG Hub Account") }}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <div class="main-message">
+                                        <p>
+                                            Go to <a href="{{ config.HARBOR_HOMEPAGE }}" target='_blank' >OSG Hub</a>
+                                            and create an account using the same identity provider that you used to
+                                            login with Soteria. Upon account creation return here and click 'Check for OSG
+                                            Hub Account' and continue to the next step.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row card-text justify-content-between">
+                                <div class="col-6">
+                                    <p class="sub-message"></p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <a class="btn btn-secondary mr-2 check">Check For OSG Hub Account</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
                     <div  id="orc-id-verification" class="card">
-                        {{ card_header_check("2. Link ORCID iD with COmanage") }}
+                        {{ card_header_check("3. Link ORCID iD with COmanage") }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mb-2">
@@ -95,16 +126,17 @@
                 </div>
                 <div class="col-12">
                     <div  id="provision-verification" class="card">
-                        {{ card_header("3. Explore Soteria!") }}
+                        {{ card_header("4. Explore Your Project and Soteria!") }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="main-message">
                                         <p>
-                                            If you have completed the previous two steps you are now
-                                            a registered Affiliate with Soteria. You can explore what
-                                            this means on the <a href="/about/#status-privileges">About Page</a> or you can
-                                            provision your first private project on the <a href="/project">Project Page.</a>
+                                            If you have completed the previous two steps you are now a registered
+                                            <a href="{{ config.DOCS_URL }}/users/affiliate">Affiliate</a>!
+                                            Affiliate status comes with a temporary project which you can view on
+                                            <a hrefHarbor
+
                                         </p>
                                     </div>
                                 </div>
