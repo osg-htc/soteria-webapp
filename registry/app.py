@@ -121,7 +121,3 @@ def create_app() -> Flask:
     app.logger.debug("Created app!")
 
     return app
-
-if __name__ == "__main__":
-    create_app()
-
