@@ -7,7 +7,7 @@ ENV LC_ALL="en_US.utf8"
 ENV PYTHONUNBUFFERED=1
 
 
-# Install core dependencies and configuration.
+## Install core dependencies and configuration.
 
 
 RUN yum update -y \
@@ -20,7 +20,7 @@ RUN yum update -y \
 COPY etc /etc/
 
 
-# Install the Flask and WSGI applications.
+## Install the Flask and WSGI applications.
 
 
 COPY poetry.lock pyproject.toml requirements.txt /srv/

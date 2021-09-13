@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-
-"""SOTERIA registry web application."""
+"""
+SOTERIA web application.
+"""
 
 import registry
 
