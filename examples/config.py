@@ -5,31 +5,32 @@
 
 CONTACT_EMAIL = "someone@example.com"
 
+## The base URL for SOTERIA's online documentation.
+
+DOCS_URL = "https://soteria.example.com/documentation"
+
 ## Where a user should go to link their ORCID iD.
 
-ORCID_ID_ENROLLMENT_PAGE = "https://registry.example.com/enroll/orcid"
+ORCID_ID_ENROLLMENT_URL = "https://registry.example.com/enroll/orcid"
 
-## The Harbor instance's homepage and API base URL.
+## The Harbor instance's homepage and API base URLs.
 
-HARBOR_HOMEPAGE = "https://harbor.example.com/"
-HARBOR_API = "https://harbor.example.com/api/v2.0"
+HARBOR_HOMEPAGE_URL = "https://harbor.example.com"
+HARBOR_API_URL = "https://harbor.example.com/api/v2.0"
 
-## The username and password for the robot account to use.
+## The username and password for the Harbor robot account to use.
 ## Environment variables of the same name will override the values set here.
 
 HARBOR_ROBOT_USERNAME = "robot"
 HARBOR_ROBOT_PASSWORD = "keep this a secret!"
 
-## Docs URL
-
-DOCS_URL = "https://cannonlock.github.io/Soteria-Docs"
 
 # Optional Configuration
 # ======================
 
 ## Controls whether debugging functionality is enabled.
 
-REGISTRY_DEBUG = False
+SOTERIA_DEBUG = False
 
 
 # Configuration of Last Resort

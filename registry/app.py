@@ -69,7 +69,7 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
-    if app.config.get("REGISTRY_DEBUG"):
+    if app.config.get("SOTERIA_DEBUG"):
         app.register_blueprint(debugging_bp, url_prefix="/debug")
 
 

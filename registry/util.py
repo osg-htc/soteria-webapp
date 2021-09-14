@@ -56,7 +56,7 @@ def update_request_environ() -> None:
     """
     Add mock data to the current request's environment if debugging is enabled.
     """
-    if current_app.config.get("REGISTRY_DEBUG"):
+    if current_app.config.get("SOTERIA_DEBUG"):
         request.environ.update(current_app.config.get("FAKE_USER", {}))
 
 
@@ -106,7 +106,7 @@ def get_admin_harbor_api() -> HarborAPI:
     Returns a Harbor API instance authenticated as an admin.
     """
     return HarborAPI(
-        current_app.config["HARBOR_API"],
+        current_app.config["HARBOR_API_URL"],
         basic_auth=(
             current_app.config["HARBOR_ADMIN_USERNAME"],
             current_app.config["HARBOR_ADMIN_PASSWORD"],
@@ -119,7 +119,7 @@ def get_robot_harbor_api() -> HarborAPI:
     Returns a Harbor API instance authenticated as a robot.
     """
     return HarborAPI(
-        current_app.config["HARBOR_API"],
+        current_app.config["HARBOR_API_URL"],
         basic_auth=(
             current_app.config["HARBOR_ROBOT_USERNAME"],
             current_app.config["HARBOR_ROBOT_PASSWORD"],
