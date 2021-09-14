@@ -2,12 +2,14 @@
 Blueprints for pages where the current user can manage their registration.
 """
 
-from flask import Blueprint, make_response, render_template
 import json
+
+from flask import Blueprint, make_response, render_template
 
 __all__ = ["account_bp"]
 
 account_bp = Blueprint("account", __name__, template_folder="templates")
+
 
 @account_bp.route("/")
 def index():
@@ -19,12 +21,11 @@ def index():
             user = json.load(json_file)
     except:
         user = {
-          "name": "First Last",
-          "orcid_id": 11235813,
-          "status": "Affiliate/Member/Researcher",
-          "email": "hello@world.org",
-          "days_remaining": "Days Left (int)"
+            "name": "First Last",
+            "orcid_id": 11235813,
+            "status": "Affiliate/Member/Researcher",
+            "email": "hello@world.org",
+            "days_remaining": "Days Left (int)",
         }
-
 
     return make_response(render_template("account.html", user=user))
