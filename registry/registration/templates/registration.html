@@ -27,20 +27,33 @@
             <div class="row">
                 <div class="col-12">
                     <div id="soteria-enrollment-verification" class="card">
-                        {{ card_header_check("1. Enroll in SOTERIA") }}
+                        {{ card_header_check("1. Tell us About Yourself") }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mb-2">
                                     <div class="main-message">
                                         <p>
-                                          SOTERIA uses CILogon as its single
-                                          sign-on provider. This allows you
-                                          to use your existing university or
-                                          other account to register with
+                                        SOTERIA uses a <a
+                                                           href="https://incommon.org/software/comanage/">COmanage</a>
+                                        instance run by <a
+                                                            href="https://opensciencegrid.org/">OSG</a>
+                                        for account management. This allows
+                                        you to use your existing university
+                                        account or other account to log into and use
                                           SOTERIA.
-
-                                          Visit <a href="{{ get_soteria_enrollment_url() }}">this page</a> to enroll in SOTERIA.
                                         </p>
+
+                                        <p><a href="{{
+                                                    get_soteria_enrollment_url()
+                                                    }}">Fill out this
+                                                    form</a> to use your {{
+                                                  get_idp_name() }} account
+                                                  with SOTERIA. To use
+                                                  a different account, click
+                                                  the "Logout" button above.
+                                                  Then start the
+                                                  registration process
+                                                  again.</p>
                                     </div>
                                 </div>
                             </div>
