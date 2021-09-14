@@ -4,7 +4,7 @@ SOTERIA web application.
 
 import os
 import pathlib
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Optional
 
 import flask
 import flask_assets  # type: ignore[import]
@@ -102,7 +102,15 @@ def add_context(app: flask.Flask) -> None:
         def get_path() -> str:
             return flask.request.url_root + "callback?logout=" + flask.request.url_root
 
-        return {"get_path": get_path}
+        def get_soteria_enrollment_url() -> Optional[str]:
+            if registry.util.has_organizational_identity():
+                return app.config.get("SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL")
+            return app.config.get("SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL")
+
+        return {
+            "get_path": get_path,
+            "get_soteria_enrollment_url": get_soteria_enrollment_url,
+        }
 
 
 def create_app() -> flask.Flask:

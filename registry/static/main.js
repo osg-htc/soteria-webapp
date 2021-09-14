@@ -12,8 +12,14 @@ function onReady(){
  * Check if user has completed any previous verifications
  */
 function checkAll(){
+    checkEnrollment();
     checkHubVerification();
     checkORCIDLink();
+}
+
+function checkEnrollment(){
+    startVerification("soteria-enrollment-verification");
+    getEnrollmentVerification();
 }
 
 function checkHubVerification(){
@@ -29,6 +35,14 @@ function checkORCIDLink(){
 /////////////
 //  AJAX calls to server check
 /////////////
+
+function getEnrollmentVerification(){
+    $.ajax({
+        "url": "/api/v1/verify_enrollment",
+        "success" : reportStatusEnrollment,
+        "error" : showErrorEnrollment
+    })
+}
 
 function getHubVerification(){
     $.ajax({
@@ -57,6 +71,18 @@ function getProvisionVerification(){
 /////////////
 //  Verification specific wrappers for reportStatus
 /////////////
+
+function reportStatusEnrollment(status, textStatus, jqXHR){
+    let message
+    let elementId = "soteria-enrollment-verification"
+
+    if(isVerified(status)){
+        message = "You are enrolled in SOTERIA."
+    }
+
+    showMessage(elementId, message)
+    endVerification(elementId, isVerified(status))
+}
 
 function reportStatusHub(status, textStatus, jqXHR){
     let message
@@ -102,6 +128,11 @@ function reportStatusProvision(status, textStatus, jqXHR){
 /////////////
 //  Verification specific wrappers for showMessage related to AJAX error
 /////////////
+
+function showErrorEnrollment(jqXHR, textStatus, errorThrown){
+    showSubMessage("soteria-enrollment-verification", errorThrown, true)
+    endVerification( "soteria-enrollment-verification", false );
+}
 
 function showErrorHub(jqXHR, textStatus, errorThrown){
     showSubMessage("hub-verification", errorThrown, true)

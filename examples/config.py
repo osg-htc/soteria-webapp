@@ -9,6 +9,11 @@ CONTACT_EMAIL = "someone@example.com"
 
 DOCS_URL = "https://soteria.example.com/documentation"
 
+## Where a user should go to enroll in SOTERIA.
+
+SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
+SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
+
 ## Where a user should go to link their ORCID iD.
 
 ORCID_ID_ENROLLMENT_URL = "https://registry.example.com/enroll/orcid"

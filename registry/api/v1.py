@@ -20,8 +20,8 @@ bp = flask.Blueprint("api_v1", __name__)
 
 @dataclasses.dataclass
 class UserObject:
+    is_soteria_affiliate: bool
     is_soteria_member: bool
-    is_soteria_collaborator: bool
     is_soteria_researcher: bool
 
     harbor_id: Optional[str] = None
@@ -77,12 +77,14 @@ def get_user(id: str) -> flask.Response:
     if id != "current":
         return make_error_response(400, "Malformed user ID")
 
-    harbor_user = registry.util.get_harbor_user()
+    harbor_user = registry.util.get_harbor_user() or {}
 
     user = UserObject(
+        is_soteria_affiliate=registry.util.is_soteria_affiliate(),
         is_soteria_member=registry.util.is_soteria_member(),
-        is_soteria_collaborator=registry.util.is_soteria_collaborator(),
         is_soteria_researcher=registry.util.is_soteria_researcher(),
+        harbor_id=harbor_user.get("user_id"),
+        harbor_username=harbor_user.get("username"),
         orcid_id=registry.util.get_orcid_id(),
     )
 

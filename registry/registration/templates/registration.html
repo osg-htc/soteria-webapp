@@ -26,17 +26,20 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div  id="hub-verification" class="card">
-                        {{ card_header_check("1. Create an OSG Hub Account") }}
+                    <div id="soteria-enrollment-verification" class="card">
+                        {{ card_header_check("1. Enroll in SOTERIA") }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mb-2">
                                     <div class="main-message">
                                         <p>
-                                            Go to <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank' >OSG Hub</a>
-                                            and create an account using the same identity provider that you used to
-                                            login with Soteria. Upon account creation return here and click 'Check for OSG
-                                            Hub Account' and continue to the next step.
+                                          SOTERIA uses CILogon as its single
+                                          sign-on provider. This allows you
+                                          to use your existing university or
+                                          other account to register with
+                                          SOTERIA.
+
+                                          Visit <a href="{{ get_soteria_enrollment_url() }}">this page</a> to enroll in SOTERIA.
                                         </p>
                                     </div>
                                 </div>
@@ -48,7 +51,7 @@
                                 <div class="col-auto">
                                     <div class="row">
                                         <div class="col-auto">
-                                            <a class="btn btn-secondary mr-2 check">Check For OSG Hub Account</a>
+                                            <a class="btn btn-secondary mr-2 check">Check for Enrollment</a>
                                         </div>
                                     </div>
                                 </div>
@@ -57,7 +60,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <div  id="hub-verification" class="card">
+                    <div id="hub-verification" class="card">
                         {{ card_header_check("2. Create an OSG Hub Account") }}
                         <div class="card-body">
                             <div class="row">

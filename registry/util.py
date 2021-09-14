@@ -17,7 +17,8 @@ __all__ = [
     "get_comanage_groups",
     "get_harbor_user",
     "get_orcid_id",
-    "is_soteria_collaborator",
+    "has_organizational_identity",
+    "is_soteria_affiliate",
     "is_soteria_member",
     "is_soteria_researcher",
     #
@@ -115,16 +116,22 @@ def get_subiss() -> Optional[str]:
     return None
 
 
-def is_soteria_collaborator() -> bool:
+def has_organizational_identity() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-Collaborators:members:all" in groups
+    return "CO:members:all" in groups
+
+
+def is_soteria_affiliate() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-All:members:all" in groups
 
 
 def is_soteria_member() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-All:members:all" in groups
+    return "CO:COU:SOTERIA-Collaborators:members:all" in groups
 
 
 def is_soteria_researcher() -> bool:
