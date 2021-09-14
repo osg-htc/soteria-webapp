@@ -5,7 +5,7 @@ Assorted helper functions.
 import logging
 import logging.handlers
 import pathlib
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from flask import current_app, request
 
@@ -14,8 +14,12 @@ from .harbor import HarborAPI
 __all__ = [
     "configure_logging",
     #
+    "get_comanage_groups",
     "get_harbor_user",
     "get_orcid_id",
+    "is_soteria_collaborator",
+    "is_soteria_member",
+    "is_soteria_researcher",
     #
     "get_admin_harbor_api",
     "get_robot_harbor_api",
@@ -60,6 +64,16 @@ def update_request_environ() -> None:
         request.environ.update(current_app.config.get("FAKE_USER", {}))
 
 
+def get_comanage_groups() -> List[str]:
+    update_request_environ()
+
+    raw_groups = request.environ.get("OIDC_CLAIM_groups")
+
+    if raw_groups:
+        return raw_groups.split(",")
+    return []
+
+
 def get_harbor_user() -> Any:
     """
     Returns the current users's Harbor account.
@@ -99,6 +113,24 @@ def get_subiss() -> Optional[str]:
         return sub + iss
 
     return None
+
+
+def is_soteria_collaborator() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-Collaborators:members:all" in groups
+
+
+def is_soteria_member() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-All:members:all" in groups
+
+
+def is_soteria_researcher() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-Researchers:members:all" in groups
 
 
 def get_admin_harbor_api() -> HarborAPI:

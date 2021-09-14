@@ -1,19 +1,20 @@
 """
-Web application for managing the users of a Harbor instance.
+SOTERIA web application.
 """
 
 import os
 import pathlib
+from typing import Any, Callable, Dict
 
-from flask import Flask, app, request
-from flask_assets import Bundle, Environment  # type: ignore[import]
+import flask
+import flask_assets  # type: ignore[import]
 
+import registry.api.debug
+import registry.api.v1
 import registry.util
-from registry.account import account_bp
 from registry.about import about_bp
+from registry.account import account_bp
 from registry.api.test import api_bp_test
-from registry.api.v1 import api_bp
-from registry.debug import debugging_bp
 from registry.index import index_bp
 from registry.registration import registration_bp
 from registry.repositories import repositories_bp
@@ -26,7 +27,7 @@ INSTANCE_DIR = THIS_FILE.parent.parent / "instance"
 LOG_DIR = INSTANCE_DIR / "log"
 
 
-def load_config(app: Flask) -> None:
+def load_config(app: flask.Flask) -> None:
     """
     Loads the application's configuration.
     """
@@ -47,15 +48,8 @@ def load_config(app: Flask) -> None:
         if val is not None:
             app.config[key] = val
 
-def add_context(app: app):
 
-    @app.context_processor
-    def utility_processor() -> str:
-        def get_path():
-            return request.url_root + "callback?logout=" + request.url_root
-        return dict(get_path=get_path)
-
-def register_blueprints(app: Flask) -> None:
+def register_blueprints(app: flask.Flask) -> None:
     """
     Registers the application's blueprints.
     """
@@ -67,23 +61,23 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(repositories_bp, url_prefix="/repositories")
     app.register_blueprint(repository_bp, url_prefix="/repository")
     app.register_blueprint(api_bp_test, url_prefix="/api/test")
-    app.register_blueprint(api_bp, url_prefix="/api/v1")
+    app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
 
     if app.config.get("SOTERIA_DEBUG"):
-        app.register_blueprint(debugging_bp, url_prefix="/debug")
+        app.register_blueprint(registry.api.debug.bp, url_prefix="/debug")
 
 
-def define_assets(app: Flask) -> None:
+def define_assets(app: flask.Flask) -> None:
     """
     Defines the application's CSS and JavaScript assets.
     """
 
-    assets = Environment(app)
+    assets = flask_assets.Environment(app)
     assets.url = app.static_url_path
 
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
-        js = Bundle("main.js", "bootstrap.js", output="gen/packed.js")
+        js = flask_assets.Bundle("main.js", "bootstrap.js", output="gen/packed.js")
     else:
         ## Assume that a production webserver cannot write these files.
 
@@ -92,22 +86,33 @@ def define_assets(app: Flask) -> None:
         assets.manifest = False
 
         assets.config["LIBSASS_STYLE"] = "compressed"
-        js = Bundle("main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js")
+        js = flask_assets.Bundle(
+            "main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js"
+        )
 
-    scss = Bundle("style.scss", filters="libsass", output="gen/style.css")
+    scss = flask_assets.Bundle("style.scss", filters="libsass", output="gen/style.css")
 
     assets.register("js_all", js)
     assets.register("scss_all", scss)
 
 
-def create_app() -> Flask:
+def add_context(app: flask.Flask) -> None:
+    @app.context_processor
+    def utility_processor() -> Dict[str, Callable[[], Any]]:
+        def get_path() -> str:
+            return flask.request.url_root + "callback?logout=" + flask.request.url_root
+
+        return {"get_path": get_path}
+
+
+def create_app() -> flask.Flask:
     """
     Creates the main application.
     """
 
     registry.util.configure_logging(LOG_DIR / "soteria.log")
 
-    app = Flask(
+    app = flask.Flask(
         __name__.split(".", maxsplit=1)[0],
         instance_path=INSTANCE_DIR,
         instance_relative_config=True,
