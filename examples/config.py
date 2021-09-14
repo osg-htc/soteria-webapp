@@ -1,3 +1,6 @@
+# fmt: off
+
+
 # Required Configuration
 # ======================
 
@@ -13,6 +16,10 @@ DOCS_URL = "https://soteria.example.com/documentation"
 
 SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
 SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
+
+## Where a user should go to enroll as a researcher.
+
+SOTERIA_RESEARCHER_ENROLLMENT_URL = "https://registry.example.com/enroll/researcher"
 
 ## Where a user should go to link their ORCID iD.
 
