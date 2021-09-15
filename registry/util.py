@@ -7,9 +7,9 @@ import logging.handlers
 import pathlib
 from typing import Any, List, Optional
 
-from flask import current_app, request
+import flask
 
-from .harbor import HarborAPI
+import registry.harbor
 
 __all__ = [
     "configure_logging",
@@ -61,14 +61,14 @@ def update_request_environ() -> None:
     """
     Add mock data to the current request's environment if debugging is enabled.
     """
-    if current_app.config.get("SOTERIA_DEBUG"):
-        request.environ.update(current_app.config.get("FAKE_USER", {}))
+    if flask.current_app.config.get("SOTERIA_DEBUG"):
+        flask.request.environ.update(flask.current_app.config.get("FAKE_USER", {}))
 
 
 def get_comanage_groups() -> List[str]:
     update_request_environ()
 
-    raw_groups = request.environ.get("OIDC_CLAIM_groups")
+    raw_groups: str = flask.request.environ.get("OIDC_CLAIM_groups", "")
 
     if raw_groups:
         return raw_groups.split(",")
@@ -98,7 +98,7 @@ def get_orcid_id() -> Optional[str]:
     """
     update_request_environ()
 
-    return request.environ.get("OIDC_CLAIM_orcid")
+    return flask.request.environ.get("OIDC_CLAIM_orcid")
 
 
 def get_subiss() -> Optional[str]:
@@ -107,8 +107,8 @@ def get_subiss() -> Optional[str]:
     """
     update_request_environ()
 
-    sub = request.environ.get("OIDC_CLAIM_sub")
-    iss = request.environ.get("OIDC_CLAIM_iss")
+    sub: str = flask.request.environ.get("OIDC_CLAIM_sub", "")
+    iss: str = flask.request.environ.get("OIDC_CLAIM_iss", "")
 
     if sub and iss:
         return sub + iss
@@ -140,27 +140,27 @@ def is_soteria_researcher() -> bool:
     return "CO:COU:SOTERIA-Researchers:members:all" in groups
 
 
-def get_admin_harbor_api() -> HarborAPI:
+def get_admin_harbor_api() -> registry.harbor.HarborAPI:
     """
     Returns a Harbor API instance authenticated as an admin.
     """
-    return HarborAPI(
-        current_app.config["HARBOR_API_URL"],
+    return registry.harbor.HarborAPI(
+        flask.current_app.config["HARBOR_API_URL"],
         basic_auth=(
-            current_app.config["HARBOR_ADMIN_USERNAME"],
-            current_app.config["HARBOR_ADMIN_PASSWORD"],
+            flask.current_app.config["HARBOR_ADMIN_USERNAME"],
+            flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
         ),
     )
 
 
-def get_robot_harbor_api() -> HarborAPI:
+def get_robot_harbor_api() -> registry.harbor.HarborAPI:
     """
     Returns a Harbor API instance authenticated as a robot.
     """
-    return HarborAPI(
-        current_app.config["HARBOR_API_URL"],
+    return registry.harbor.HarborAPI(
+        flask.current_app.config["HARBOR_API_URL"],
         basic_auth=(
-            current_app.config["HARBOR_ROBOT_USERNAME"],
-            current_app.config["HARBOR_ROBOT_PASSWORD"],
+            flask.current_app.config["HARBOR_ROBOT_USERNAME"],
+            flask.current_app.config["HARBOR_ROBOT_PASSWORD"],
         ),
     )

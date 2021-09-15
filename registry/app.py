@@ -36,7 +36,7 @@ def load_config(app: flask.Flask) -> None:
     pyfiles = pathlib.Path(app.instance_path).glob("*.py")
 
     for p in sorted(pyfiles):
-        app.config.from_pyfile(p)
+        app.config.from_pyfile(os.fspath(p))
 
     for key in [
         "HARBOR_ADMIN_USERNAME",
@@ -128,7 +128,7 @@ def create_app() -> flask.Flask:
 
     app = flask.Flask(
         __name__.split(".", maxsplit=1)[0],
-        instance_path=INSTANCE_DIR,
+        instance_path=os.fspath(INSTANCE_DIR),
         instance_relative_config=True,
     )
 
