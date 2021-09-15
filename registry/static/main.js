@@ -77,7 +77,7 @@ function reportStatusEnrollment(status, textStatus, jqXHR){
     let elementId = "soteria-enrollment-verification"
 
     if(isVerified(status)){
-        message = "You are logged into SOTERIA with your " + status.data["idp_name"] + " account."
+        message = "You are logged in via: status.data["idp_name"]
     }
 
     showMessage(elementId, message)
@@ -89,7 +89,7 @@ function reportStatusHub(status, textStatus, jqXHR){
     let elementId = "hub-verification"
 
     if(isVerified(status)){
-        message = "You currently have an registration at the Hub with username: " + status.data["username"]
+        message = "You have an account with the username: " + status.data["username"]
     }
 
     showMessage(elementId, message)
@@ -101,7 +101,7 @@ function reportStatusORCID(status, textStatus, jqXHR){
     let elementId = "orc-id-verification"
 
     if(isVerified(status)){
-        message = "This registration is currently linked with ORCID iD: " + status.data["orcid_id"]
+        message = "Your linked ORCID iD is: " + status.data["orcid_id"]
     }
 
     showMessage(elementId, message)
