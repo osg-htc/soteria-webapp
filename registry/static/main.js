@@ -77,7 +77,7 @@ function reportStatusEnrollment(status, textStatus, jqXHR){
     let elementId = "soteria-enrollment-verification"
 
     if(isVerified(status)){
-        message = "You are enrolled in SOTERIA."
+        message = "You are logged into SOTERIA with your " + status.data["idp_name"] + " account."
     }
 
     showMessage(elementId, message)

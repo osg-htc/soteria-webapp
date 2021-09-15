@@ -16,6 +16,7 @@ __all__ = [
     #
     "get_comanage_groups",
     "get_harbor_user",
+    "get_idp_name",
     "get_orcid_id",
     "has_organizational_identity",
     "is_soteria_affiliate",
@@ -90,6 +91,12 @@ def get_harbor_user() -> Any:
             return details
 
     return None
+
+
+def get_idp_name() -> Optional[str]:
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_idp_name")
 
 
 def get_orcid_id() -> Optional[str]:

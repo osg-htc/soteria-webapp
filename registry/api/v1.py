@@ -108,6 +108,16 @@ def api_response(
     return flask.make_response(body)
 
 
+@bp.route("/verify_enrollment")
+def verify_enrollment():
+    enrolled = registry.util.has_organizational_identity()
+    idp_name = registry.util.get_idp_name()
+
+    data = {"verified": bool(enrolled), "idp_name": idp_name}
+
+    return api_response(True, data)
+
+
 @bp.route("/verify_harbor_account")
 def verify_harbor_account():
     """

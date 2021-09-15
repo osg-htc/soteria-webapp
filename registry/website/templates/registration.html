@@ -4,7 +4,7 @@
 
 {% block title %}Registration{% endblock %}
 
-{%  block page_class %}subpage{% endblock %}
+{% block page_class %}subpage{% endblock %}
 
 {% block body %}
     {{ page_header("Registration") }}
@@ -14,13 +14,14 @@
             <div class="row mb-2">
                 <div class="col">
                     <p>
-                        <b>Registration to Soteria is available to everyone with a ORCID iD!</b>
+                      Follow the steps below to create an account in SOTERIA
+                      with basic "affiliate" status. This grants you access
+                      to a public project, owned by you, that can be used to
+                      publish container images (limited to a total of 5GiB).
                     </p>
                     <p>
-                        Following the steps below will grant you the 'Affiliate' status for
-                        30 days after which you can seek sponsorship by a Verified Researcher
-                        or become a Verified Researcher yourself. More information on the
-                        various roles in Soteria can be found on the <a href="/about/#status-privileges">About Page</a>.
+                      More information on the various statuses and roles in SOTERIA
+                      can be found on the <a href="/about#status-privileges">About page</a>.
                     </p>
                 </div>
             </div>
@@ -42,18 +43,16 @@
                                         account or other account to log into and use
                                           SOTERIA.
                                         </p>
-
                                         <p><a href="{{
                                                     get_soteria_enrollment_url()
                                                     }}">Fill out this
-                                                    form</a> to use your {{
-                                                  get_idp_name() }} account
-                                                  with SOTERIA. To use
-                                                  a different account, click
-                                                  the "Logout" button above.
-                                                  Then start the
-                                                  registration process
-                                                  again.</p>
+                                                    form</a> to enroll your
+                                                  {{ get_idp_name() }}
+                                                  account in SOTERIA. (If
+                                                  prompted by CILogon,
+                                                  select the same account
+                                                  you initially used to log into
+                                                  SOTERIA.)</p>
                                     </div>
                                 </div>
                             </div>
@@ -80,10 +79,19 @@
                                 <div class="col-12 mb-2">
                                     <div class="main-message">
                                         <p>
-                                            Go to <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank' >OSG Hub</a>
-                                            and create an account using the same identity provider that you used to
-                                            login with Soteria. Upon account creation return here and click 'Check for OSG
-                                            Hub Account' and continue to the next step.
+                                        SOTERIA uses <a href="{{
+                                                                config.HARBOR_HOMEPAGE_URL }}" target='_blank' >OSG Hub</a> for its container registry.</p>
+                                        <p>
+                                            <a href="{{
+                                              config.HARBOR_HOMEPAGE_URL }}"
+                                              target='_blank' >Create an
+                                            account on OSG Hub</a> using the
+                                          same {{ get_idp_name() }} account
+                                          that you used to log into SOTERIA.
+                                          Then come back to this page and click
+                                          "Check for OSG Hub Account" to
+                                          confirm that SOTERIA can find your
+                                          OSG Hub account.
                                         </p>
                                     </div>
                                 </div>
@@ -105,23 +113,28 @@
                 </div>
                 <div class="col-12">
                     <div  id="orc-id-verification" class="card">
-                        {{ card_header_check("3. Link ORCID iD with COmanage") }}
+                        {{ card_header_check("3. Link Your ORCID iD") }}
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 mb-2">
                                     <div class="main-message">
-                                        <b>If do not have a ORCID iD</b>
-                                        <p>
-                                            Register at <a href='https://orcid.org/register' target='_blank'>ORCID.org</a>
-                                            and then proceed with the step below.
+                                        <p>Because SOTERIA is aimed at
+                                        researchers, we require everyone to
+                                        have an <a
+                                                    href="https://info.orcid.org/what-is-orcid/">ORCID
+                                                    iD</a>.</p>
+
+                                        <p><b>If you do not have a ORCID
+                                          iD</b>, <a
+                                                      href='https://orcid.org/register'
+                                                      target='_blank'>register
+                                                      for one</a>.</p>
+
+                                        <p><b>Once you have an ORCID iD</b>,
+                                        <a href="{{
+                                        config.ORCID_ID_ENROLLMENT_URL
+                                      }}">link it with SOTERIA</a>.
                                         </p>
-                                        <b>If you have a ORCID iD</b>
-                                        <p>
-                                            Go to <a href="{{ config.ORCID_ID_ENROLLMENT_URL }}" target='_blank' >COmanage</a> and
-                                            link your ORCID iD to your account. Then return and click the 'Check for ORCID iD Link'
-                                            button below.
-                                        </p>
-                                        <p>After your ORDIC iD is linked you can click 'Check for ORCID iD Link' and continue to the next step.</p>
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +145,7 @@
                                 <div class="col-auto">
                                     <div class="row">
                                         <div class="col-auto">
-                                            <a class="btn btn-secondary mr-2 check">Check for ORCID iD Link</a>
+                                            <a class="btn btn-secondary mr-2 check">Check for ORCID iD</a>
                                         </div>
                                     </div>
                                 </div>
