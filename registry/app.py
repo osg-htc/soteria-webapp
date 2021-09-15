@@ -16,7 +16,6 @@ import registry.website
 from registry.about import about_bp
 from registry.account import account_bp
 from registry.api.test import api_bp_test
-from registry.index import index_bp
 from registry.registration import registration_bp
 from registry.repositories import repositories_bp
 from registry.repository import repository_bp
@@ -55,7 +54,6 @@ def register_blueprints(app: flask.Flask) -> None:
     Registers the application's blueprints.
     """
 
-    app.register_blueprint(index_bp, url_prefix="/")
     app.register_blueprint(account_bp, url_prefix="/account")
     app.register_blueprint(about_bp, url_prefix="/about")
     app.register_blueprint(registration_bp, url_prefix="/registration")

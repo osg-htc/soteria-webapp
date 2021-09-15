@@ -1,20 +1,18 @@
 {% from "macros/page-header.html" import page_header with context %}
 {% extends "base.html" %}
 
-{% block title %}Open Science Container User Registry{% endblock %}
+{% block title %}SOTERIA{% endblock %}
 
 {% block page_class %}home{% endblock %}
 
 {% block body %}
-    {{ page_header("Home Page") }}
+    {{ page_header("Securing an Open and Trustworthy Ecosystem for Research Infrastructure and Applications") }}
 
     <div class="row">
         <div class="col-12 col-lg-10 col-xl-8">
             <div class="row mt-2">
                 <p>
-                    Welcome to the OSG container registry a project inspired by the need
-                    of open sources container repos by the research community. Below are
-                    displayed the key gateways into using this website.
+                    Welcome to the SOTERIA container registry for open science!
                 </p>
             </div>
             <div class="row mt-2 justify-content-center">
@@ -26,7 +24,8 @@
                         <div class="card-body">
                             <div class="row">
                                 <p>
-                                    Register to create a container repository by following the link below
+                                    To get started with SOTERIA, register
+                                    for an account.
                                 </p>
                             </div>
                             <div class="row justify-content-end">
@@ -38,12 +37,31 @@
                 <div class="col-12 col-md-6">
                     <div class="card">
                         <div class="card-header">
+                            <h2>Learn More</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <p>
+                                    To learn more about SOTERIA, view our
+                                    documentation.
+                                </p>
+                            </div>
+                            <div class="row justify-content-end">
+                              <div class="col-auto"><a href="{{ config.DOCS_URL }}" class="btn btn-primary">View Documentation</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--
+                <div class="col-12 col-md-6">
+                    <div class="card">
+                        <div class="card-header">
                             <h2>Contact Us</h2>
                         </div>
                         <div class="card-body">
                             <p>
-                                Contact us with any and all questions relating to your account
-                                and container repository
+                                Contact us with any questions about your
+                                account and projects.
                             </p>
                             <ul>
                                 <li>
@@ -53,6 +71,7 @@
                         </div>
                     </div>
                 </div>
+                -->
             </div>
         </div>
     </div>
