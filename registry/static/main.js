@@ -77,7 +77,7 @@ function reportStatusEnrollment(status, textStatus, jqXHR){
     let elementId = "soteria-enrollment-verification"
 
     if(isVerified(status)){
-        message = "You are logged in via: status.data["idp_name"]
+        message = "You are logged in via: " + status.data["idp_name"]
     }
 
     showMessage(elementId, message)
