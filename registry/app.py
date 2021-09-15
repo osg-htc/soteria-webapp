@@ -128,12 +128,6 @@ def create_app() -> flask.Flask:
         instance_relative_config=True,
     )
 
-    @app.after_request
-    def add_header(response: flask.Response) -> flask.Response:
-        response.cache_control.max_age = 0
-        response.cache_control.no_store = True
-        return response
-
     load_config(app)
     register_blueprints(app)
     define_assets(app)
