@@ -12,6 +12,7 @@ import flask_assets  # type: ignore[import]
 import registry.api.debug
 import registry.api.v1
 import registry.util
+import registry.website
 from registry.about import about_bp
 from registry.account import account_bp
 from registry.api.test import api_bp_test
@@ -62,6 +63,7 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(repository_bp, url_prefix="/repository")
     app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
+    app.register_blueprint(registry.website.bp, url_prefix="/")
 
     if app.config.get("SOTERIA_DEBUG"):
         app.register_blueprint(registry.api.debug.bp, url_prefix="/debug")
