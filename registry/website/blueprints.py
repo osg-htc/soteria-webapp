@@ -6,12 +6,39 @@ SOTERIA website.
 # the default/generic ``show`` handler below must be declared last in this
 # file and the blueprint registered last in ``registry.app``.
 
+import json
+import pathlib
+
 import flask
 import jinja2
 
 __all__ = ["bp"]
 
 bp = flask.Blueprint("website", __name__, template_folder="templates")
+
+
+@bp.route("/account")
+def index() -> flask.Response:
+    try:
+        sample_data_path = (
+            pathlib.Path(flask.current_app.instance_path).resolve().parent
+            / "data-templates/TEMPLATE-user.json"
+        )
+
+        flask.current_app.logger.debug(sample_data_path)
+
+        with open(sample_data_path) as fp:
+            user = json.load(fp)
+    except:
+        user = {
+            "name": "First Last",
+            "orcid_id": 11235813,
+            "status": "Affiliate/Member/Researcher",
+            "email": "hello@world.org",
+            "days_remaining": "Days Left (int)",
+        }
+
+    return flask.make_response(flask.render_template("account.html", user=user))
 
 
 @bp.route("/status")
