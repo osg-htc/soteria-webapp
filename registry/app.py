@@ -60,6 +60,21 @@ def register_blueprints(app: flask.Flask) -> None:
     if app.config.get("SOTERIA_DEBUG"):
         app.register_blueprint(registry.api.debug.bp, url_prefix="/debug")
 
+    # NOTE: Earlier versions of the application did two things:
+    #
+    #   1. Put the registration page at "/registration/"
+    #   2. Redirected "/registration" to "/registration/"
+    #
+    # This matters because links have always used "/registration", meaning
+    # that some browsers have cached the redirect, which we no longer need
+    # or want.
+
+    @app.before_request
+    def redirect_old_registration():
+        if flask.request.path == "/registration/":
+            return flask.redirect("/registration", code=302)
+        return None
+
 
 def define_assets(app: flask.Flask) -> None:
     """
