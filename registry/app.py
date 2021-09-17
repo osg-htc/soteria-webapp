@@ -107,12 +107,12 @@ def define_assets(app: flask.Flask) -> None:
 
 def add_context(app: flask.Flask) -> None:
     @app.context_processor
-    def utility_processor() -> Dict[str, Callable[[], Any]]:
+    def populate_context() -> Dict[str, Any]:
+        flask.g.has_oidc_sub = flask.request.environ.get("OIDC_CLAIM_sub")
+        flask.g.logout_url = f"{flask.request.root_url}callback?logout={flask.request.root_url}"
+
         def get_idp_name() -> Optional[str]:
             return flask.request.environ.get("OIDC_CLAIM_idp_name")
-
-        def get_path() -> str:
-            return flask.request.url_root + "callback?logout=" + flask.request.url_root
 
         def get_soteria_enrollment_url() -> Optional[str]:
             if registry.util.has_organizational_identity():
@@ -121,7 +121,6 @@ def add_context(app: flask.Flask) -> None:
 
         return {
             "get_idp_name": get_idp_name,
-            "get_path": get_path,
             "get_soteria_enrollment_url": get_soteria_enrollment_url,
         }
 
