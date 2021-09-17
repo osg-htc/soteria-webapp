@@ -2,77 +2,55 @@
 {% extends "base.html" %}
 
 {% block title %}SOTERIA{% endblock %}
-
 {% block page_class %}home{% endblock %}
-
 {% block body %}
-    {{ page_header("Securing an Open and Trustworthy Ecosystem for Research Infrastructure and Applications") }}
-
-    <div class="row">
-        <div class="col-12 col-lg-10 col-xl-8">
-            <div class="row mt-2">
-                <p>
-                    Welcome to the SOTERIA container registry for open science!
-                </p>
-            </div>
-            <div class="row mt-2 justify-content-center">
-                <div class="col-12 col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Register</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <p>
-                                    To get started with SOTERIA, register
-                                    for an account.
-                                </p>
-                            </div>
-                            <div class="row justify-content-end">
-                                <div class="col-auto"><a href="/registration" class="btn btn-primary">Register</a></div>
-                            </div>
-                        </div>
+{{ page_header("Securing an Open and Trustworthy Ecosystem for Research Infrastructure and Applications") }}
+<div class="row">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <div class="row mt-2">
+            <p>
+                Welcome to the SOTERIA container registry for open science!
+            </p>
+        </div>
+        <div class="row mt-2 justify-content-center">
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Register</h2>
                     </div>
-                </div>
-                <div class="col-12 col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Learn More</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <p>
-                                    To learn more about SOTERIA, view our
-                                    documentation.
-                                </p>
-                            </div>
-                            <div class="row justify-content-end">
-                              <div class="col-auto"><a href="{{ config.DOCS_URL }}" class="btn btn-primary">View Documentation</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--
-                <div class="col-12 col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Contact Us</h2>
-                        </div>
-                        <div class="card-body">
+                    <div class="card-body">
+                        <div class="row">
                             <p>
-                                Contact us with any questions about your
-                                account and projects.
+                                Get started using SOTERIA by clicking the button below and, when prompted by <a
+                                    href="https://www.cilogon.org/home">CILogon</a>, selecting an identity provider to
+                                use with SOTERIA.
                             </p>
-                            <ul>
-                                <li>
-                                    Email: <a href="mailto:{{ config.CONTACT_EMAIL }}">{{ config.CONTACT_EMAIL }}</a>
-                                </li>
-                            </ul>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-auto"><a class="btn btn-primary" href="/registration">Register</a></div>
                         </div>
                     </div>
                 </div>
-                -->
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Learn More</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <p>
+                                To learn more about SOTERIA, view our documentation.
+                            </p>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-auto"><a class="btn btn-primary" href="{{ config.DOCS_URL }}">View
+                                Documentation</a></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
