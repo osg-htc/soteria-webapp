@@ -25,8 +25,9 @@ SOTERIA_RESEARCHER_ENROLLMENT_URL = "https://registry.example.com/enroll/researc
 
 ORCID_ID_ENROLLMENT_URL = "https://registry.example.com/enroll/orcid"
 
-## The Harbor instance's homepage and API base URLs.
+## The Harbor instance's name, homepage URL, and API base URL.
 
+HARBOR_NAME = "Example Harbor Instance"
 HARBOR_HOMEPAGE_URL = "https://harbor.example.com"
 HARBOR_API_URL = "https://harbor.example.com/api/v2.0"
 
