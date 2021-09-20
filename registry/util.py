@@ -8,6 +8,7 @@ import pathlib
 from typing import Any, List, Optional
 
 import flask
+import ldap3
 
 import registry.harbor
 
@@ -63,17 +64,33 @@ def update_request_environ() -> None:
     Add mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
-        flask.request.environ.update(flask.current_app.config.get("FAKE_USER", {}))
+        flask.request.environ.update(
+            flask.current_app.config.get("FAKE_USER", {})
+        )
 
 
 def get_comanage_groups() -> List[str]:
     update_request_environ()
 
-    raw_groups: str = flask.request.environ.get("OIDC_CLAIM_groups", "")
+    sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
-    if raw_groups:
-        return raw_groups.split(",")
-    return []
+    if sub:
+        ldap_url = flask.current_app.config.get("LDAP_URL")
+        ldap_username = flask.current_app.config.get("LDAP_USERNAME")
+        ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
+
+        server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
+
+        with  ldap3.Connection(server, ldap_username, ldap_password) as conn:
+
+            conn.search("o=OSG,o=CO,dc=cilogon,dc=org", f'(uid={sub})', attributes=["isMemberOf"])
+
+            if len(conn.entries) > 1:
+                flask.current_app.logger.error("???")
+
+            return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+
+    return None
 
 
 def get_harbor_user() -> Any:
@@ -105,7 +122,27 @@ def get_orcid_id() -> Optional[str]:
     """
     update_request_environ()
 
-    return flask.request.environ.get("OIDC_CLAIM_orcid")
+    sub = flask.request.environ.get("OIDC_CLAIM_sub")
+
+    if sub:
+        ldap_url = flask.current_app.config.get("LDAP_URL")
+        ldap_username = flask.current_app.config.get("LDAP_USERNAME")
+        ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
+
+        server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
+
+        with  ldap3.Connection(server, ldap_username, ldap_password) as conn:
+
+            conn.search("o=OSG,o=CO,dc=cilogon,dc=org", f'(uid={sub})', attributes=["eduPersonOrcid"])
+
+            flask.current_app.logger.debug(sub)
+
+            if len(conn.entries) > 1:
+                flask.current_app.logger.error("???")
+
+            return conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+
+    return None
 
 
 def get_subiss() -> Optional[str]:
