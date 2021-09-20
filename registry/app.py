@@ -90,7 +90,9 @@ def define_assets(app: flask.Flask) -> None:
 
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
-        js = flask_assets.Bundle("main.js", "bootstrap.js", output="gen/packed.js")
+        js = flask_assets.Bundle(
+            "main.js", "bootstrap.js", output="gen/packed.js"
+        )
     else:
         ## Assume that a production webserver cannot write these files.
 
@@ -103,24 +105,33 @@ def define_assets(app: flask.Flask) -> None:
             "main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js"
         )
 
-    scss = flask_assets.Bundle("style.scss", filters="libsass", output="gen/style.css")
+    scss = flask_assets.Bundle(
+        "style.scss", filters="libsass", output="gen/style.css"
+    )
 
     assets.register("js_all", js)
     assets.register("scss_all", scss)
 
 
-def add_context(app: flask.Flask) -> None:
+def add_context_processors(app: flask.Flask) -> None:
     @app.context_processor
     def populate_context() -> Dict[str, Any]:
-        flask.g.has_oidc_sub = flask.request.environ.get("OIDC_CLAIM_sub")
-        flask.g.logout_url = f"{flask.request.root_url}callback?logout={flask.request.root_url}"
+        root_url = flask.request.root_url
+
+        cookie_name = app.config.get("MOD_AUTH_OPENIDC_SESSION_COOKIE_NAME")
+        cookie = flask.request.cookies.get(cookie_name)
+
+        flask.g.has_session_cookie = bool(cookie)
+        flask.g.logout_url = f"{root_url}callback?logout={root_url}"
 
         def get_idp_name() -> Optional[str]:
             return flask.request.environ.get("OIDC_CLAIM_idp_name")
 
         def get_soteria_enrollment_url() -> Optional[str]:
             if registry.util.has_organizational_identity():
-                return app.config.get("SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL")
+                return app.config.get(
+                    "SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL"
+                )
             return app.config.get("SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL")
 
         return {
@@ -145,7 +156,7 @@ def create_app() -> flask.Flask:
     load_config(app)
     register_blueprints(app)
     define_assets(app)
-    add_context(app)
+    add_context_processors(app)
 
     app.logger.debug("Created app!")
 

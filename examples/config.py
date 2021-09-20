@@ -37,6 +37,10 @@ HARBOR_API_URL = "https://harbor.example.com/api/v2.0"
 HARBOR_ROBOT_USERNAME = "robot"
 HARBOR_ROBOT_PASSWORD = "keep this a secret!"
 
+## The name of the session cookie used by mod_auth_openidc.
+
+MOD_AUTH_OPENIDC_SESSION_COOKIE_NAME = "mod_auth_openidc_session"
+
 
 # Optional Configuration
 # ======================
