@@ -7,12 +7,12 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.black]
-line-length = 88
+line-length = 79
 target-version = ["py36"]
 
 
 [tool.isort]
-line_length = 88
+line_length = 79
 profile = "black"
 
 
@@ -48,6 +48,7 @@ python = ">=3.6.8,<3.7"
 dataclasses = "^0.8"
 Flask = "^2.0.1"
 Flask-Assets = "^2.0"
+ldap3 = "^2.9.1"
 libsass = "^0.21.0"
 requests = "^2.26.0"
 typing-extensions = "^3.10.0"
@@ -69,5 +70,5 @@ types-requests = "^2.25.6"
 
 
 [tool.pylint.messages-control]
-max-line-length = 88
+max-line-length = 79
 disable = "invalid-name,missing-class-docstring,missing-function-docstring"
