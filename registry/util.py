@@ -93,7 +93,7 @@ def get_comanage_groups() -> List[str]:
 
             return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
 
-    return None
+    return []
 
 
 def get_harbor_user() -> Any:
