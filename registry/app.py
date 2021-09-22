@@ -39,6 +39,10 @@ def load_config(app: flask.Flask) -> None:
         "HARBOR_ADMIN_PASSWORD",
         "HARBOR_ROBOT_USERNAME",
         "HARBOR_ROBOT_PASSWORD",
+        "LDAP_URL",
+        "LDAP_USERNAME",
+        "LDAP_PASSWORD",
+        "LDAP_BASE_DN",
     ]:
         val = os.environ.get(key)
 
