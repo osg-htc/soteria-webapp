@@ -64,9 +64,7 @@ def update_request_environ() -> None:
     Add mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
-        flask.request.environ.update(
-            flask.current_app.config.get("FAKE_USER", {})
-        )
+        flask.request.environ.update(flask.current_app.config.get("FAKE_USER", {}))
 
 
 def get_comanage_groups() -> List[str]:
@@ -78,12 +76,17 @@ def get_comanage_groups() -> List[str]:
         ldap_url = flask.current_app.config.get("LDAP_URL")
         ldap_username = flask.current_app.config.get("LDAP_USERNAME")
         ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
+        ldap_base_dn = flask.current_app.config.get("LDAP_BASE_DN")
 
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
-        with  ldap3.Connection(server, ldap_username, ldap_password) as conn:
+        with ldap3.Connection(server, ldap_username, ldap_password) as conn:
 
-            conn.search("o=OSG,o=CO,dc=cilogon,dc=org", f'(uid={sub})', attributes=["isMemberOf"])
+            conn.search(
+                ldap_base_dn,
+                f"(&(objectClass=inetOrgPerson)(uid={sub}))",
+                attributes=["isMemberOf"],
+            )
 
             if len(conn.entries) > 1:
                 flask.current_app.logger.error("???")
@@ -128,12 +131,17 @@ def get_orcid_id() -> Optional[str]:
         ldap_url = flask.current_app.config.get("LDAP_URL")
         ldap_username = flask.current_app.config.get("LDAP_USERNAME")
         ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
+        ldap_base_dn = flask.current_app.config.get("LDAP_BASE_DN")
 
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
-        with  ldap3.Connection(server, ldap_username, ldap_password) as conn:
+        with ldap3.Connection(server, ldap_username, ldap_password) as conn:
 
-            conn.search("o=OSG,o=CO,dc=cilogon,dc=org", f'(uid={sub})', attributes=["eduPersonOrcid"])
+            conn.search(
+                ldap_base_dn,
+                f"(&(objectClass=inetOrgPerson)(uid={sub}))",
+                attributes=["eduPersonOrcid"],
+            )
 
             flask.current_app.logger.debug(sub)
 
