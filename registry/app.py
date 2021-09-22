@@ -14,8 +14,6 @@ import registry.api.v1
 import registry.util
 import registry.website
 from registry.api.test import api_bp_test
-from registry.repositories import repositories_bp
-from registry.repository import repository_bp
 
 __all__ = ["create_app"]
 
@@ -55,8 +53,6 @@ def register_blueprints(app: flask.Flask) -> None:
     Registers the application's blueprints.
     """
 
-    app.register_blueprint(repositories_bp, url_prefix="/repositories")
-    app.register_blueprint(repository_bp, url_prefix="/repository")
     app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
