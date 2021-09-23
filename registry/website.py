@@ -14,7 +14,7 @@ import jinja2
 
 __all__ = ["bp"]
 
-bp = flask.Blueprint("website", __name__, template_folder="templates")
+bp = flask.Blueprint("website", __name__)
 
 
 @bp.route("/account")
