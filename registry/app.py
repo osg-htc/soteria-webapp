@@ -95,23 +95,25 @@ def define_assets(app: flask.Flask) -> None:
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
         js = flask_assets.Bundle(
-            "main.js", "bootstrap.js", output="gen/packed.js"
+            "bootstrap.js",
+            "registration.js",
+            output="assets/soteria.js",
         )
     else:
         ## Assume that a production webserver cannot write these files.
-
         assets.auto_build = False
         assets.cache = False
         assets.manifest = False
 
         assets.config["LIBSASS_STYLE"] = "compressed"
         js = flask_assets.Bundle(
-            "main.js", "bootstrap.js", filters="rjsmin", output="gen/packed.js"
+            "bootstrap.js",
+            "registration.js",
+            filters="rjsmin",
+            output="assets/soteria.min.js",
         )
 
-    scss = flask_assets.Bundle(
-        "style.scss", filters="libsass", output="gen/style.css"
-    )
+    scss = flask_assets.Bundle("style.scss", filters="libsass", output="assets/style.css")
 
     assets.register("js_all", js)
     assets.register("scss_all", scss)

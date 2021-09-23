@@ -4,4 +4,4 @@
 ## Flask's configuration and run-time artifacts, which might contain passwords.
 /instance/
 /registry/static/.webassets-cache/
-/registry/static/gen/
+/registry/static/assets/

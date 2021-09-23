@@ -1,14 +1,14 @@
-/**
+/*
  * Set up event listeners and check verifications
  */
-function onReady(){
+function onReady() {
     $("#hub-verification a.check").click(checkHubVerification);
     $("#orc-id-verification a.check").click(checkORCIDLink);
 
     checkAll()
 }
 
-/**
+/*
  * Check if user has completed any previous verifications
  */
 function checkAll(){
@@ -185,7 +185,6 @@ function showMessage( element_id, message ){
 }
 
 function showSubMessage( element_id, message, error=false ){
-
     // Adjust the color
     if( error ){
         $("#" + element_id + " .sub-message").addClass("error");
@@ -194,5 +193,4 @@ function showSubMessage( element_id, message, error=false ){
     // Add the message
     message = message === undefined ? "" : message;
     $("#" + element_id + " .sub-message").html(message);
-
 }
