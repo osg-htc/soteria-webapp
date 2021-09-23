@@ -49,6 +49,12 @@ MOD_AUTH_OPENIDC_SESSION_COOKIE_NAME = "mod_auth_openidc_session"
 ORCID_ID_ENROLLMENT_URL = "https://registry.example.com/enroll/orcid"
 
 #
+# The COmanage registry's name and homepage URL.
+#
+REGISTRY_NAME = "Example COmanage Registry"
+REGISTRY_HOMEPAGE_URL = "https://registry.example.com"
+
+#
 # Where a user should go to enroll in SOTERIA.
 #
 SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
