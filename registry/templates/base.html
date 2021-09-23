@@ -1,33 +1,33 @@
-{% from "macros/layout/navbar.html" import navbar with context %}
-{% from "macros/layout/footer.html" import footer with context %}
+{% from "macros/layout/navbar.html" import navbar %}
+{% from "macros/layout/footer.html" import footer %}
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>{% block title %}{% endblock %}</title>
-
-    {% block head %}{% endblock %}
+    {% block head %}
+    {% endblock %}
     {% block script %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script crossorigin="anonymous"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+            src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% endblock %}
     {% assets "scss_all" %}
-        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
     {% endassets %}
     {% assets "js_all" %}
-        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
     {% block style %}
     {% endblock %}
 </head>
-
 <body class="d-flex flex-column {% block page_class %}{% endblock %}">
-    {{ navbar() }}
-    <div class="{% block body_container %}container mb-auto{% endblock %}">
-       {% block body %}{% endblock %}
-    </div>
-    {{ footer() }}
+{{ navbar() }}
+<div class="{% block body_container %}container mb-auto{% endblock %}">
+    {% block body %}
+    {% endblock %}
+</div>
+{{ footer() }}
 </body>
-{%  block scripts %}
-
-{%  endblock %}
-</html>
+{% block scripts %}
+{% endblock %}
