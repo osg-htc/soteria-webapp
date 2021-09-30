@@ -35,7 +35,7 @@ warn_unused_ignores = true
 
 
 [tool.poetry]
-name = "soteria_registry"
+name = "soteria_webapp"
 version = "0.1.0"
 description = "SOTERIA web application"
 license = "Apache-2.0"
@@ -51,22 +51,22 @@ Flask-Assets = "^2.0"
 ldap3 = "^2.9.1"
 libsass = "^0.21.0"
 requests = "^2.26.0"
-typing-extensions = "^3.10.0"
+typing-extensions = "^3.10.0.2"
 
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
-black = "^21.8b0"
+black = "^21.9b0"
 docutils = "^0.17.1"
 isort = "^5.9.3"
 mypy = "^0.910"
 pre-commit = "^2.15.0"
-pylint = "^2.10.2"
-pytype = "^2021.9.9"
+pylint = "^2.11.1"
+pytype = "^2021.9.27"
 "ruamel.yaml.cmd" = "^0.5.7"
 safety = "^1.10.3"
 types-dataclasses = "^0.1.7"
-types-requests = "^2.25.6"
+types-requests = "^2.25.9"
 
 
 [tool.pylint.messages-control]
