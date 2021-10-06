@@ -5,14 +5,16 @@
 {% block page_class %}subpage{% endblock %}
 {% block body %}
 {{ page_title("Account") }}
-<nav id="navigation" class="card mb-4">
+<nav class="card mb-4" id="navigation">
     <ul class="nav flex-row">
-      <li class="nav-item">
-        <a class="nav-link" href="#details">Details</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#actions">Actions</a>
-      </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#details">Details</a>
+        </li>
+        <!--
+        <li class="nav-item">
+            <a class="nav-link" href="#actions">Actions</a>
+        </li>
+        -->
     </ul>
 </nav>
 <div class="row mb-3">
@@ -31,6 +33,7 @@
                         <h5>ORCID I.D.</h5>
                         {{ user.orcid_id }}
                     </div>
+                    <!--
                     <div class="col-12 col-sm-6">
                         <h5>Status</h5>
                         {{ user.status }}
@@ -43,16 +46,18 @@
                         <h5>Days Remaining</h5>
                         {{ user.days_remaining }}
                     </div>
+                    -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div id="actions" class="row">
+<!--
+<div class="row" id="actions">
     <div class="col-12">
         <h2 id="actions">Actions</h2>
     </div>
-    <div id="researcher-registration" class="affiliate-member-action col-12 col-md-6 mb-4">
+    <div class="affiliate-member-action col-12 col-md-6 mb-4" id="researcher-registration">
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
@@ -68,18 +73,20 @@
                     The button below will take you to the Registration guide on our documentation page.
                 </p>
                 <p>
-                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#registration">Docs - Researcher Registration</a>
+                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#registration">Docs -
+                        Researcher Registration</a>
                 </p>
                 <p>
                     If you are familiar with the process you can follow the button below to be taken to the form.
                 </p>
                 <p>
-                <a class="btn btn-primary" href="{{ config.SOTERIA_RESEARCHER_ENROLLMENT_URL }}">COmanage - Researcher Registration</a>
+                    <a class="btn btn-primary" href="{{ config.SOTERIA_RESEARCHER_ENROLLMENT_URL }}">COmanage -
+                        Researcher Registration</a>
                 </p>
             </div>
         </div>
     </div>
-    <div id="sponsor-affiliate" class="researcher-action col-12 col-md-6 mb-4">
+    <div class="researcher-action col-12 col-md-6 mb-4" id="sponsor-affiliate">
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
@@ -93,7 +100,8 @@
                     to the Sponsorship Guide.
                 </p>
                 <p>
-                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#sponsor-a-soteria-member">Docs - Affiliate Sponsorship</a>
+                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#sponsor-a-soteria-member">Docs
+                        - Affiliate Sponsorship</a>
                 </p>
                 <p>
                     If you have <b>done this before</b>, you can find the COmanage form here.
@@ -102,7 +110,7 @@
             </div>
         </div>
     </div>
-    <div id="request-additional-project" class="researcher-action col-12 col-md-6 mb-4">
+    <div class="researcher-action col-12 col-md-6 mb-4" id="request-additional-project">
         <div class="card">
             <div class="card-body">
                 <div class="card-title">
@@ -114,7 +122,8 @@
                 </p>
                 <p>
                     The details of this action can be found in the
-                    <a href="{{ config.DOCS_URL }}users/researcher/#request-additional-project-allocation">Soteria Docs</a>
+                    <a href="{{ config.DOCS_URL }}users/researcher/#request-additional-project-allocation">Soteria
+                        Docs</a>
                 </p>
                 <p>
                     The COmanage form can be found here.
@@ -124,4 +133,5 @@
         </div>
     </div>
 </div>
+-->
 {% endblock %}
