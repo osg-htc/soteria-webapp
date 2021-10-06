@@ -158,7 +158,7 @@ function isVerified( status ){
 function startVerification( element_id ){
 
     // Start Loading Spinner
-    $("#" + element_id + " .status-icon>.failed").attr("hidden", true);
+    $("#" + element_id + " .status-icon>.failure").attr("hidden", true);
     $("#" + element_id + " .status-icon>.success").attr("hidden", true);
     $("#" + element_id + " .status-icon>.loading").attr("hidden", false);
 }
@@ -173,7 +173,7 @@ function endVerification( element_id, verified ){
         $("#" + element_id + " a.check").hide()
     } else {
         // Add X indicator
-        $("#" + element_id + " .status-icon>.failed").attr("hidden", false);
+        $("#" + element_id + " .status-icon>.failure").attr("hidden", false);
     }
 }
 

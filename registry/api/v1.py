@@ -159,7 +159,9 @@ def create_harbor_project():
     if not orcid_id:
         errors.append({"code": "PREREQUISITE", "message": "Missing ORCID iD"})
     if not harbor_user:
-        errors.append({"code": "PREREQUISITE", "message": "Missing Harbor user"})
+        errors.append(
+            {"code": "PREREQUISITE", "message": "Missing Harbor user"}
+        )
     if errors:
         return api_response(False, errors=errors)
 

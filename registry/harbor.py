@@ -75,7 +75,9 @@ class HarborAPI:
         """
         self._renew_session()
 
-        return self._request("DELETE", f"{self._api_base_url}{route}", **kwargs)
+        return self._request(
+            "DELETE", f"{self._api_base_url}{route}", **kwargs
+        )
 
     def _get(self, route, **kwargs):
         """
@@ -131,7 +133,9 @@ class HarborAPI:
         """
         return self._get(f"/projects/{project_name_or_id}").json()
 
-    def add_project_member(self, project_id: int, username: str, role_id: int = 2):
+    def add_project_member(
+        self, project_id: int, username: str, role_id: int = 2
+    ):
         payload = {
             "role_id": role_id,
             "member_user": {"username": username},

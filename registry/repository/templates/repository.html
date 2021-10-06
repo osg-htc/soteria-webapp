@@ -1,4 +1,4 @@
-{% from "macros/page-header.html" import page_header with context %}
+{% from "macros/layout/title.html" import page_title with context %}
 {% from "macros/project-card.html" import project_card with context %}
 {% from "macros/repo-desc-card.html" import repo_desc_card with context %}
 {% from "macros/tag-card-basic.html" import tag_card_basic with context %}
@@ -12,7 +12,7 @@
 {% block body %}
     {{ subnavigation() }}
     <div class="container">
-        {{ page_header(project['name']) }}
+        {{ page_title(project['name']) }}
         <div class="row">
             <div class="col-12">
                 {{ repo_desc_card(project) }}

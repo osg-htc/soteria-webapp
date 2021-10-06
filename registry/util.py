@@ -8,7 +8,7 @@ import pathlib
 from typing import Any, List, Optional
 
 import flask
-import ldap3
+import ldap3  # type: ignore[import]
 
 import registry.harbor
 
@@ -64,7 +64,9 @@ def update_request_environ() -> None:
     Add mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
-        flask.request.environ.update(flask.current_app.config.get("FAKE_USER", {}))
+        flask.request.environ.update(
+            flask.current_app.config.get("FAKE_USER", {})
+        )
 
 
 def get_comanage_groups() -> List[str]:

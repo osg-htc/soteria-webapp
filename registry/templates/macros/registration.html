@@ -1,22 +1,26 @@
-{% macro card_header_check( title ) %}
+{% macro registration_card_header(title) %}
 <div class="card-header">
-    <div class="row justify-content-between w-100">
-        <div class="col-6"><h4>{{ title }}</h4></div>
-        <div class="col-6 align-self-center">
+    <div class="row">
+        <div class="col align-self-center">
+            <h4 class="mt-1 mb-1">{{ title }}</h4>
+        </div>
+        <div class="col-2 align-self-center">
             <div class="row justify-content-end">
                 <div class="col-auto status-icon">
-                    <div class="loading" hidden >
+                    <div class="loading" hidden>
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <div class="failed" >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                    <div class="failure">
+                        <svg class="bi bi-x-lg" fill="currentColor" height="16" viewBox="0 0 16 16"
+                             width="16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/>
                         </svg>
                     </div>
                     <div class="success" hidden>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                        <svg class="bi bi-check-lg" fill="currentColor" height="16" viewBox="0 0 16 16"
+                             width="16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
                         </svg>
                     </div>
@@ -27,8 +31,29 @@
 </div>
 {% endmacro %}
 
-{% macro card_header(title) %}
-<div class="card-header">
-   <h4>{{ title }}</h4>
+{% macro registration_card_body(message, action) %}
+<div class="card-body">
+    <div class="row">
+        <div class="col mb-2">
+            <div class="main-message">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-between">
+        <div class="col">
+            <p class="sub-message"></p>
+        </div>
+        <div class="col-auto">
+            <a class="btn btn-secondary mr-2 check">{{ action }}</a>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro registration_card(id, title, message, action) %}
+<div class="card" id="{{ id }}">
+    {{ registration_card_header(title) }}
+    {{ registration_card_body(message, action) }}
 </div>
 {% endmacro %}

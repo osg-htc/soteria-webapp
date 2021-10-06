@@ -1,21 +1,21 @@
-{%  macro navbar() %}
+{% macro navbar() %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
         <a class="navbar-brand d-flex ms-3" href="/">
-            <img alt="Wreath" height="50" src="/static/images/wreath.svg">
+            <img alt="SOTERIA logo (wreath)" height="50" src="/static/images/wreath.svg">
             <h1 class="ms-2 mt-auto mb-auto">SOTERIA</h1>
         </a>
-        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+        <button aria-controls="navbarItems" aria-expanded="false" aria-label="Toggle navigation"
                 class="navbar-toggler"
-                data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+                data-bs-target="#navbarItems" data-bs-toggle="collapse" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse" id="navbarItems">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item" id="about">
+                <li class="nav-item">
                     <a class="nav-link" href="/about">About</a>
                 </li>
-                <li class="nav-item" id="documentation">
+                <li class="nav-item">
                     <a class="nav-link" href="{{ config.DOCS_URL }}">Documentation</a>
                 </li>
             </ul>
@@ -23,28 +23,28 @@
                 {% if g.has_session_cookie %}
                 <li class="nav-item dropdown">
                     <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
-                       id="navbarDropdownMenuLink" role="button">
+                       id="accountDetailsDropdown" role="button">
                         Account Details
                     </a>
-                    <ul aria-labelledby="navbarDropdownMenuLink" class="dropdown-menu">
+                    <ul aria-labelledby="accountDetailsDropdown" class="dropdown-menu">
                         <li><a class="dropdown-item" href="/account">Account</a></li>
                         <li><a class="dropdown-item" href="/repositories">Repositories</a></li>
                     </ul>
                 </li>
-                <li class="nav-item d-flex ms-2" id="logout">
+                <li class="nav-item d-flex ms-2">
                     <a aria-expanded="false" class="nav-link btn btn-secondary text-dark pt-2 pb-2 mt-auto mb-auto"
                        href="{{ g.logout_url }}">
                         <span class="ms-3 me-3">Log out</span>
                     </a>
                 </li>
                 {% else %}
-                <li class="nav-item d-flex ms-2" id="login">
+                <li class="nav-item d-flex ms-2">
                     <a aria-expanded="false" class="nav-link btn btn-secondary text-dark pt-2 pb-2 mt-auto mb-auto"
                        href="/account">
                         <span class="ms-3 me-3">Log in</span>
                     </a>
                 </li>
-                <li class="nav-item d-flex ms-2" id="registration">
+                <li class="nav-item d-flex ms-2">
                     <a aria-expanded="false" class="nav-link btn btn-secondary text-dark pt-2 pb-2 mt-auto mb-auto"
                        href="/registration">
                         <span class="ms-3 me-3">Register</span>

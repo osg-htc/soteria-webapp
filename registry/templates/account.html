@@ -1,13 +1,10 @@
 {% extends "layout/base.html" %}
-{% from "macros/page-header.html" import page_header with context %}
-{% from "macros/card.html" import card with context %}
-
-{% block title %}Account Page{% endblock %}
+{% from "macros/layout/title.html" import page_title %}
+{% from "macros/card.html" import card %}
+{% block title %}SOTERIA: Account{% endblock %}
 {% block page_class %}subpage{% endblock %}
-
 {% block body %}
-{{ page_header("Account") }}
-
+{{ page_title("Account") }}
 <nav id="navigation" class="card mb-4">
     <ul class="nav flex-row">
       <li class="nav-item">
@@ -18,8 +15,6 @@
       </li>
     </ul>
 </nav>
-
-
 <div class="row mb-3">
     <div class="col-12">
         <h2 id="details">Details</h2>

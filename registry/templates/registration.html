@@ -1,165 +1,95 @@
 {% extends "layout/base.html" %}
-{% from "macros/page-header.html" import page_header %}
-{% from "macros/registration.html" import card_header, card_header_with_check %}
+{% from "macros/layout/title.html" import page_title %}
+{% from "macros/registration.html" import registration_card %}
 {% block title %}SOTERIA: Registration{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body %}
-{{ page_header("Registration") }}
+{{ page_title("Registration") }}
 <div class="row">
     <div class="col-12 col-lg-10 col-xl-8">
         <div class="row mb-2">
             <div class="col">
                 <p>
-                    Follow the steps below to register for <a href="/about#status-privileges">Affiliate status</a> in
-                    SOTERIA. This grants you access to a private project on <a href="{{ config.HARBOR_HOMEPAGE_URL
-                    }}">{{ config.HARBOR_NAME }}</a> that can be used to publish container images (limited to a total of
-                    5GiB).
+                    Follow the steps below to register for <a href="{{ config.DOCS_URL }}/users/affiliate">Affiliate
+                    status</a> in SOTERIA. This grants you access to a private project on <a href="{{
+                    config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> with a 5 GiB quota.
                 </p>
             </div>
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="card" id="soteria-enrollment-verification">
-                    {{ card_header_with_check("1. Join the SOTERIA Group") }}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mb-2">
-                                <div class="main-message">
-                                    <p>
-                                        SOTERIA uses a <a href="https://incommon.org/software/comanage/">COmanage</a>
-                                        instance managed by <a href="https://www.cilogon.org/comanage">CILogon</a> to
-                                        enable and manage collaboration between its users.
-                                    </p>
-                                    <p>
-                                        {% if g.has_registry_org_id %}
-                                        <a href="{{ config.SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL }}">Fill out this
-                                            form</a> to join the group of all SOTERIA users. Note that you must be log
-                                        into <a href="{{ config.REGISTRY_HOMEPAGE_URL }}">{{ config.REGISTRY_NAME }}</a>
-                                        with the same identity provider that you initially used to log into SOTERIA.
-                                        {% else %}
-                                        <a href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">Fill out this
-                                            form</a> to join the group of all SOTERIA users. When prompted by CILogon,
-                                        select the same identity provider that you initially used to log into SOTERIA.
-                                        {% endif %}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row card-text justify-content-between">
-                            <div class="col-6">
-                                <p class="sub-message"></p>
-                            </div>
-                            <div class="col-auto">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <a class="btn btn-secondary mr-2 check">Check for Group Membership</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% set id = "soteria-enrollment-verification" %}
+                {% set title = "1. Join the SOTERIA Group" %}
+                {% set action = "Check for Group Membership" %}
+                {% set message %}
+                <p>
+                    SOTERIA uses a <a href="https://incommon.org/software/comanage/">COmanage</a> instance managed by <a
+                        href="https://www.cilogon.org/comanage">CILogon</a> to enable and manage collaboration between
+                    its users.
+                </p>
+                {% if g.has_registry_org_id %}
+                <p>
+                    <a href="{{ config.SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL }}">Fill out this form</a> to join the
+                    group of all SOTERIA users. Note that you must be log into <a href="{{ config.REGISTRY_HOMEPAGE_URL
+                    }}">{{ config.REGISTRY_NAME }}</a> with the same identity provider that you used initially to log
+                    into SOTERIA.
+                </p>
+                {% else %}
+                <p>
+                    <a href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">Fill out this form</a> to join the
+                    group of all SOTERIA users. When prompted by CILogon, select the same identity provider that you
+                    used initially to log into SOTERIA.
+                </p>
+                {% endif %}
+                {% endset %}
+                {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                <div class="card" id="hub-verification">
-                    {{ card_header_with_check("2. Create a " + config.HARBOR_NAME + " Account") }}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mb-2">
-                                <div class="main-message">
-                                    <p>
-                                        SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME
-                                        }}</a> for its container registry.
-                                    </p>
-                                    <p>
-                                        <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Create an account
-                                            there</a> by logging in via OIDC and, when prompted by CILogon, selecting
-                                        the same identity provider that you chose when logging into SOTERIA. Then come
-                                        back to this page and click the button below to confirm that SOTERIA can find
-                                        your {{ config.HARBOR_NAME }} account.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row card-text justify-content-between">
-                            <div class="col-6">
-                                <p class="sub-message"></p>
-                            </div>
-                            <div class="col-auto">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <a class="btn btn-secondary mr-2 check">Check for {{ config.HARBOR_NAME }}
-                                            Account</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% set id = "hub-verification" %}
+                {% set title = "2. Create a " ~ config.HARBOR_NAME ~ " Account" %}
+                {% set action = "Check for " ~ config.HARBOR_NAME ~ " Account" %}
+                {% set message %}
+                <p>
+                    SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> for its
+                    container registry.
+                </p>
+                <p>
+                    <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Create an account there</a> by logging in
+                    via OIDC and, when prompted by CILogon, selecting the same identity provider that you chose when
+                    logging into SOTERIA. Then come back to this page and click the button below to confirm that SOTERIA
+                    can find your {{ config.HARBOR_NAME }} account.
+                </p>
+                {% endset %}
+                {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                <div class="card" id="orc-id-verification">
-                    {{ card_header_with_check("3. Link Your ORCID iD") }}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12 mb-2">
-                                <div class="main-message">
-                                    <p>
-                                        <a href="https://info.orcid.org/what-is-orcid/">ORCID iDs</a> help uniquely
-                                        identify you amongst SOTERIA's community of researchers.
-                                    </p>
-                                    <p>
-                                        If you do not have a ORCID iD, <a href='https://orcid.org/register'
-                                                                          target='_blank'>register for one</a>.
-                                    </p>
-                                    <p>
-                                        Once you have an ORCID iD, <a
-                                            href="{{ config.ORCID_ID_ENROLLMENT_URL }}">link it with SOTERIA</a>.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row card-text justify-content-between">
-                            <div class="col-6">
-                                <p class="sub-message"></p>
-                            </div>
-                            <div class="col-auto">
-                                <div class="row">
-                                    <div class="col-auto">
-                                        <a class="btn btn-secondary mr-2 check">Check for ORCID iD</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% set id = "ord-id-verification" %}
+                {% set title = "3. Link Your ORCID iD" %}
+                {% set action = "Check for ORCID iD" %}
+                {% set message %}
+                <p>
+                    <a href="https://info.orcid.org/what-is-orcid/">ORCID iDs</a> help uniquely
+                    identify you amongst SOTERIA's community of researchers.
+                </p>
+                <p>
+                    First, <a href="https://orcid.org/register">register for an ORCID iD</a> if you do not already have
+                    one.
+                    Then, <a
+                        href="{{ config.ORCID_ID_ENROLLMENT_URL }}">link it to SOTERIA</a>.
+                </p>
+                {% endset %}
+                {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                <div class="card" id="provision-verification">
-                    {{ card_header("4. Explore Your Project and Soteria!") }}
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="main-message">
-                                    <p>
-                                        If you have completed the previous two steps you are now a registered
-                                        <a href="{{ config.DOCS_URL }}/users/affiliate">Affiliate</a>!
-                                        Affiliate status comes with a temporary project which you can view on
-                                        <a hrefHarbor
-
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row card-text justify-content-between">
-                            <div class="col-6">
-                                <p class="sub-message"></p>
-                            </div>
-                            <div class="col-auto">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% set id = "project-verification" %}
+                {% set title = "4. Create Your Project" %}
+                {% set action = "Create Project" %}
+                {% set message %}
+                <p>
+                    If you have completed the previous steps, you may click the button below to create your project.
+                </p>
+                {% endset %}
+                {{ registration_card(id, title, message, action) }}
             </div>
         </div>
     </div>

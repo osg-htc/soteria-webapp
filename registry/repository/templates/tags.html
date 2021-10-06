@@ -1,4 +1,4 @@
-{% from "macros/page-header.html" import page_header with context %}
+{% from "macros/layout/title.html" import page_title with context %}
 {% from "macros/project-card.html" import project_card with context %}
 {% from "macros/subnavigation.html" import subnavigation %}
 {% from "macros/tag-card-advanced.html" import tag_card_advanced with context %}
@@ -11,7 +11,7 @@
 {% block body %}
     {{ subnavigation() }}
     <div class="container-lg">
-        {{ page_header("Tags") }}
+        {{ page_title("Tags") }}
         <div class="row">
             <div class="col-12">
                 <div class="card">

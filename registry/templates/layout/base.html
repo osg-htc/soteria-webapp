@@ -6,21 +6,15 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>{% block title %}{% endblock %}</title>
-    {% block head %}
-    {% endblock %}
-    {% block script %}
     <script crossorigin="anonymous"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% endblock %}
-    {% assets "scss_all" %}
-    <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
-    {% endassets %}
-    {% assets "js_all" %}
+    {% assets "soteria_js" %}
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    {% block style %}
-    {% endblock %}
+    {% assets "soteria_css" %}
+    <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
+    {% endassets %}
 </head>
 <body class="d-flex flex-column {% block page_class %}{% endblock %}">
 {{ navbar() }}

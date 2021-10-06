@@ -55,11 +55,12 @@ def register_blueprints(app: flask.Flask) -> None:
     Registers the application's blueprints.
     """
 
-    app.register_blueprint(repositories_bp, url_prefix="/repositories")
-    app.register_blueprint(repository_bp, url_prefix="/repository")
-    app.register_blueprint(api_bp_test, url_prefix="/api/test")
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
+
+    # app.register_blueprint(repositories_bp, url_prefix="/repositories")
+    # app.register_blueprint(repository_bp, url_prefix="/repository")
+    # app.register_blueprint(api_bp_test, url_prefix="/api/test")
 
     if app.config.get("SOTERIA_DEBUG"):
         app.register_blueprint(registry.api.debug.bp, url_prefix="/debug")
@@ -97,7 +98,7 @@ def define_assets(app: flask.Flask) -> None:
         js = flask_assets.Bundle(
             "bootstrap.js",
             "registration.js",
-            output="assets/soteria.js",
+            output="assets/app.js",
         )
     else:
         ## Assume that a production webserver cannot write these files.
@@ -110,13 +111,15 @@ def define_assets(app: flask.Flask) -> None:
             "bootstrap.js",
             "registration.js",
             filters="rjsmin",
-            output="assets/soteria.min.js",
+            output="assets/app.min.js",
         )
 
-    scss = flask_assets.Bundle("style.scss", filters="libsass", output="assets/style.css")
+    css = flask_assets.Bundle(
+        "style.scss", filters="libsass", output="assets/style.css"
+    )
 
-    assets.register("js_all", js)
-    assets.register("scss_all", scss)
+    assets.register("soteria_js", js)
+    assets.register("soteria_css", css)
 
 
 def add_context_processors(app: flask.Flask) -> None:
@@ -129,20 +132,15 @@ def add_context_processors(app: flask.Flask) -> None:
 
         flask.g.has_session_cookie = bool(cookie)
         flask.g.logout_url = f"{root_url}callback?logout={root_url}"
+        flask.g.has_registry_org_id = bool(
+            registry.util.has_organizational_identity()
+        )
 
         def get_idp_name() -> Optional[str]:
             return flask.request.environ.get("OIDC_CLAIM_idp_name")
 
-        def get_soteria_enrollment_url() -> Optional[str]:
-            if registry.util.has_organizational_identity():
-                return app.config.get(
-                    "SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL"
-                )
-            return app.config.get("SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL")
-
         return {
             "get_idp_name": get_idp_name,
-            "get_soteria_enrollment_url": get_soteria_enrollment_url,
         }
 
 

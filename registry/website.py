@@ -38,7 +38,8 @@ def index() -> flask.Response:
             "days_remaining": "Days Left (int)",
         }
 
-    return flask.make_response(flask.render_template("account.html", user=user))
+    html = flask.render_template("account.html", user=user)
+    return flask.make_response(html)
 
 
 @bp.route("/status")

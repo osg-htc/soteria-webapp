@@ -1,9 +1,10 @@
 {% extends "layout/base.html" %}
-{% from "macros/page-header.html" import page_header %}
+{% from "macros/layout/title.html" import page_title %}
+{% from "macros/card.html" import card_with_header %}
 {% block title %}SOTERIA{% endblock %}
 {% block page_class %}home{% endblock %}
 {% block body %}
-{{ page_header("Securing an Open and Trustworthy Ecosystem for Research Infrastructure and Applications") }}
+{{ page_title("Securing an Open and Trustworthy Ecosystem for Research Infrastructure and Applications") }}
 <div class="row">
     <div class="col-12 col-lg-10 col-xl-8">
         <div class="row mt-2">
@@ -11,42 +12,32 @@
                 Welcome to the SOTERIA container registry for open science!
             </p>
         </div>
-        <div class="row mt-2 justify-content-center">
+        <div class="row mt-2">
             <div class="col-12 col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Register</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <p>
-                                To register with SOTERIA, click the button below and, when prompted by <a
-                                    href="https://www.cilogon.org/home">CILogon</a>, select an identity provider to use.
-                            </p>
-                        </div>
-                        <div class="row justify-content-end">
-                            <div class="col-auto"><a class="btn btn-primary" href="/registration">Register</a></div>
-                        </div>
-                    </div>
+                {% call card_with_header("Register") %}
+                <div class="row">
+                    <p>
+                        To register for SOTERIA, click the button below and, when prompted by <a
+                            href="https://www.cilogon.org/home">CILogon</a>, select an identity provider to use.
+                    </p>
                 </div>
+                <div class="row justify-content-end">
+                    <div class="col-auto"><a class="btn btn-primary" href="/registration">Register</a></div>
+                </div>
+                {% endcall %}
             </div>
             <div class="col-12 col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Learn More</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <p>
-                                To learn more about SOTERIA, view our documentation.
-                            </p>
-                        </div>
-                        <div class="row justify-content-end">
-                            <div class="col-auto"><a class="btn btn-primary" href="{{ config.DOCS_URL }}">View
-                                Documentation</a></div>
-                        </div>
-                    </div>
+                {% call card_with_header("Learn More") %}
+                <div class="row">
+                    <p>
+                        To learn more about SOTERIA, view our documentation.
+                    </p>
                 </div>
+                <div class="row justify-content-end">
+                    <div class="col-auto"><a class="btn btn-primary" href="{{ config.DOCS_URL }}">View
+                        Documentation</a></div>
+                </div>
+                {% endcall %}
             </div>
         </div>
     </div>
