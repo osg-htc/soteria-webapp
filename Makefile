@@ -1,6 +1,6 @@
 .PHONY: all check format
 
-PY_FILES := wsgi.py registry/
+PY_FILES := set_version.py wsgi.py registry/
 
 all: format check
 

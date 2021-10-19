@@ -15,5 +15,5 @@
 /registry/static/assets/
 
 ## PyCharm's project files and default virtual environment.
-/.idea
-/venv
+/.idea/
+/venv/
