@@ -1,11 +1,14 @@
-name: Build and Push Image to Hub
+name: Build and Push Image to Container Registry
 
 on:
   push:
-    branches: [main]
+    branches:
+    - main
+    tags:
+    - v*
 
 jobs:
-  build-and-push:
+  build-and-push-image:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,6 +25,7 @@ jobs:
         tags: |
           type=ref,event=branch
           type=ref,event=pr
+          type=ref,event=tag
           type=semver,pattern={{version}}
           type=sha
 
