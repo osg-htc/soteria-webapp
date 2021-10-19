@@ -55,7 +55,7 @@ REGISTRY_NAME = "Example COmanage Registry"
 REGISTRY_HOMEPAGE_URL = "https://registry.example.com"
 
 #
-# Where a user should go to enroll in SOTERIA.
+# Where a user should go to enroll in the SOTERIA COU.
 #
 SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
 SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
@@ -74,6 +74,11 @@ SOTERIA_RESEARCHER_ENROLLMENT_URL = "https://registry.example.com/enroll/researc
 # Controls whether debugging functionality is enabled.
 #
 SOTERIA_DEBUG = False
+
+#
+# The version string to display to users.
+#
+SOTERIA_VERSION = "0.0.0+template"
 
 
 # ============================
