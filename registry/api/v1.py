@@ -72,6 +72,13 @@ def ping():
     return api_response(True, "pong!")
 
 
+@bp.route("/version")
+def version():
+    version = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")
+
+    return api_response(True, version)
+
+
 @bp.route("/users/<id>")
 def get_user(id: str) -> flask.Response:
     if id != "current":
