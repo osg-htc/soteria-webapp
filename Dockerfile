@@ -1,5 +1,19 @@
 FROM opensciencegrid/software-base:release
 
+
+## Build arguments for embedding a version string within the image.
+
+
+ARG GITHUB_REF
+ENV GITHUB_REF="${GITHUB_REF:-}"
+
+ARG GITHUB_SHA
+ENV GITHUB_SHA="${GITHUB_SHA:-}"
+
+
+## Locale and Python settings required by Flask.
+
+
 ENV LANG="en_US.utf8"
 ENV LC_ALL="en_US.utf8"
 ENV PYTHONUNBUFFERED=1
