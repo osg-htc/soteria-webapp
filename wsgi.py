@@ -3,6 +3,6 @@
 SOTERIA web application.
 """
 
-import registry
+import registry.app
 
-application = registry.create_app()
+application = registry.app.create_app()
