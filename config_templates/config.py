@@ -23,11 +23,11 @@ HARBOR_HOMEPAGE_URL = "https://harbor.example.com"
 HARBOR_API_URL = "https://harbor.example.com/api/v2.0"
 
 #
-# The username and password for the Harbor robot account to use.
+# The username and password for the Harbor instance's "admin" account.
 # Environment variables of the same name will override the values set here.
 #
-HARBOR_ROBOT_USERNAME = "robot"
-HARBOR_ROBOT_PASSWORD = "keep this a secret!"
+HARBOR_ADMIN_USERNAME = "admin"
+HARBOR_ADMIN_PASSWORD = "keep this a secret!"
 
 #
 # The LDAP instance to query for users' attributes.
@@ -60,11 +60,6 @@ REGISTRY_HOMEPAGE_URL = "https://registry.example.com"
 SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
 SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
 
-#
-# Where a user should go to enroll as a researcher.
-#
-SOTERIA_RESEARCHER_ENROLLMENT_URL = "https://registry.example.com/enroll/researcher"
-
 
 # ======================
 # Optional Configuration
@@ -79,15 +74,3 @@ SOTERIA_DEBUG = False
 # The version string to display to users.
 #
 SOTERIA_VERSION = "0.0.0+config_template"
-
-
-# ============================
-# Configuration of Last Resort
-# ============================
-
-#
-# The username and password for the Harbor instance's "admin" account.
-# Environment variables of the same name will override the values set here.
-#
-HARBOR_ADMIN_USERNAME = "admin"
-HARBOR_ADMIN_PASSWORD = "keep this a secret!"
