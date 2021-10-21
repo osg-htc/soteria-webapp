@@ -1,5 +1,7 @@
 """
-Web application for managing the users of a Harbor instance.
+SOTERIA web application.
 """
 
-from .app import create_app
+## Define the factory function for creating the Flask application.
+
+from registry.app import create_app
