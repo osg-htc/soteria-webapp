@@ -1,6 +1,12 @@
 {% extends "layout/base.html" %}
 {% from "macros/layout/title.html" import page_title %}
 {% from "macros/card.html" import card %}
+{% from "macros/researcher-application-form.html" import researcher_application_button, researcher_application_modal %}
+{% block js_extension %}
+    {% assets "soteria_js_account" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 {% block title %}SOTERIA: Account{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body %}
@@ -10,11 +16,9 @@
         <li class="nav-item">
             <a class="nav-link" href="#details">Details</a>
         </li>
-        <!--
         <li class="nav-item">
             <a class="nav-link" href="#actions">Actions</a>
         </li>
-        -->
     </ul>
 </nav>
 <div class="row mb-3">
@@ -52,7 +56,6 @@
         </div>
     </div>
 </div>
-<!--
 <div class="row" id="actions">
     <div class="col-12">
         <h2 id="actions">Actions</h2>
@@ -80,58 +83,14 @@
                     If you are familiar with the process you can follow the button below to be taken to the form.
                 </p>
                 <p>
-                    <a class="btn btn-primary" href="{{ config.SOTERIA_RESEARCHER_ENROLLMENT_URL }}">COmanage -
-                        Researcher Registration</a>
+                    <a type="button" class="btn btn-primary" href="/researcher-registration">
+                        Apply for Researcher Status
+                    </a>
                 </p>
-            </div>
-        </div>
-    </div>
-    <div class="researcher-action col-12 col-md-6 mb-4" id="sponsor-affiliate">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">
-                    <h4>Sponsor a Soteria User</h4>
-                </div>
-                <p>
-                    All Soteria Researchers can sponsor an Affiliate, giving them Member Status.
-                </p>
-                <p>
-                    If this is your <b>first time</b>, you can click the button below which will take to
-                    to the Sponsorship Guide.
-                </p>
-                <p>
-                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#sponsor-a-soteria-member">Docs
-                        - Affiliate Sponsorship</a>
-                </p>
-                <p>
-                    If you have <b>done this before</b>, you can find the COmanage form here.
-                </p>
-                <a class="btn btn-primary" href="TODO - Brian">COmanage - Sponsorship Form</a>
-            </div>
-        </div>
-    </div>
-    <div class="researcher-action col-12 col-md-6 mb-4" id="request-additional-project">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">
-                    <h4>Request Additional Project</h4>
-                </div>
-                <p>
-                    All Soteria Researchers can request additional projects, which will be granted on the
-                    discretion of the Soteria Staff.
-                </p>
-                <p>
-                    The details of this action can be found in the
-                    <a href="{{ config.DOCS_URL }}users/researcher/#request-additional-project-allocation">Soteria
-                        Docs</a>
-                </p>
-                <p>
-                    The COmanage form can be found here.
-                </p>
-                <a class="btn btn-primary" href="TODO - Brian">COmanage - Project Request</a>
             </div>
         </div>
     </div>
 </div>
--->
 {% endblock %}
+
+
