@@ -9,9 +9,10 @@
     <script crossorigin="anonymous"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% assets "soteria_js" %}
+    {% assets "soteria_js_main" %}
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    {% block js_extension %}{% endblock %}
     {% assets "soteria_css" %}
     <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
     {% endassets %}
