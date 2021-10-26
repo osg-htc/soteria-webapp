@@ -1,6 +1,11 @@
 {% extends "layout/base.html" %}
 {% from "macros/layout/title.html" import page_title %}
 {% from "macros/registration.html" import registration_card %}
+{% block js_extension %}
+    {% assets "soteria_js_registration" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 {% block title %}SOTERIA: Registration{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body %}
