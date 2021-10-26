@@ -11,6 +11,7 @@ import flask
 import ldap3  # type: ignore[import]
 
 import registry.harbor
+import registry.freshdesk
 
 __all__ = [
     "configure_logging",
@@ -217,4 +218,12 @@ def get_robot_harbor_api() -> registry.harbor.HarborAPI:
             flask.current_app.config["HARBOR_ROBOT_USERNAME"],
             flask.current_app.config["HARBOR_ROBOT_PASSWORD"],
         ),
+    )
+
+def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
+    """
+    Returns a Fresh Desk API instance
+    """
+    return registry.freshdesk.FreshDeskAPI(
+        flask.current_app.config["FRESH_DESK_API_KEY"]
     )

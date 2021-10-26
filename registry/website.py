@@ -8,17 +8,18 @@ SOTERIA website.
 
 import json
 import pathlib
-
+from .forms import ResearcherApprovalForm
 import flask
 import jinja2
+from registry.util import get_fresh_desk_api
 
 __all__ = ["bp"]
 
 bp = flask.Blueprint("website", __name__)
 
-
 @bp.route("/account")
 def index() -> flask.Response:
+
     try:
         sample_data_path = (
             pathlib.Path(flask.current_app.instance_path).resolve().parent
@@ -38,7 +39,18 @@ def index() -> flask.Response:
             "days_remaining": "Days Left (int)",
         }
 
+
     html = flask.render_template("account.html", user=user)
+    return flask.make_response(html)
+
+@bp.route("/researcher-registration", methods=["GET", "POST"])
+def researcher_registration() -> flask.Response:
+    researcher_form = ResearcherApprovalForm(flask.request.form)
+
+    if researcher_form.validate_on_submit():
+        researcher_form.submit_request()
+
+    html = flask.render_template("researcher-registration.html", form=researcher_form)
     return flask.make_response(html)
 
 
