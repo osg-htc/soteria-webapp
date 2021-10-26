@@ -95,10 +95,17 @@ def define_assets(app: flask.Flask) -> None:
 
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
-        js = flask_assets.Bundle(
-            "bootstrap.js",
-            "registration.js",
-            output="assets/app.js",
+        js_main = flask_assets.Bundle(
+            "js/bootstrap.js",
+            output="assets/main.js",
+        )
+        js_registration = flask_assets.Bundle(
+            "js/registration.js",
+            output="assets/registration.js",
+        )
+        js_account = flask_assets.Bundle(
+            "js/account.js",
+            output="assets/account.js",
         )
     else:
         ## Assume that a production webserver cannot write these files.
@@ -107,18 +114,29 @@ def define_assets(app: flask.Flask) -> None:
         assets.manifest = False
 
         assets.config["LIBSASS_STYLE"] = "compressed"
-        js = flask_assets.Bundle(
+        js_main = flask_assets.Bundle(
             "bootstrap.js",
+            filters="rjsmin",
+            output="assets/js/main.min.js",
+        )
+        js_registration = flask_assets.Bundle(
             "registration.js",
             filters="rjsmin",
-            output="assets/app.min.js",
+            output="assets/js/registration.min.js",
+        )
+        js_account = flask_assets.Bundle(
+            "account.js",
+            filters="rjsmin",
+            output="assets/js/account.min.js",
         )
 
     css = flask_assets.Bundle(
         "style.scss", filters="libsass", output="assets/style.css"
     )
 
-    assets.register("soteria_js", js)
+    assets.register("soteria_js_main", js_main)
+    assets.register("soteria_js_registration", js_registration)
+    assets.register("soteria_js_account", js_account)
     assets.register("soteria_css", css)
 
 
