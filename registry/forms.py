@@ -91,7 +91,7 @@ class ResearcherApprovalForm(FlaskForm):
             "email": self.email.data,
             "subject": "SOTERIA Researcher Application",
             "description": description,
-            "group_id": 12000006681,
+            "group_id": 12000006916,
             "priority": 2,
             "status": 2,
             "type": "SOTERIA Researcher Application"
