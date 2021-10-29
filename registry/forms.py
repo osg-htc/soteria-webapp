@@ -61,7 +61,7 @@ class ResearcherApprovalForm(FlaskForm):
         if self.criteria.data == "c-active-grant-on-ORCID":
             return self.c_fields
 
-        if self.criteria.data == "c-active-grant-on-ORCID":
+        if self.criteria.data == "d-institution-non-R1-HBCU-TCU":
             return self.d_fields
 
         return []
