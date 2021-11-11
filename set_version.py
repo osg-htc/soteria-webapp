@@ -19,7 +19,7 @@ def main() -> None:
     sha = None
     tag = None
 
-    ## FIXME (baydemir): Use Python 3.8's "walrus" operator
+    ## FIXME (baydemir): Python 3.8: Use assignment expressions
 
     ref = os.environ.get("GITHUB_REF")
 
