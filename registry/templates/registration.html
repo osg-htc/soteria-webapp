@@ -1,10 +1,10 @@
 {% extends "layout/base.html" %}
-{% from "macros/layout/title.html" import page_title %}
+{% from "macros/layout/title.html" import title %}
 {% from "macros/registration.html" import registration_card %}
 {% block title %}SOTERIA: Registration{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body %}
-{{ page_title("Registration") }}
+{{ title("Registration") }}
 <div class="row">
     <div class="col-12 col-lg-10 col-xl-8">
         <div class="row mb-2">
@@ -27,7 +27,7 @@
                         href="https://www.cilogon.org/comanage">CILogon</a> to enable and manage collaboration between
                     its users.
                 </p>
-                {% if g.has_registry_org_id %}
+                {% if g.has_organizational_identity %}
                 <p>
                     <a href="{{ config.SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL }}">Fill out this form</a> to join the
                     group of all SOTERIA users. Note that you must be log into <a href="{{ config.REGISTRY_HOMEPAGE_URL

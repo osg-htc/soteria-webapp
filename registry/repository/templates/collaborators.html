@@ -1,4 +1,4 @@
-{% from "macros/layout/title.html" import page_title with context %}
+{% from "macros/layout/title.html" import title with context %}
 {% from "macros/project-card.html" import project_card with context %}
 {% from "macros/subnavigation.html" import subnavigation %}
 {% from "macros/card.html" import card %}
@@ -13,7 +13,7 @@
 {% block body %}
     {{ subnavigation() }}
     <div class="container-lg">
-        {{ page_title("Collaborators") }}
+        {{ title("Collaborators") }}
         <div class="row">
             <div class="col-12">
                 {% call card("Admin") %}
