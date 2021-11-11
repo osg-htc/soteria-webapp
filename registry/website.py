@@ -12,6 +12,8 @@ import pathlib
 import flask
 import jinja2
 
+import registry.util
+
 __all__ = ["bp"]
 
 bp = flask.Blueprint("website", __name__)
@@ -19,24 +21,10 @@ bp = flask.Blueprint("website", __name__)
 
 @bp.route("/account")
 def index() -> flask.Response:
-    try:
-        sample_data_path = (
-            pathlib.Path(flask.current_app.instance_path).resolve().parent
-            / "data-templates/TEMPLATE-user.json"
-        )
-
-        flask.current_app.logger.debug(sample_data_path)
-
-        with open(sample_data_path) as fp:
-            user = json.load(fp)
-    except:
-        user = {
-            "name": "First Last",
-            "orcid_id": 11235813,
-            "status": "Affiliate/Member/Researcher",
-            "email": "hello@world.org",
-            "days_remaining": "Days Left (int)",
-        }
+    user = {
+        "name": registry.util.get_name() or "<not available>",
+        "orcid_id": registry.util.get_orcid_id() or "<not available>",
+    }
 
     html = flask.render_template("account.html", user=user)
     return flask.make_response(html)

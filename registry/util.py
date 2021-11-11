@@ -3,6 +3,7 @@ Assorted helper functions.
 """
 
 import logging
+import logging.config
 import logging.handlers
 import pathlib
 from typing import Any, List, Optional
@@ -28,35 +29,65 @@ __all__ = [
     "get_robot_harbor_api",
 ]
 
+LOG_FORMAT = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+LOG_MAX_BYTES = 10 * 1024 * 1024
+LOG_BACKUP_COUNT = 4  # plus the current log file -> 50 MiB total, by default
 
-def configure_logging(
-    filename: pathlib.Path,
-    *,
-    level: int = logging.DEBUG,
-    fmt: str = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s",
-    datefmt: str = "%Y-%m-%d %H:%M:%S",
-    maxBytes: int = 10 * 1024 * 1024,
-    backupCount: int = 4,  # plus the current log file -> 50 MiB total
-) -> None:
-    """
-    Adds a stream handler and a rotating file handler to the root logger.
-    """
 
+def configure_logging(filename: pathlib.Path) -> None:
     filename.parent.mkdir(parents=True, exist_ok=True)
 
-    logger = logging.getLogger()
-    formatter = logging.Formatter(fmt, datefmt=datefmt)
+    # We configure logging to the WSGI error stream to be more conservative
+    # than the rotating file because the error stream can end up in the web
+    # server's log files.
 
-    for handler in [
-        logging.StreamHandler(),
-        logging.handlers.RotatingFileHandler(
-            filename, maxBytes=maxBytes, backupCount=backupCount
-        ),
-    ]:
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "formatters": {
+                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
+            },
+            "handlers": {
+                "rotating_file": {
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "level": "DEBUG",
+                    "formatter": "default",
+                    "filename": filename,
+                    "maxBytes": LOG_MAX_BYTES,
+                    "backupCount": LOG_BACKUP_COUNT,
+                },
+                "wsgi_stream": {
+                    "class": "logging.StreamHandler",
+                    "level": "WARNING",
+                    "formatter": "default",
+                    "stream": "ext://flask.logging.wsgi_errors_stream",
+                },
+            },
+            "root": {
+                "level": "DEBUG",
+                "handlers": ["rotating_file", "wsgi_stream"],
+            },
+        }
+    )
 
-    logger.setLevel(level)
+
+def configure_stderr_logging() -> None:
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "formatters": {
+                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
+            },
+            "handlers": {
+                "stream": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "default",
+                }
+            },
+            "root": {"level": "DEBUG", "handlers": ["stream"]},
+        }
+    )
 
 
 def update_request_environ() -> None:
@@ -64,9 +95,8 @@ def update_request_environ() -> None:
     Add mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
-        flask.request.environ.update(
-            flask.current_app.config.get("FAKE_USER", {})
-        )
+        mock_oidc_claim = flask.current_app.config.get("MOCK_OIDC_CLAIM", {})
+        flask.request.environ.update(mock_oidc_claim)
 
 
 def get_comanage_groups() -> List[str]:
@@ -75,10 +105,10 @@ def get_comanage_groups() -> List[str]:
     sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
     if sub:
-        ldap_url = flask.current_app.config.get("LDAP_URL")
-        ldap_username = flask.current_app.config.get("LDAP_USERNAME")
-        ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
-        ldap_base_dn = flask.current_app.config.get("LDAP_BASE_DN")
+        ldap_url = flask.current_app.config["LDAP_URL"]
+        ldap_username = flask.current_app.config["LDAP_USERNAME"]
+        ldap_password = flask.current_app.config["LDAP_PASSWORD"]
+        ldap_base_dn = flask.current_app.config["LDAP_BASE_DN"]
 
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
@@ -121,6 +151,12 @@ def get_idp_name() -> Optional[str]:
     return flask.request.environ.get("OIDC_CLAIM_idp_name")
 
 
+def get_name() -> Optional[str]:
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_name")
+
+
 def get_orcid_id() -> Optional[str]:
     """
     Returns the current user's ORCID iD.
@@ -130,10 +166,10 @@ def get_orcid_id() -> Optional[str]:
     sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
     if sub:
-        ldap_url = flask.current_app.config.get("LDAP_URL")
-        ldap_username = flask.current_app.config.get("LDAP_USERNAME")
-        ldap_password = flask.current_app.config.get("LDAP_PASSWORD")
-        ldap_base_dn = flask.current_app.config.get("LDAP_BASE_DN")
+        ldap_url = flask.current_app.config["LDAP_URL"]
+        ldap_username = flask.current_app.config["LDAP_USERNAME"]
+        ldap_password = flask.current_app.config["LDAP_PASSWORD"]
+        ldap_base_dn = flask.current_app.config["LDAP_BASE_DN"]
 
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
