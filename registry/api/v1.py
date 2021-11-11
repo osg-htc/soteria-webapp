@@ -73,7 +73,7 @@ def ping():
 
 
 @bp.route("/version")
-def version():
+def version() -> flask.Response:
     version = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")
 
     return api_response(True, version)
