@@ -23,24 +23,13 @@
                 {% set action = "Check for Group Membership" %}
                 {% set message %}
                 <p>
-                    SOTERIA uses a <a href="https://incommon.org/software/comanage/">COmanage</a> instance managed by <a
-                        href="https://www.cilogon.org/comanage">CILogon</a> to enable and manage collaboration between
-                    its users.
+                    SOTERIA is managed as group under the OSG organization on <a href="https://www.cilogon.org/home">CILogon</a>.
                 </p>
-                {% if g.has_organizational_identity %}
-                <p>
-                    <a href="{{ config.SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL }}">Fill out this form</a> to join the
-                    group of all SOTERIA users. Note that you must be log into <a href="{{ config.REGISTRY_HOMEPAGE_URL
-                    }}">{{ config.REGISTRY_NAME }}</a> with the same identity provider that you used initially to log
-                    into SOTERIA.
-                </p>
-                {% else %}
                 <p>
                     <a href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">Fill out this form</a> to join the
                     group of all SOTERIA users. When prompted by CILogon, select the same identity provider that you
                     used initially to log into SOTERIA.
                 </p>
-                {% endif %}
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}
             </div>

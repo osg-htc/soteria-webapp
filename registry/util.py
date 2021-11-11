@@ -120,10 +120,11 @@ def get_comanage_groups() -> List[str]:
                 attributes=["isMemberOf"],
             )
 
+            if len(conn.entries) == 1:
+                return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+
             if len(conn.entries) > 1:
                 flask.current_app.logger.error("???")
-
-            return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
 
     return []
 

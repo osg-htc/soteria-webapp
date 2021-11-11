@@ -125,13 +125,7 @@ def add_context_processors(app: flask.Flask) -> None:
         flask.g.has_session_cookie = bool(cookie)
         flask.g.logout_url = f"{root_url}callback?logout={root_url}"
 
-        def get_idp_name() -> Optional[str]:
-            return flask.request.environ.get("OIDC_CLAIM_idp_name")
-
-        return {
-            "get_idp_name": get_idp_name,
-            "has_organizational_identity": registry.util.has_organizational_identity,
-        }
+        return {}
 
 
 def create_app() -> flask.Flask:
