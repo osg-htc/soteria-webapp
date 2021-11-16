@@ -29,7 +29,7 @@
         </div>
     </div>
 </div>
-{% endmacro %}
+{%- endmacro %}
 
 {% macro registration_card_body(message, action) %}
 <div class="card-body">
@@ -49,11 +49,11 @@
         </div>
     </div>
 </div>
-{% endmacro %}
+{%- endmacro %}
 
 {% macro registration_card(id, title, message, action) %}
 <div class="card" id="{{ id }}">
     {{ registration_card_header(title) }}
     {{ registration_card_body(message, action) }}
 </div>
-{% endmacro %}
+{%- endmacro %}

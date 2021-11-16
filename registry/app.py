@@ -140,6 +140,12 @@ def create_app() -> flask.Flask:
         instance_relative_config=True,
     )
 
+    # Configure Jinja so that we can put a block tag on its own line without
+    # introducing a blank line into the output when the template is rendered.
+
+    app.jinja_env.lstrip_blocks = True
+    app.jinja_env.trim_blocks = True
+
     load_config(app)
     register_blueprints(app)
     define_assets(app)
