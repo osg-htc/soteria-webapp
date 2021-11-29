@@ -16,6 +16,12 @@ CONTACT_EMAIL = "someone@example.com"
 DOCS_URL = "https://soteria.example.com/documentation"
 
 #
+# The API key for Freshdesk.
+# An environment variable of the same name will override the value set here.
+#
+FRESHDESK_API_KEY = "keep this a secret!"
+
+#
 # The Harbor instance's name, homepage URL, and API base URL.
 #
 HARBOR_NAME = "Example Harbor Instance"

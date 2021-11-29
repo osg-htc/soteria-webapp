@@ -31,6 +31,7 @@ def load_config(app: flask.Flask) -> None:
         app.config.from_pyfile(os.fspath(p))
 
     for key in [
+        "FRESHDESK_API_KEY",
         "HARBOR_ADMIN_PASSWORD",
         "HARBOR_ADMIN_USERNAME",
         "HARBOR_ROBOT_PASSWORD",
