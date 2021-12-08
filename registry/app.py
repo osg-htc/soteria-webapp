@@ -4,12 +4,11 @@ SOTERIA web application.
 
 import os
 import pathlib
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import flask
 import flask_assets  # type: ignore[import]
 
-import registry.api.debug
 import registry.api.v1
 import registry.util
 import registry.website
@@ -22,9 +21,6 @@ LOG_DIR = INSTANCE_DIR / "log"
 
 
 def load_config(app: flask.Flask) -> None:
-    """
-    Loads the application's configuration.
-    """
     pyfiles = pathlib.Path(app.instance_path).glob("*.py")
 
     for p in sorted(pyfiles):
@@ -34,11 +30,9 @@ def load_config(app: flask.Flask) -> None:
         "FRESHDESK_API_KEY",
         "HARBOR_ADMIN_PASSWORD",
         "HARBOR_ADMIN_USERNAME",
-        "HARBOR_ROBOT_PASSWORD",
-        "HARBOR_ROBOT_USERNAME",
         "LDAP_BASE_DN",
-        "LDAP_URL",
         "LDAP_PASSWORD",
+        "LDAP_URL",
         "LDAP_USERNAME",
     ]:
         ## FIXME (baydemir): Python 3.8: Use assignment expressions
@@ -50,40 +44,11 @@ def load_config(app: flask.Flask) -> None:
 
 
 def register_blueprints(app: flask.Flask) -> None:
-    """
-    Registers the application's blueprints.
-    """
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
 
-    if app.config.get("SOTERIA_DEBUG"):
-        app.register_blueprint(registry.api.debug.bp, url_prefix="/api/debug")
-
-        # Early versions (< 0.2.0) of the application:
-        #
-        #   1. Put various pages at "/<page>/"
-        #   2. Redirected "/<page>" to "/<page>/"
-        #
-        # Some browsers have cached the redirect, which is no longer correct.
-
-        @app.before_request
-        def strip_trailing_slash_from_path():
-            rp = flask.request.path
-
-            if rp in [
-                "/about/",
-                "/account/",
-                "/registration/",
-            ]:
-                return flask.redirect(rp[:-1], code=302)
-
-            return None
-
 
 def define_assets(app: flask.Flask) -> None:
-    """
-    Defines the application's CSS and JavaScript assets.
-    """
     assets = flask_assets.Environment(app)
     assets.url = app.static_url_path
 
@@ -92,7 +57,7 @@ def define_assets(app: flask.Flask) -> None:
         js = flask_assets.Bundle(
             "bootstrap.js",
             "registration.js",
-            output="assets/app.js",
+            output="dist/app.js",
         )
     else:
         ## Assume that a production webserver cannot write these files.
@@ -105,20 +70,22 @@ def define_assets(app: flask.Flask) -> None:
             "bootstrap.js",
             "registration.js",
             filters="rjsmin",
-            output="assets/app.min.js",
+            output="dist/app.min.js",
         )
 
     css = flask_assets.Bundle(
-        "style.scss", filters="libsass", output="assets/style.css"
+        "style.scss",
+        filters="libsass",
+        output="dist/style.css",
     )
 
     assets.register("soteria_js", js)
     assets.register("soteria_css", css)
 
 
-def add_context_processors(app: flask.Flask) -> None:
+def add_context_processor(app: flask.Flask) -> None:
     @app.context_processor
-    def populate_context() -> Dict[str, Any]:
+    def add_globals() -> Dict[str, Any]:
         root_url = flask.request.root_url
         cookie_name = app.config["MOD_AUTH_OPENIDC_SESSION_COOKIE_NAME"]
         cookie = flask.request.cookies.get(cookie_name)
@@ -130,9 +97,6 @@ def add_context_processors(app: flask.Flask) -> None:
 
 
 def create_app() -> flask.Flask:
-    """
-    Creates the SOTERIA web application.
-    """
     registry.util.configure_logging(LOG_DIR / "soteria.log")
 
     app = flask.Flask(
@@ -141,16 +105,10 @@ def create_app() -> flask.Flask:
         instance_relative_config=True,
     )
 
-    # Configure Jinja so that we can put a block tag on its own line without
-    # introducing a blank line into the output when the template is rendered.
-
-    app.jinja_env.lstrip_blocks = True
-    app.jinja_env.trim_blocks = True
-
     load_config(app)
     register_blueprints(app)
     define_assets(app)
-    add_context_processors(app)
+    add_context_processor(app)
 
     app.logger.info("Created and configured app!")
 
