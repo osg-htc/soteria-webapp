@@ -16,9 +16,9 @@
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
 </head>
-<body class="d-flex flex-column {% block page_class %}{% endblock %}">
+<body class="{% block page_class %}{% endblock %} d-flex flex-column">
 {{ navbar() }}
-<div class="{% block body_class %}container mb-auto{% endblock %}">
+<div class="{% block body_class %}{% endblock %} mb-auto">
     {% block body %}
     {% endblock %}
 </div>
