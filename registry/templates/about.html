@@ -3,7 +3,6 @@
 {% from "macros/card.html" import card %}
 {% block title %}SOTERIA: About{% endblock %}
 {% block page_class %}subpage{% endblock %}
-{% block body_class %}mb-auto{% endblock %}
 {% block body %}
 <div class="container">
     {{ title("About") }}
@@ -61,10 +60,10 @@
                 <thead class="table-light">
                 <tr>
                     <td></td>
-                    <th class="h5">Base</th>
                     <th class="h5">Affiliate</th>
                     <th class="h5">Member</th>
                     <th class="h5">Researcher</th>
+                    <th class="h5">Expired</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -76,11 +75,11 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Expiration Timeline</td>
-                    <td>Always applicable</td>
+                    <td>Renewal Period</td>
                     <td>30 Days</td>
-                    <td>12 months</td>
-                    <td>12 months</td>
+                    <td>12 Months</td>
+                    <td>12 Months</td>
+                    <td>&mdash;</td>
                 </tr>
                 <tr>
                     <th>Projects</th>
@@ -91,24 +90,24 @@
                 </tr>
                 <tr>
                     <td>Private</td>
-                    <td>0</td>
                     <td>1</td>
-                    <td>0 (Can access Researchers)</td>
+                    <td>1</td>
                     <td>2</td>
+                    <td>Read-only access</td>
                 </tr>
                 <tr>
                     <td>Public</td>
                     <td>0</td>
                     <td>0</td>
-                    <td>0 (Can access Researchers)</td>
                     <td>3</td>
+                    <td>Read-only access</td>
                 </tr>
                 <tr>
-                    <td>Size per project (GB)</td>
-                    <td>NA</td>
-                    <td>5 GB</td>
-                    <td>NA</td>
-                    <td>100 GB</td>
+                    <td>Quota per Project</td>
+                    <td>5 GiB</td>
+                    <td>5 GiB</td>
+                    <td>100 GiB</td>
+                    <td>&mdash;</td>
                 </tr>
                 </tbody>
             </table>
