@@ -3,7 +3,7 @@
  */
 function onReady() {
     $("#hub-verification a.check").click(checkHubVerification);
-    $("#orc-id-verification a.check").click(checkORCIDLink);
+    $("#orcid-verification a.check").click(checkORCIDLink);
 
     checkAll()
 }
@@ -28,7 +28,7 @@ function checkHubVerification(){
 }
 
 function checkORCIDLink(){
-    startVerification("orc-id-verification");
+    startVerification("orcid-verification");
     getORCIDVerification();
 }
 
@@ -98,7 +98,7 @@ function reportStatusHub(status, textStatus, jqXHR){
 
 function reportStatusORCID(status, textStatus, jqXHR){
     let message
-    let elementId = "orc-id-verification"
+    let elementId = "orcid-verification"
 
     if(isVerified(status)){
         message = "Your linked ORCID iD is: " + status.data["orcid_id"]
