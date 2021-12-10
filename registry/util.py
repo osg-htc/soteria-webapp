@@ -20,13 +20,13 @@ __all__ = [
     "get_harbor_user",
     "get_idp_name",
     "get_orcid_id",
+    "get_starter_project_name",
     "has_organizational_identity",
     "is_soteria_affiliate",
     "is_soteria_member",
     "is_soteria_researcher",
     #
     "get_admin_harbor_api",
-    "get_robot_harbor_api",
 ]
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s"
@@ -68,24 +68,6 @@ def configure_logging(filename: pathlib.Path) -> None:
                 "level": "DEBUG",
                 "handlers": ["rotating_file", "wsgi_stream"],
             },
-        }
-    )
-
-
-def configure_stderr_logging() -> None:
-    logging.config.dictConfig(
-        {
-            "version": 1,
-            "formatters": {
-                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
-            },
-            "handlers": {
-                "stream": {
-                    "class": "logging.StreamHandler",
-                    "formatter": "default",
-                }
-            },
-            "root": {"level": "DEBUG", "handlers": ["stream"]},
         }
     )
 
@@ -182,12 +164,19 @@ def get_orcid_id() -> Optional[str]:
                 attributes=["eduPersonOrcid"],
             )
 
-            flask.current_app.logger.debug(sub)
+            if len(conn.entries) == 1:
+                return conn.entries[0].entry_attributes_as_dict[
+                    "eduPersonOrcid"
+                ]
 
-            if len(conn.entries) > 1:
-                flask.current_app.logger.error("???")
+    return None
 
-            return conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+
+def get_starter_project_name() -> Optional[str]:
+    user = get_harbor_user()
+
+    if user:
+        return user["username"]
 
     return None
 
@@ -240,18 +229,5 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
         basic_auth=(
             flask.current_app.config["HARBOR_ADMIN_USERNAME"],
             flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
-        ),
-    )
-
-
-def get_robot_harbor_api() -> registry.harbor.HarborAPI:
-    """
-    Returns a Harbor API instance authenticated as a robot.
-    """
-    return registry.harbor.HarborAPI(
-        flask.current_app.config["HARBOR_API_URL"],
-        basic_auth=(
-            flask.current_app.config["HARBOR_ROBOT_USERNAME"],
-            flask.current_app.config["HARBOR_ROBOT_PASSWORD"],
         ),
     )

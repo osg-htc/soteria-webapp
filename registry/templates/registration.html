@@ -19,7 +19,7 @@
         </div>
         <div class="row">
             <div class="col-12">
-                {% set id = "soteria-enrollment-verification" %}
+                {% set id = "enrollment" %}
                 {% set title = "1. Join the SOTERIA Group" %}
                 {% set action = "Check for Group Membership" %}
                 {% set message %}
@@ -28,14 +28,14 @@
                 </p>
                 <p>
                     <a href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">Fill out this form</a> to join the
-                    group of all SOTERIA users. When prompted by CILogon, select the same identity provider that you
+                    group of SOTERIA users. When prompted by CILogon, select the same identity provider that you
                     used initially to log into SOTERIA.
                 </p>
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                {% set id = "hub-verification" %}
+                {% set id = "hub" %}
                 {% set title = "2. Create a " ~ config.HARBOR_NAME ~ " Account" %}
                 {% set action = "Check for " ~ config.HARBOR_NAME ~ " Account" %}
                 {% set message %}
@@ -53,7 +53,7 @@
                 {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                {% set id = "orcid-verification" %}
+                {% set id = "orcid" %}
                 {% set title = "3. Link Your ORCID iD" %}
                 {% set action = "Check for ORCID iD" %}
                 {% set message %}
@@ -71,7 +71,7 @@
                 {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                {% set id = "project-verification" %}
+                {% set id = "project" %}
                 {% set title = "4. Create Your Project" %}
                 {% set action = "Create Project" %}
                 {% set message %}

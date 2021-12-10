@@ -1,118 +1,110 @@
 /*
- * Set up event listeners and check verifications
+ * Event handlers.
  */
-function onReady() {
-    $("#hub-verification a.check").click(checkHubVerification);
-    $("#orcid-verification a.check").click(checkORCIDLink);
 
-    checkAll()
+function onReady() {
+    $("#enrollment a.check").click(checkEnrollment);
+    $("#hub a.check").click(checkHub);
+    $("#orcid a.check").click(checkORCID);
+    $("#project a.check").click(createProject);  // create the project only when asked
+
+    checkEnrollment();
+    checkHub();
+    checkORCID();
+    checkProject();
+}
+
+function checkEnrollment() {
+    startCheck("enrollment");
+    $.ajax({
+        "url": "/api/v1/users/current/enrollment",
+        "success": reportStatusEnrollment,
+        "error": reportError.bind(null, "enrollment")
+    });
+}
+
+function checkHub() {
+    startCheck("hub");
+    $.ajax({
+        "url": "/api/v1/users/current/harbor_id",
+        "success": reportStatusHub,
+        "error": reportError.bind(null, "hub")
+    });
+}
+
+function checkORCID() {
+    startCheck("orcid");
+    $.ajax({
+        "url": "/api/v1/users/current/orcid_id",
+        "success": reportStatusORCID,
+        "error": reportError.bind(null, "orcid")
+    });
+}
+
+function checkProject() {
+    startCheck("project");
+    $.ajax({
+        "url": "/api/v1/users/current/starter_project",
+        "success": reportStatusProject,
+        "error": reportError.bind(null, "project")
+    });
+}
+
+function createProject() {
+    startCheck("project");
+    $.ajax({
+        "url": "/api/v1/users/current/starter_project",
+        "type": "POST",
+        "success": checkProject,
+        "error": reportError.bind(null, "project")
+    });
 }
 
 /*
- * Check if user has completed any previous verifications
+ * Providing feedback to the user.
  */
-function checkAll(){
-    checkEnrollment();
-    checkHubVerification();
-    checkORCIDLink();
-}
 
-function checkEnrollment(){
-    startVerification("soteria-enrollment-verification");
-    getEnrollmentVerification();
-}
+function reportStatusEnrollment(status, textStatus, jqXHR) {
+    let message;
+    let elementId = "enrollment";
 
-function checkHubVerification(){
-    startVerification("hub-verification");
-    getHubVerification();
-}
-
-function checkORCIDLink(){
-    startVerification("orcid-verification");
-    getORCIDVerification();
-}
-
-/////////////
-//  AJAX calls to server check
-/////////////
-
-function getEnrollmentVerification(){
-    $.ajax({
-        "url": "/api/v1/verify_enrollment",
-        "success" : reportStatusEnrollment,
-        "error" : showErrorEnrollment
-    })
-}
-
-function getHubVerification(){
-    $.ajax({
-        "url": "/api/v1/verify_harbor_account",
-        "success" : reportStatusHub,
-        "error" : showErrorHub
-    })
-}
-
-function getORCIDVerification(){
-    $.ajax({
-        "url": "/api/v1/verify_orcid_id",
-        "success" : reportStatusORCID,
-        "error" : showErrorORCID
-    })
-}
-
-function getProvisionVerification(){
-    $.ajax({
-        "url": "/api/v1/create_harbor_project",
-        "success" : reportStatusProvision,
-        "error" : showErrorProvision
-    })
-}
-
-/////////////
-//  Verification specific wrappers for reportStatus
-/////////////
-
-function reportStatusEnrollment(status, textStatus, jqXHR){
-    let message
-    let elementId = "soteria-enrollment-verification"
-
-    if(isVerified(status)){
-        message = "You are logged in via: " + status.data["idp_name"]
+    if (isVerified(status)) {
+        message = "You have joined SOTERIA using your identity from: " + status.data.idp_name;
     }
 
-    showMessage(elementId, message)
-    endVerification(elementId, isVerified(status))
+    showMainMessage(elementId, message);
+    endCheck(elementId, isVerified(status));
 }
 
-function reportStatusHub(status, textStatus, jqXHR){
-    let message
-    let elementId = "hub-verification"
+function reportStatusHub(status, textStatus, jqXHR) {
+    let message;
+    let elementId = "hub";
 
-    if(isVerified(status)){
-        message = "You have an account with the username: " + status.data["username"]
+    if (isVerified(status)) {
+        message = "You have a " + status.data.harbor.name + " account with the username: " + status.data.username;
     }
 
-    showMessage(elementId, message)
-    endVerification(elementId, isVerified(status))
+    showMainMessage(elementId, message);
+    endCheck(elementId, isVerified(status));
 }
 
-function reportStatusORCID(status, textStatus, jqXHR){
-    let message
-    let elementId = "orcid-verification"
+function reportStatusORCID(status, textStatus, jqXHR) {
+    let message;
+    let elementId = "orcid";
 
-    if(isVerified(status)){
-        message = "Your linked ORCID iD is: " + status.data["orcid_id"]
+    if (isVerified(status)) {
+        message = "Your ORCID iD is: " + status.data.orcid_id;
     }
 
-    showMessage(elementId, message)
-    endVerification(elementId, isVerified(status))
+    showMainMessage(elementId, message);
+    endCheck(elementId, isVerified(status));
 }
 
-function reportStatusProvision(status, textStatus, jqXHR){
-    let message
-    let elementId = "provision-verification"
+function reportStatusProject(status, textStatus, jqXHR) {
+    let message;
+    let elementId = "project";
 
-    if(isVerified(status)){
+    if (isVerified(status)) {
         message = "You are now a registered " +
             "<a href='{{ config.DOCS_URL }}/users/affiliates'>Affiliate</a>!" +
             " You can view your project on " +
@@ -121,76 +113,55 @@ function reportStatusProvision(status, textStatus, jqXHR){
             "<a href='/projects'>Project Page</a>."
     }
 
-    showMessage(elementId, message)
-    endVerification(elementId, isVerified(status))
+    showMainMessage(elementId, message);
+    endCheck(elementId, isVerified(status), true);
 }
 
-/////////////
-//  Verification specific wrappers for showMessage related to AJAX error
-/////////////
-
-function showErrorEnrollment(jqXHR, textStatus, errorThrown){
-    showSubMessage("soteria-enrollment-verification", errorThrown, true)
-    endVerification( "soteria-enrollment-verification", false );
+function reportError(elementId, jqXHR, textStatus, errorThrown) {
+    showSubMessage(elementId, errorThrown, true);
+    endCheck(elementId, false);
 }
 
-function showErrorHub(jqXHR, textStatus, errorThrown){
-    showSubMessage("hub-verification", errorThrown, true)
-    endVerification( "hub-verification", false );
-}
+/*
+ * Assorted helper functions.
+ */
 
-function showErrorORCID(jqXHR, textStatus, errorThrown){
-    showSubMessage("orc-id-verification", errorThrown, true)
-    endVerification( "orc-id-verification", false );
-}
-
-
-function isVerified( status ){
+function isVerified(status) {
     try {
         return status.data.verified;
     }
-    catch(err){
-        return false
+    catch (err) {
+        return false;
     }
 }
 
-// Visual Handlers
-function startVerification( element_id ){
-
-    // Start Loading Spinner
-    $("#" + element_id + " .status-icon>.failure").attr("hidden", true);
-    $("#" + element_id + " .status-icon>.success").attr("hidden", true);
-    $("#" + element_id + " .status-icon>.loading").attr("hidden", false);
+function startCheck(elementId) {
+    $("#" + elementId + " .status-icon>.loading").attr("hidden", false);
+    $("#" + elementId + " .status-icon>.success").attr("hidden", true);
+    $("#" + elementId + " .status-icon>.failure").attr("hidden", true);
 }
 
-function endVerification( element_id, verified ){
-    // End Loading Spinner
-    $("#" + element_id + " .status-icon>.loading").attr("hidden", true);
-    if( verified ){
-        // Add check mark
-        $("#" + element_id + " .status-icon>.success").attr("hidden", false);
-        // Remove Button
-        $("#" + element_id + " a.check").hide()
-    } else {
-        // Add X indicator
-        $("#" + element_id + " .status-icon>.failure").attr("hidden", false);
+function endCheck(elementId, success, hide_failure = false) {
+    $("#" + elementId + " .status-icon>.loading").attr("hidden", true);
+    if (success) {
+        $("#" + elementId + " .status-icon>.success").attr("hidden", false);
+        $("#" + elementId + " a.check").hide();
+    }
+    else {
+        $("#" + elementId + " .status-icon>.failure").attr("hidden", hide_failure);
     }
 }
 
-function showMessage( element_id, message ){
-    // Add the message
-    if( message !== undefined ){
-        $("#" + element_id + " .main-message").html(message);
+function showMainMessage(elementId, message) {
+    if (message !== undefined) {
+        $("#" + elementId + " .main-message").html(message);
     }
 }
 
-function showSubMessage( element_id, message, error=false ){
-    // Adjust the color
-    if( error ){
-        $("#" + element_id + " .sub-message").addClass("error");
+function showSubMessage(elementId, message, error = false) {
+    if (error) {
+        $("#" + elementId + " .sub-message").addClass("error");
     }
-
-    // Add the message
     message = message === undefined ? "" : message;
-    $("#" + element_id + " .sub-message").html(message);
+    $("#" + elementId + " .sub-message").html(message);
 }

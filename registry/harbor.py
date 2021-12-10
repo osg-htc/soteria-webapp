@@ -112,6 +112,7 @@ class HarborAPI:
         return self._get(f"/users/{user_id}").json()
 
     def create_project(self, name: str, *, storage_limit: int = 5368709120):
+        ## 5368709120 bytes = 1024 * 1024 * 1024
         """
         Create a new private project, with the given user as an administrator.
         """
@@ -156,7 +157,7 @@ class HarborAPI:
             if member["entity_name"] == username:
                 return member
 
-        raise NotImplementedError
+        return None
 
     def delete_project_member(self, project_id: int, username: str):
         member = self.get_project_member(project_id, username)
