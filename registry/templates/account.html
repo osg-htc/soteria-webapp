@@ -1,6 +1,11 @@
 {% extends "layout/base.html" %}
 {% from "macros/layout/title.html" import title %}
 {% from "macros/card.html" import card %}
+{% block js_extension %}
+    {% assets "soteria_js_account" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 {% block title %}SOTERIA: Account{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body_class %}container{% endblock %}
@@ -10,6 +15,9 @@
     <ul class="nav flex-row">
         <li class="nav-item">
             <a class="nav-link" href="#details">Details</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#actions">Actions</a>
         </li>
     </ul>
 </nav>
@@ -29,7 +37,56 @@
                         <h5>ORCID iD</h5>
                         {{ user.orcid_id }}
                     </div>
+                    <!--
+                    <div class="col-12 col-sm-6">
+                        <h5>Status</h5>
+                        {{ user.status }}
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>Email</h5>
+                        {{ user.email }}
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <h5>Days Remaining</h5>
+                        {{ user.days_remaining }}
+                    </div>
+                    -->
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" id="actions">
+    <div class="col-12">
+        <h2 id="actions">Actions</h2>
+    </div>
+    <div class="affiliate-member-action col-12 col-md-6 mb-4" id="researcher-registration">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h4>Register For Researcher Status</h4>
+                </div>
+                <p>
+                    All Affiliates/Members that meet the <a href="{{ config.DOCS_URL }}users/researcher/#requirements">requirements</a>
+                    can apply to become a Researcher on Soteria. Researchers are given more advanced
+                    <a href="{{ config.DOCS_URL }}users/researcher/#allocation">project allotments</a> and
+                    <a href="{{ config.DOCS_URL }}users/researcher/#permissions">permissions</a>
+                </p>
+                <p>
+                    The button below will take you to the Registration guide on our documentation page.
+                </p>
+                <p>
+                    <a class="btn btn-secondary" href="{{ config.DOCS_URL }}users/researcher/#registration">Docs -
+                        Researcher Registration</a>
+                </p>
+                <p>
+                    If you are familiar with the process you can follow the button below to be taken to the form.
+                </p>
+                <p>
+                    <a type="button" class="btn btn-primary" href="/researcher-registration">
+                        Apply for Researcher Status
+                    </a>
+                </p>
             </div>
         </div>
     </div>

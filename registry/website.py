@@ -13,6 +13,9 @@ import flask
 import jinja2
 
 import registry.util
+from registry.util import get_fresh_desk_api
+
+from .forms import ResearcherApprovalForm
 
 __all__ = ["bp"]
 
@@ -27,6 +30,19 @@ def index() -> flask.Response:
     }
 
     html = flask.render_template("account.html", user=user)
+    return flask.make_response(html)
+
+
+@bp.route("/researcher-registration", methods=["GET", "POST"])
+def researcher_registration() -> flask.Response:
+    researcher_form = ResearcherApprovalForm(flask.request.form)
+
+    if researcher_form.validate_on_submit():
+        researcher_form.submit_request()
+
+    html = flask.render_template(
+        "researcher-registration.html", form=researcher_form
+    )
     return flask.make_response(html)
 
 

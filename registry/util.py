@@ -11,6 +11,7 @@ from typing import Any, List, Optional
 import flask
 import ldap3  # type: ignore[import]
 
+import registry.freshdesk
 import registry.harbor
 
 __all__ = [
@@ -230,4 +231,13 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
             flask.current_app.config["HARBOR_ADMIN_USERNAME"],
             flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
         ),
+    )
+
+
+def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
+    """
+    Returns a Fresh Desk API instance
+    """
+    return registry.freshdesk.FreshDeskAPI(
+        flask.current_app.config["FRESH_DESK_API_KEY"]
     )
