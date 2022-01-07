@@ -56,15 +56,15 @@ def define_assets(app: flask.Flask) -> None:
         assets.config["LIBSASS_STYLE"] = "nested"
         js_main = flask_assets.Bundle(
             "js/bootstrap.js",
-            output="assets/main.js",
+            output="assets/js/main.js",
         )
         js_registration = flask_assets.Bundle(
             "js/registration.js",
-            output="assets/registration.js",
+            output="assets/js/registration.js",
         )
         js_account = flask_assets.Bundle(
             "js/account.js",
-            output="assets/account.js",
+            output="assets/js/account.js",
         )
     else:
         ## Assume that a production webserver cannot write these files.
@@ -92,7 +92,7 @@ def define_assets(app: flask.Flask) -> None:
     css = flask_assets.Bundle(
         "style.scss",
         filters="libsass",
-        output="dist/style.css",
+        output="assets/css/style.css",
     )
 
     assets.register("soteria_js_main", js_main)
