@@ -104,13 +104,13 @@ function reportStatusProject(status, textStatus, jqXHR) {
     let message;
     let elementId = "project";
 
+    harbor_name = status.data.harbor.name;
+    harbor_projects_url = status.data.harbor.projects_url;
+    project_name = status.data.project.name;
+
     if (isVerified(status)) {
-        message = "You are now a registered " +
-            "<a href='{{ config.DOCS_URL }}/users/affiliates'>Affiliate</a>!" +
-            " You can view your project on " +
-            "<a href=\"${status.data['url']}\">Harbor</a>" +
-            " or project details on the " +
-            "<a href='/projects'>Project Page</a>."
+        message = "You have a private project on " + harbor_name +
+            "with the name <a href='" + harbor_projects_url + "'>" + project_name + "</a>.";
     }
 
     showMainMessage(elementId, message);

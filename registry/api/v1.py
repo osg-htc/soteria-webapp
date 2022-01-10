@@ -242,6 +242,16 @@ def check_user_starter_project(user_id: str):
 
     response = api.get_project(project_name)
 
+    flask.current_app.logger.info(response)
+
+    harbor = {
+        "name": flask.current_app.config["HARBOR_NAME"],
+        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"]
+        + "/harbor/projects",
+    }
+
     if "errors" in response:
         return make_ok_response({"verified": False})
-    return make_ok_response({"verified": True, "project": response})
+    return make_ok_response(
+        {"verified": True, "harbor": harbor, "project": response}
+    )
