@@ -74,17 +74,17 @@ def define_assets(app: flask.Flask) -> None:
 
         assets.config["LIBSASS_STYLE"] = "compressed"
         js_main = flask_assets.Bundle(
-            "bootstrap.js",
+            "js/bootstrap.js",
             filters="rjsmin",
             output="assets/js/main.min.js",
         )
         js_registration = flask_assets.Bundle(
-            "registration.js",
+            "js/registration.js",
             filters="rjsmin",
             output="assets/js/registration.min.js",
         )
         js_account = flask_assets.Bundle(
-            "account.js",
+            "js/account.js",
             filters="rjsmin",
             output="assets/js/account.min.js",
         )
