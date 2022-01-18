@@ -1,5 +1,5 @@
 {% extends "layout/base.html" %}
-{% from "macros/layout/title.html" import page_title %}
+{% from "macros/layout/title.html" import title %}
 {% from "macros/card.html" import card %}
 {% macro form_element(element) %}
     {{ element.label(class="form-label") }}
@@ -17,8 +17,9 @@
 {% endblock %}
 {% block title %}SOTERIA: Account{% endblock %}
 {% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
 {% block body %}
-{{ page_title("Researcher Registration") }}
+{{ title("Researcher Registration") }}
 <div class="row">
     <div class="col-12 col-md-10 col-xl-8">
         <form method="POST">
