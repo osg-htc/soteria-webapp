@@ -10,6 +10,7 @@ import flask
 import flask_assets  # type: ignore[import]
 
 import registry.api.v1
+import registry.cli
 import registry.util
 import registry.website
 
@@ -46,6 +47,7 @@ def load_config(app: flask.Flask) -> None:
 def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
+    app.register_blueprint(registry.cli.bp, cli_group="soteria")
 
 
 def define_assets(app: flask.Flask) -> None:
