@@ -7,23 +7,18 @@ requires = ["poetry-core>=1.0.0"]
 
 
 [tool.black]
-line-length = 79
-target-version = ["py36"]
+line-length = 96
+target-version = ["py39"]
 
 
 [tool.isort]
-line_length = 79
+line_length = 96
 profile = "black"
 
 
 [tool.mypy]
-incremental = true
-cache_dir = ".mypy"
-sqlite_cache = true
-
-color_output = false
-pretty = true
-show_error_codes = true
+explicit_package_bases = true
+namespace_packages = true
 
 check_untyped_defs = true
 strict_optional = true
@@ -35,6 +30,14 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_ignores = true
 
+color_output = false
+pretty = true
+show_error_codes = true
+
+incremental = true
+cache_dir = ".mypy"
+sqlite_cache = true
+
 
 [tool.poetry]
 name = "soteria_webapp"
@@ -45,36 +48,34 @@ authors = [
     "Brian Aydemir <baydemir@morgridge.org>",
     "Cannon Lock <clock@wisc.edu>",
 ]
+repository = "https://github.com/brianaydemir/soteria-webapp"
 packages = [{ include = "registry" }]
 
 
 [tool.poetry.dependencies]
-python = ">=3.6.8,<3.7"
-dataclasses = "^0.8"
-Flask = "^2.0.2"
-Flask-Assets = "^2.0"
-Flask-WTF = "^1.0.0"
-ldap3 = "^2.9.1"
-libsass = "^0.21.0"
-requests = "^2.26.0"
-typing-extensions = "^3.10.0.2"
+python = "~3.9.7"
+Flask = "~2.1"
+Flask-Assets = "~2.0"
+Flask-WTF = "~1.0"
+ldap3 = "~2.9"
+libsass = "~0.21"
+requests = "~2.27"
+typing-extensions = "~4.2"
 
 
 [tool.poetry.dev-dependencies]
-bandit = "^1.7.1"
-black = "^21.12b0"
-docutils = "^0.17.1"
-isort = "^5.10.1"
-mypy = "^0.910"
-pre-commit = "^2.16.0"
-pylint = "^2.12.2"
-pytype = "^2021.11.2"
-"ruamel.yaml.cmd" = "^0.5.10"
-safety = "^1.10.3"
-types-dataclasses = "^0.1.7"
-types-requests = "^2.26.3"
+bandit = "~1.7"
+black = "~22.3"
+docutils = "~0.18"
+isort = "~5.10"
+mypy = "~0.960"
+pre-commit = "~2.19"
+pylint = "~2.13"
+"ruamel.yaml.cmd" = "~0.5"
+safety = "~1.10"
+types-requests = "~2.27"
 
 
 [tool.pylint.messages-control]
-max-line-length = 79
+max-line-length = 96
 disable = "invalid-name,missing-class-docstring,missing-function-docstring"

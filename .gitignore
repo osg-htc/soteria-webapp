@@ -4,7 +4,6 @@
 ## Cache directories created by the eponymous tools.
 /.mypy/
 /.pylint/
-/.pytype/
 
 ## Local configuration file for pyenv.
 /.python-version

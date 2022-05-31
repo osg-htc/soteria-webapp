@@ -1,4 +1,4 @@
-FROM opensciencegrid/software-base:release
+FROM hub.opensciencegrid.org/opensciencegrid/software-base:3.6-el8-release
 
 
 ## Build arguments for embedding a version string within the image.
@@ -9,6 +9,13 @@ ENV GITHUB_REF="${GITHUB_REF:-}"
 
 ARG GITHUB_SHA
 ENV GITHUB_SHA="${GITHUB_SHA:-}"
+
+
+## Set the Python version.
+
+
+ARG PY_PKG=python39
+ARG PY_EXE=python3.9
 
 
 ## Locale and Python settings required by Flask.
@@ -22,12 +29,13 @@ ENV PYTHONUNBUFFERED=1
 ## Install core dependencies and configuration.
 
 
-RUN yum update -y \
-    && yum install -y httpd mod_auth_openidc mod_ssl python3-pip python3-mod_wsgi \
+RUN yum module enable -y mod_auth_openidc ${PY_PKG} \
+    && yum update -y \
+    && yum install -y httpd mod_auth_openidc mod_ssl ${PY_PKG}-pip ${PY_PKG}-mod_wsgi \
     && yum clean all \
     && rm -rf /etc/httpd/conf.d/* /var/cache/yum/ \
     #
-    && python3 -m pip install --no-cache-dir -U pip setuptools wheel
+    && ${PY_EXE} -m pip install --no-cache-dir -U pip setuptools wheel
 
 COPY etc /etc/
 
@@ -36,15 +44,15 @@ COPY etc /etc/
 
 
 COPY poetry.lock pyproject.toml requirements.txt /srv/
-RUN python3 -m pip install --no-cache-dir -r /srv/requirements.txt
+RUN ${PY_EXE} -m pip install --no-cache-dir -r /srv/requirements.txt
 
 COPY set_version.py wsgi.py /srv/
 COPY registry /srv/registry/
 
-RUN (cd /srv/ && env FLASK_APP="registry" python3 -m flask assets build) \
+RUN (cd /srv/ && env FLASK_APP="registry" ${PY_EXE} -m flask assets build) \
     #
     && find /srv/ -name ".*" -exec rm -rf {} \; -prune \
     #
     && rm -rf /srv/instance/* \
     && chown apache:apache /srv/instance/ \
-    && python3 /srv/set_version.py
+    && ${PY_EXE} /srv/set_version.py
