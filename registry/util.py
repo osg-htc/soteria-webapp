@@ -173,7 +173,7 @@ def get_starter_project_name() -> Optional[str]:
     user = get_harbor_user()
 
     if user:
-        return user["username"].lower().replace(".", "-")
+        return user["username"].lower()
 
     return None
 
