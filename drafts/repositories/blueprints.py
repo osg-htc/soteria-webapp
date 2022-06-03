@@ -8,9 +8,7 @@ from flask import Blueprint, make_response, render_template
 
 __all__ = ["repositories_bp"]
 
-repositories_bp = Blueprint(
-    "repositories", __name__, template_folder="templates"
-)
+repositories_bp = Blueprint("repositories", __name__, template_folder="templates")
 
 
 @repositories_bp.route("/", methods=["GET", "POST"])
@@ -142,6 +140,4 @@ def index():
             },
         ]
 
-    return make_response(
-        render_template("repositories.html", projects=projects)
-    )
+    return make_response(render_template("repositories.html", projects=projects))

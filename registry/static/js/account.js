@@ -40,4 +40,3 @@ function ResearcherApplicationForm() {
 function main() {
     const researcher_application_form = new ResearcherApplicationForm()
 }
-

@@ -40,9 +40,7 @@ def researcher_registration() -> flask.Response:
     if researcher_form.validate_on_submit():
         researcher_form.submit_request()
 
-    html = flask.render_template(
-        "researcher-registration.html", form=researcher_form
-    )
+    html = flask.render_template("researcher-registration.html", form=researcher_form)
     return flask.make_response(html)
 
 

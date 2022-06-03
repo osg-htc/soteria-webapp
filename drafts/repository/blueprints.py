@@ -12,9 +12,7 @@ repository_bp = Blueprint("repository", __name__, template_folder="templates")
 
 
 @repository_bp.route("/<user_name>/<project_name>/", methods=["GET", "POST"])
-@repository_bp.route(
-    "/<user_name>/<project_name>/general", methods=["GET", "POST"]
-)
+@repository_bp.route("/<user_name>/<project_name>/general", methods=["GET", "POST"])
 def index(user_name, project_name):
     """
     Returns a page where the current user can manage their registration.
@@ -36,9 +34,7 @@ def index(user_name, project_name):
     )
 
 
-@repository_bp.route(
-    "/<user_name>/<project_name>/tags", methods=["GET", "POST"]
-)
+@repository_bp.route("/<user_name>/<project_name>/tags", methods=["GET", "POST"])
 def tags(user_name, project_name):
 
     with open("../data-templates/TEMPLATE-projects.json") as json_file:
@@ -49,14 +45,10 @@ def tags(user_name, project_name):
 
     tags = project["tags"]
 
-    return make_response(
-        render_template("tags.html", project=project, tags=tags)
-    )
+    return make_response(render_template("tags.html", project=project, tags=tags))
 
 
-@repository_bp.route(
-    "/<user_name>/<project_name>/collaborators", methods=["GET", "POST"]
-)
+@repository_bp.route("/<user_name>/<project_name>/collaborators", methods=["GET", "POST"])
 def collaborators(user_name, project_name):
 
     with open("../data-templates/TEMPLATE-projects.json") as json_file:
@@ -67,6 +59,4 @@ def collaborators(user_name, project_name):
 
     users = project["users"]
 
-    return make_response(
-        render_template("collaborators.html", project=project, users=users)
-    )
+    return make_response(render_template("collaborators.html", project=project, users=users))

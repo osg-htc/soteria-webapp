@@ -1,10 +1,12 @@
 import json
-import requests
 import logging
+
+import requests
 
 __all__ = ["FreshDeskAPI"]
 
 BASE_URL = "https://opensciencegrid.freshdesk.com"
+
 
 class FreshDeskAPI:
     """

@@ -1,8 +1,22 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, SelectMultipleField, StringField, \
-    TimeField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Length, EqualTo, \
-    Regexp, NumberRange, InputRequired, URL
+from wtforms import (
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    SubmitField,
+    TextAreaField,
+    TimeField,
+)
+from wtforms.validators import (
+    URL,
+    DataRequired,
+    EqualTo,
+    InputRequired,
+    Length,
+    NumberRange,
+    Regexp,
+)
+
 from registry.util import get_fresh_desk_api
 
 requirement_choices = [
@@ -11,13 +25,15 @@ requirement_choices = [
     ("b-listed-and-published", "Institute Member and Recently Published"),
     ("c-active-grant-on-ORCID", "Active Federal Grant on ORCID Profile"),
     ("d-institution-non-R1-HBCU-TCU", "Non R1, HBCU, or TCU institute member"),
-    ("e-pi-approval", "SOTERIA PI approval")
+    ("e-pi-approval", "SOTERIA PI approval"),
 ]
 
 
 class ResearcherApprovalForm(FlaskForm):
     email = StringField("Institute Affiliated Email", validators=[InputRequired()])
-    criteria = SelectField("Requirement Met", choices=requirement_choices, validators=[InputRequired()])
+    criteria = SelectField(
+        "Requirement Met", choices=requirement_choices, validators=[InputRequired()]
+    )
 
     b_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
     b_publication_doi = StringField("Publication DOI", validators=[InputRequired()])
@@ -38,7 +54,6 @@ class ResearcherApprovalForm(FlaskForm):
         self.c_fields = [self.c_grant_number, self.c_funding_agency]
         self.d_fields = [self.d_website_url, self.d_classification]
         self.e_fields = []
-
 
     class Meta:
         csrf = False  # CSRF not needed because no data gets modified
@@ -68,7 +83,9 @@ class ResearcherApprovalForm(FlaskForm):
 
     def submit_request(self):
         api = get_fresh_desk_api()
-        selected_requirement = next(x[1] for x in requirement_choices if x[0] == self.criteria.data)
+        selected_requirement = next(
+            x[1] for x in requirement_choices if x[0] == self.criteria.data
+        )
         description = f"""
             <div>
               <p>
@@ -94,7 +111,7 @@ class ResearcherApprovalForm(FlaskForm):
             "group_id": 12000006916,
             "priority": 2,
             "status": 2,
-            "type": "SOTERIA Researcher Application"
+            "type": "SOTERIA Researcher Application",
         }
 
         a = api.create_ticket(**ticket)

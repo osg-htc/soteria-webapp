@@ -94,4 +94,3 @@
     },
     "readme": "<h2>This is how this project is used</h2><p>This project was created so that you could run things inside this container to advance your research</p><h4>How to use this container</h4><p>To use this container all you have to do is run the following code in your repo<pre><code>soteria build this/repo</code></pre></p>"
 }]
-
