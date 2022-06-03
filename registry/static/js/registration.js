@@ -104,11 +104,11 @@ function reportStatusProject(status, textStatus, jqXHR) {
     let message;
     let elementId = "project";
 
-    harbor_name = status.data.harbor.name;
-    harbor_projects_url = status.data.harbor.projects_url;
-    project_name = status.data.project.name;
-
     if (isVerified(status)) {
+        harbor_name = status.data.harbor.name;
+        harbor_projects_url = status.data.harbor.projects_url;
+        project_name = status.data.project.name;
+
         message = "You have a private project on " + harbor_name +
             "with the name <a href='" + harbor_projects_url + "'>" + project_name + "</a>.";
     }
