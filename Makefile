@@ -31,6 +31,7 @@ clean:
 	rm -rf .mypy/ .pylint/
 	rm -rf dist/$(PY_WHEEL_BASENAME)-*.tar.gz
 	rm -rf dist/$(PY_WHEEL_BASENAME)-*.whl
+	-docker image rm soteria-webapp:dev
 
 #---------------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ local-install: \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
 
-	docker compose build --no-cache --pull
+	docker compose build --pull
 
 secrets/config.py:
 	cp config_templates/config.py $@

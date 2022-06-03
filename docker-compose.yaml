@@ -3,7 +3,7 @@ version: "3.0"
 
 services:
 
-  soteria:
+  soteria-webapp:
 
     build:
       context: .
@@ -11,8 +11,8 @@ services:
       args:
         GIT_SHA: local-repository
 
-    image: soteria:dev
-    container_name: soteria
+    image: soteria-webapp:dev
+    container_name: soteria-webapp
     restart: always
 
     ports:
