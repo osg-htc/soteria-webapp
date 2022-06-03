@@ -1,0 +1,42 @@
+---
+version: "3.0"
+
+services:
+
+  soteria:
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GIT_SHA: local-repository
+
+    image: soteria:dev
+    container_name: soteria
+    restart: always
+
+    ports:
+    - 9801:8443
+
+    secrets:
+    - source: httpd-conf
+      target: /etc/httpd/conf.d/httpd.conf
+    - source: soteria-conf
+      target: /srv/instance/config.py
+    - source: tls-crt
+      target: /certs/tls.crt
+    - source: tls-key
+      target: /certs/tls.key
+
+    volumes:
+    - ${PWD}/instance:/srv/instance
+
+secrets:
+  httpd-conf:
+    file: secrets/httpd.conf
+  soteria-conf:
+    file: secrets/config.py
+  tls-crt:
+    file: secrets/tls.crt
+  tls-key:
+    file: secrets/tls.key

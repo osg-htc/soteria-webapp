@@ -1,0 +1,92 @@
+#
+# Configuration for a web application that uses:
+#
+#   - mod_ssl
+#   - mod_auth_openidc (configured for CILogon)
+#   - mod_wsgi
+#
+# Features:
+#
+#   - Listens for SSL connections on port 8443.
+#   - Routes all requests through the web application.
+#
+# This file is only a template.
+# It must be processed by gomplate <https://gomplate.ca/>.
+#
+
+ServerName {{ getenv "SERVER_NAME" }}
+Listen 8443
+
+## Minimize information sent about this server.
+
+ServerSignature Off
+ServerTokens ProductOnly
+TraceEnable Off
+
+## Redirect all non-SSL requests.
+
+<VirtualHost *:80>
+  Redirect permanent / https://{{ getenv "SERVER_NAME" }}/
+</VirtualHost>
+
+<VirtualHost *:8443>
+  ServerName {{ getenv "SERVER_NAME" }}
+  ServerAdmin {{ getenv "SERVER_ADMIN" }}
+
+  ## Deny access to the file system.
+
+  <Directory "/">
+    Require all denied
+    Options None
+    AllowOverride None
+  </Directory>
+
+  ## Restrict the web space to authenticated users...
+
+  <Location "/">
+    Require valid-user
+    AuthType openid-connect
+  </Location>
+
+  ## ...but relax restrictions on public and static content.
+
+  <LocationMatch "^(/|/about)$">
+    Require all granted
+    AuthType none
+  </LocationMatch>
+
+  <Location "/static">
+    Require all granted
+    AuthType none
+  </Location>
+
+  ## Configure logging.
+
+  ErrorLog "/var/log/httpd/local_default_ssl_error_ssl.log"
+  LogLevel info
+  CustomLog "/var/log/httpd/local_default_ssl_access_ssl.log" combined
+
+  ## Configure SSL.
+
+  SSLEngine on
+  SSLCertificateFile "/certs/tls.crt"
+  SSLCertificateKeyFile "/certs/tls.key"
+  SSLCertificateChainFile "/certs/tls.crt"
+
+  ## Configure WSGI.
+
+  WSGIDaemonProcess WebApp display-name=WebApp processes=2 home=/srv
+  WSGIProcessGroup WebApp
+  WSGIScriptAlias / "/srv/wsgi.py"
+
+  ## Configure OIDC.
+
+  OIDCProviderMetadataURL https://cilogon.org/.well-known/openid-configuration
+  OIDCClientID {{ ds "secrets" "id" }}
+  OIDCClientSecret {{ ds "secrets" "secret" }}
+  OIDCRedirectURI https://{{ getenv "SERVER_NAME" }}/callback
+
+  OIDCScope "openid profile email org.cilogon.userinfo"
+
+  OIDCCryptoPassphrase {{ ds "secrets" "passphrase" }}
+</VirtualHost>
