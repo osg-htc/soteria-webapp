@@ -46,9 +46,7 @@ def configure_logging(filename: pathlib.Path) -> None:
     logging.config.dictConfig(
         {
             "version": 1,
-            "formatters": {
-                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
-            },
+            "formatters": {"default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}},
             "handlers": {
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -166,9 +164,7 @@ def get_orcid_id() -> Optional[str]:
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict[
-                    "eduPersonOrcid"
-                ]
+                return conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
 
     return None
 
@@ -177,7 +173,7 @@ def get_starter_project_name() -> Optional[str]:
     user = get_harbor_user()
 
     if user:
-        return user["username"]
+        return user["username"].lower().replace(".", "-")
 
     return None
 
@@ -238,6 +234,4 @@ def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
     """
     Returns a Fresh Desk API instance
     """
-    return registry.freshdesk.FreshDeskAPI(
-        flask.current_app.config["FRESH_DESK_API_KEY"]
-    )
+    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESH_DESK_API_KEY"])

@@ -61,9 +61,7 @@ def make_ok_response(data: DataObject) -> flask.Response:
 
 
 def make_error_response(code: int, message: str) -> flask.Response:
-    response = ErrorResponse(
-        "errors", [{"code": str(code), "message": message}]
-    )
+    response = ErrorResponse("errors", [{"code": str(code), "message": message}])
     if 400 <= code < 600:
         return flask.make_response(dataclasses.asdict(response), code)
     return flask.make_response(dataclasses.asdict(response))
@@ -84,9 +82,7 @@ def ping():
 
 @bp.route("/version")
 def version() -> flask.Response:
-    version_string = flask.current_app.config.get(
-        "SOTERIA_VERSION", "<not set>"
-    )
+    version_string = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")
 
     return make_ok_response({"version": version_string})
 
@@ -188,15 +184,14 @@ def create_user_starter_project(user_id: str):
     if not orcid_id:
         errors.append({"code": "PREREQUISITE", "message": "Missing ORCID iD"})
     if not harbor_user:
-        errors.append(
-            {"code": "PREREQUISITE", "message": "Missing Harbor user"}
-        )
+        errors.append({"code": "PREREQUISITE", "message": "Missing Harbor user"})
     if errors:
         return make_errors_response(errors)
 
     username = harbor_user["username"]
+    projectname = registry.util.get_starter_project_name()
 
-    project = api.create_project(username)
+    project = api.create_project(projectname)
 
     if "errors" in project:
         return make_errors_response(project["errors"])
@@ -227,7 +222,7 @@ def check_user_starter_project(user_id: str):
     api = registry.util.get_admin_harbor_api()
 
     harbor_user = registry.util.get_harbor_user() or {}
-    project_name = harbor_user["username"]
+    project_name = registry.util.get_starter_project_name()
 
     if not harbor_user:
         return make_error_response(
@@ -246,12 +241,9 @@ def check_user_starter_project(user_id: str):
 
     harbor = {
         "name": flask.current_app.config["HARBOR_NAME"],
-        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"]
-        + "/harbor/projects",
+        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"] + "/harbor/projects",
     }
 
     if "errors" in response:
         return make_ok_response({"verified": False})
-    return make_ok_response(
-        {"verified": True, "harbor": harbor, "project": response}
-    )
+    return make_ok_response({"verified": True, "harbor": harbor, "project": response})
