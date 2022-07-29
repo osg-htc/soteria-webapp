@@ -1,3 +1,6 @@
+## Temporary files created by vim.
+**/*.swp
+
 ## Configuration and cache directories for various tools.
 /.*
 
@@ -5,3 +8,7 @@
 /instance/
 /registry/static/.webassets-cache/
 /registry/static/assets/
+
+## PyCharm's project files and default virtual environment.
+/.idea/
+/venv/

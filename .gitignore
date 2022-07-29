@@ -8,6 +8,9 @@
 ## Local configuration file for pyenv.
 /.python-version
 
+## Build artifacts.
+/dist
+
 ## Flask's configuration and run-time artifacts, which might contain passwords.
 /instance/
 /registry/static/.webassets-cache/
