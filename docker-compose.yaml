@@ -15,8 +15,11 @@ services:
     container_name: soteria-webapp
     restart: always
 
+    # Expose the container's web server on a non-standard port so that
+    # it can coexist on the host with other web servers.
+
     ports:
-    - 9801:8443
+    - ${SOTERIA_WEBAPP_PORT}:8443
 
     secrets:
     - source: httpd-conf

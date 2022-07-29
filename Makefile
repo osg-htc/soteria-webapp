@@ -1,7 +1,9 @@
 # This Makefile is less a build system and more a means of making running
 # some development tasks more convenient.
 
-.PHONY: all build clean local-install lint reformat
+include .env
+
+.PHONY: all build clean local lint reformat
 
 PY_FILES := set_version.py wsgi.py registry/
 PY_WHEEL_BASENAME := soteria_webapp
@@ -35,18 +37,38 @@ clean:
 
 #---------------------------------------------------------------------------
 
-local-install: \
+local: \
 		secrets/config.py \
 		secrets/httpd.conf \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
 
-	docker compose build --pull
+	# Run `docker compose build --no-cache --pull` manually to ensure
+	# that the base image and additional packages are up to date. The
+	# build in this Makefile aims to be quick by using Docker's cache.
+
+	docker compose build
+
+	@echo ""
+	@echo "Build and configuration complete."
+	@echo ""
+	@echo "Start your local instance of SOTERIA by running:"
+	@echo ""
+	@echo "    docker compose up -d"
+	@echo ""
+	@echo "The web application should be available at:"
+	@echo ""
+	@echo "    https://localhost:${SOTERIA_WEBAPP_PORT}/"
+	@echo ""
+	@echo "Stop and remove your local instance by running:"
+	@echo ""
+	@echo "    docker compose down"
+	@echo ""
 
 secrets/config.py:
-	cp config_templates/config.py $@
+	cp templates/config.py $@
 	@echo
-	@echo "Please update $@ with the SOTERIA configuration to use."
+	@echo "ERROR: Please update '$@' with the SOTERIA configuration to use."
 	@echo
 	@exit 1
 
@@ -61,7 +83,7 @@ secrets/httpd.conf: \
 
 	docker run --rm \
 	  -e SERVER_ADMIN=someone@example.com \
-	  -e SERVER_NAME=localhost:9801 \
+	  -e SERVER_NAME=localhost:${SOTERIA_WEBAPP_PORT} \
 	  -v "$(PWD)"/etc/httpd/conf.d:/input \
 	  -v "$(PWD)"/secrets:/output \
 	  -v "$(PWD)"/secrets/oidc/id:/oidc/id \
@@ -74,7 +96,7 @@ secrets/httpd.conf: \
 
 secrets/oidc/id:
 	@echo
-	@echo "Please create $@ with the OIDC Client ID to use."
+	@echo "ERROR: Please create '$@' with the OIDC Client ID to use."
 	@echo
 	@exit 1
 
@@ -83,7 +105,7 @@ secrets/oidc/passphrase:
 
 secrets/oidc/secret:
 	@echo
-	@echo "Please create $@ with the OIDC Client Secret to use."
+	@echo "ERROR: Please create '$@' with the OIDC Client Secret to use."
 	@echo
 	@exit 1
 

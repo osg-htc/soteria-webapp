@@ -46,8 +46,8 @@ COPY etc /etc/
 COPY poetry.lock pyproject.toml requirements.txt /srv/
 RUN ${PY_EXE} -m pip install --no-cache-dir -r /srv/requirements.txt
 
-COPY set_version.py wsgi.py /srv/
 COPY registry /srv/registry/
+COPY set_version.py wsgi.py /srv/
 
 RUN (cd /srv/ && env FLASK_APP="registry" ${PY_EXE} -m flask assets build) \
     #

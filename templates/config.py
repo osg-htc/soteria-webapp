@@ -79,4 +79,4 @@ SOTERIA_DEBUG = False
 #
 # The version string to display to users.
 #
-SOTERIA_VERSION = "0.0.0+config_template"
+SOTERIA_VERSION = "0.0.0+template"

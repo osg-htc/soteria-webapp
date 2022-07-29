@@ -1,5 +1,5 @@
-Harbor User Registry
-====================
+SOTERIA Web Application
+=======================
 
 Web application for managing the users of a Harbor_ instance
 
@@ -11,8 +11,6 @@ Overview
 
 The web application is implemented using Flask_.
 
-<additional details to be written>
-
 .. _Flask: https://flask.palletsprojects.com/
 
 
@@ -23,52 +21,42 @@ The web application is configured using Python files placed in the
 application's `instance folder`_. The files are sorted by name and then
 loaded in that order.
 
-.. _Instance folder: https://flask.palletsprojects.com/en/2.0.x/config/#instance-folders
+.. _Instance folder: https://flask.palletsprojects.com/en/2.1.x/config/#instance-folders
 
-See `<examples/config.py>`_ for a sample configuration that documents the
-available configuration knobs. Usernames and passwords can be overriden via
+See `<templates/config.py>`_ for a sample configuration that documents the
+available configuration knobs. Usernames and passwords can be overridden via
 environment variables, which may be helpful when running in a container.
-
-The application can be configured for local development and testing, where
-OIDC callbacks may not be possible, or where credentials for a Harbor
-instance may not be available. Set ``REGISTRY_DEBUG = True``, and then copy
-the following files into the instance folder, as needed:
-
-* `<examples/mock_harbor_api.py>`_:
-
-* `<examples/mock_user_with_orcid.py>`_:
-
-* `<examples/mock_user_without_orcid.py>`_:
-
-Note that this mock data contains only enough information for the web
-application to function successfully.
 
 
 Quickstart: Development Environment
 -----------------------------------
 
-This project uses Poetry for packaging and dependency management.
+The steps below are but one way to set up a development environment.
+Anything that results in a Python 3.9 environment with the dependencies
+listed in `<pyproject.toml>`_ installed should work.
 
-1. Install `Poetry`_.
+1. Install `Poetry`_. It is used by this project for packaging and managing
+   dependencies.
 
-2. Create a virtual environment using pyenv. This is more convenient than
-   letting Poetry create the virtual environment, because with pyenv, there
-   is no need for explicitly activating and deactivating the environment.
+2. Create a virtual environment using `pyenv`_. With pyenv, there is no need
+   to explicitly activate and deactivate the virtual environment.
 
    a. Install `pyenv`_ and `pyenv-virtualenv`_.
 
    b. Create the virtual environment::
 
-        pyenv install 3.6.8  # for EL7
-        pyenv virtualenv 3.6.8 harbor-user-registry
+        pyenv install 3.9.7  # for EL8
+        pyenv virtualenv 3.9.7 soteria-webapp
         pyenv rehash
-        pyenv local harbor-user-registry
+
+        cd <location of your clone of this repository>
+        pyenv local soteria-webapp
 
    c. Ensure that ``pip`` and friends are up to date::
 
         python3 -m pip install -U pip setuptools wheel
 
-3. Install the project's dependencies and development tools::
+3. Install this project's dependencies and development tools::
 
      poetry install --remove-untracked
      pyenv rehash
@@ -82,43 +70,33 @@ This project uses Poetry for packaging and dependency management.
 Quickstart: Testing on localhost
 --------------------------------
 
-1. Create the Flask application's instance directory::
+Prerequisites:
 
-     mkdir instance
+- A CILogon OIDC Client ID and Secret
+- A Docker installation
 
-2. Copy ``examples/config.py`` to ``instance/config.py``.
+Steps:
 
-3. Edit ``instance/config.py``.
+1. Build and configure a local instance of SOTERIA::
 
-4. Run the Flask application using a local development server::
+     make local
 
-     poetry run ./run.sh
+   This command reports missing configuration files one by one, so you will
+   need to run it several times until it completes successfully. It does not
+   check whether the configuration files contain "valid" values.
 
+   - ``secrets/config.py``: The `<Makefile>`_ creates this file based on
+     a `template <templates/config.py>`_. Replace the placeholder values
+     from the template as needed.
 
-Quickstart: Testing on Docker
------------------------------
+   - ``secrets/oidc/id``: This file should contain the CILogon OIDC Client
+     ID to use. The OIDC client must be configured to allow
+     ``https://localhost:9801/callback`` as a callback URL. (If you update
+     the default port specified in `<.env>`_, update the port number in the
+     callback URL to match.)
 
-The steps below are useful mainly for testing the Docker image itself and
-the configuration for httpd (sans authentication via OIDC). To configure the
-web application, you can create the instance directory, as when testing on
-localhost (see above), and then modify the ``Dockerfile`` to ``COPY instance
-/srv/instance/`` as its last step.
+   - ``secrets/oidc/passphrase``: This file should contain the CILogon OIDC
+     Client Secret for the above Client ID.
 
-1. Build the image::
-
-     docker build -t <TAG> .
-
-2. Run the image in a new container::
-
-     docker run -d --rm -p 8443:8443 --name <NAME> <TAG>
-
-3. Visit `<https://localhost:8443/>`_.
-
-4. To debug errors, review the log files in:
-
-   * ``/var/log/httpd/``
-   * ``/srv/instance/log/``
-
-5. Stop the container::
-
-     docker stop <NAME>
+2. When the previous step completes without errors, the final output will
+   end with instructions for starting and stopping the local instance.
