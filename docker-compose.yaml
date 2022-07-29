@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        GIT_SHA: local-repository
+        GITHUB_REF: refs/tags/v0.local-repository
 
     image: soteria-webapp:dev
     container_name: soteria-webapp
@@ -32,7 +32,7 @@ services:
       target: /certs/tls.key
 
     volumes:
-    - ${PWD}/instance:/srv/instance
+    - ${PWD}/instance/log:/srv/instance/log
 
 secrets:
   httpd-conf:
