@@ -15,23 +15,15 @@ VERSION_PY = INSTANCE_DIR / "version.py"
 
 
 def main() -> None:
-    version_string = ""
+    version_string = "unknown"
     sha = None
     tag = None
 
-    ## FIXME (baydemir): Python 3.8: Use assignment expressions
-
-    ref = os.environ.get("GITHUB_REF")
-
-    if ref:
-        match = re.match(r"refs/tags/v(.+)", ref)
-
-        if match:
+    if ref := os.environ.get("GITHUB_REF"):
+        if match := re.match(r"refs/tags/v(.+)", ref):
             tag = match.group(1)
 
-    sha = os.environ.get("GITHUB_SHA")
-
-    if sha:
+    if sha := os.environ.get("GITHUB_SHA"):
         sha = sha[:8]
 
     if tag and sha:
