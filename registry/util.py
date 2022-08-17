@@ -234,4 +234,4 @@ def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
     """
     Returns a Fresh Desk API instance
     """
-    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESH_DESK_API_KEY"])
+    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESHDESK_API_KEY"])
