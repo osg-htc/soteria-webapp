@@ -1,9 +1,21 @@
 {% macro footer() %}
-<footer class="bg-primary">
-    <div class="row">
-        <div class="col text-center text-light">
-            For all user support, questions, and comments:
-            <a class="text-secondary" href="mailto:{{ config.CONTACT_EMAIL }}">{{ config.CONTACT_EMAIL }}</a>
+<footer class="bg-primary py-3">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col text-center text-light">
+                For all user support, questions, and comments:
+                <a class="text-secondary" href="mailto:{{ config.CONTACT_EMAIL }}">{{ config.CONTACT_EMAIL }}</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center text-light">
+                <p>Supported by National Science Foundation Award <a class="text-secondary" href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2115148">#2115148</a></p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <img height="75" width="75" src="/static/images/NSF_Official_logo.svg" alt="NSF Logo" />
+            </div>
         </div>
     </div>
 </footer>
