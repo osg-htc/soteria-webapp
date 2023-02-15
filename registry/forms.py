@@ -1,3 +1,5 @@
+import logging
+
 from flask_wtf import FlaskForm
 from wtforms import (
     SelectField,
@@ -114,4 +116,9 @@ class ResearcherApprovalForm(FlaskForm):
             "type": "SOTERIA Researcher Application",
         }
 
-        a = api.create_ticket(**ticket)
+        response = api.create_ticket(**ticket)
+
+        if response.status_code == 201:
+            return True
+        else:
+            return False

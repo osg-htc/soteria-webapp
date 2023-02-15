@@ -37,10 +37,18 @@ def index() -> flask.Response:
 def researcher_registration() -> flask.Response:
     researcher_form = ResearcherApprovalForm(flask.request.form)
 
+    html = None
     if researcher_form.validate_on_submit():
-        researcher_form.submit_request()
+        ticket_created = researcher_form.submit_request()
+        html = flask.render_template(
+            "researcher-registration.html",
+            form=researcher_form,
+            ticket_created=ticket_created
+        )
 
-    html = flask.render_template("researcher-registration.html", form=researcher_form)
+    else:
+        html = flask.render_template("researcher-registration.html", form=researcher_form)
+
     return flask.make_response(html)
 
 

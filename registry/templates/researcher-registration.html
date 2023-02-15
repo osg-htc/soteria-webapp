@@ -4,7 +4,7 @@
 {% macro form_element(element) %}
     {{ element.label(class="form-label") }}
     {% if element.errors %}
-    <div class="text-warning">{% for error in element.errors %}{{  error }}{% endfor %}</div>
+        <div class="text-warning">{% for error in element.errors %}{{ error }}{% endfor %}</div>
     {% endif %}
     {{ element(class="form-control") }}
 {% endmacro %}
@@ -19,66 +19,137 @@
 {% block page_class %}subpage{% endblock %}
 {% block body_class %}container{% endblock %}
 {% block body %}
-{{ title("Researcher Registration") }}
-<div class="row">
-    <div class="col-12 col-md-10 col-xl-8">
-        <form method="POST">
-        <p>
-            Researcher status is available for all SOTERIA members that meet certain criteria.
-            You can find these requirements listed out in the
-            <a href="{{ config.DOCS_URL }}/users/researcher/#requirements">documentation</a>.
-        </p>
-        <div class="mb-2">
-            {{ form_element(form.email) }}
-            {{ form_element(form.criteria) }}
-        </div>
-        <div class="mb-3">
-            <div id="a-xrac" class="requirement-option" hidden>
+    {{ title("Researcher Registration") }}
+    <div class="row">
+        <div class="col-12 col-md-10 col-xl-8">
+            <form method="POST">
                 <p>
-                    The user has an active XRAC allocation.
+                    Researcher status is available for all SOTERIA members that meet certain criteria.
+                    You can find these requirements listed out in the
+                    <a href="{{ config.DOCS_URL }}/users/researcher/#requirements">documentation</a>.
                 </p>
-                <b>No additional information is needed.</b>
-            </div>
-            <div id="b-listed-and-published" class="requirement-option" hidden>
-                <p>
-                    Researcher is listed as faculty or scientist/researcher in a department at the institution on an institutional website AND they have a publication from within the last 2 years listed in their public ORC ID profile.  Staff member should note what URL they appear at and the DOI of the publication.
-                </p>
-                {{ form_element(form.b_website_url) }}
-                {{ form_element(form.b_publication_doi) }}
-            </div>
-            <div id="c-active-grant-on-ORCID" class="requirement-option" hidden>
-                <p>
-                    Researcher is listed as having an active grant through that institution from a US federal government funding agency AND the grant shows up in their public ORC ID profile.  Staff member should note the grant #, and funding agency.
-                </p>
-                {{ form_element(form.c_grant_number) }}
-                {{ form_element(form.c_funding_agency) }}
-            </div>
-            <div id="d-institution-non-R1-HBCU-TCU" class="requirement-option" hidden>
-                <p>
-                    Researcher is listed as faculty or scientist/researcher in a department at the institution on an institutional website AND the institution is non-R1, HBCU, or TCU.  Staff member should note the institution and the classification.
-                </p>
-                {{ form_element(form.d_website_url) }}
-                {{ form_element(form.d_classification) }}
-            </div>
-            <div id="e-pi-approval" class="requirement-option" hidden>
-                <p>
-                    SOTERIA PI approval.  PI, not staff, should do approval; PI should note the reason why this exceptional case was approved.
-                </p>
-                <b>No additional information is needed.</b>
-            </div>
-        </div>
+                <div class="mb-2">
+                    {{ form_element(form.email) }}
+                    {{ form_element(form.criteria) }}
+                </div>
+                <div class="mb-3">
+                    <div id="a-xrac" class="requirement-option" hidden>
+                        <p>
+                            The user has an active XRAC allocation.
+                        </p>
+                        <b>No additional information is needed.</b>
+                    </div>
+                    <div id="b-listed-and-published" class="requirement-option" hidden>
+                        <p>
+                            Researcher is listed as faculty or scientist/researcher in a department at the institution
+                            on an institutional website AND they have a publication from within the last 2 years listed
+                            in their public ORC ID profile. Staff member should note what URL they appear at and the DOI
+                            of the publication.
+                        </p>
+                        {{ form_element(form.b_website_url) }}
+                        {{ form_element(form.b_publication_doi) }}
+                    </div>
+                    <div id="c-active-grant-on-ORCID" class="requirement-option" hidden>
+                        <p>
+                            Researcher is listed as having an active grant through that institution from a US federal
+                            government funding agency AND the grant shows up in their public ORC ID profile. Staff
+                            member should note the grant #, and funding agency.
+                        </p>
+                        {{ form_element(form.c_grant_number) }}
+                        {{ form_element(form.c_funding_agency) }}
+                    </div>
+                    <div id="d-institution-non-R1-HBCU-TCU" class="requirement-option" hidden>
+                        <p>
+                            Researcher is listed as faculty or scientist/researcher in a department at the institution
+                            on an institutional website AND the institution is non-R1, HBCU, or TCU. Staff member should
+                            note the institution and the classification.
+                        </p>
+                        {{ form_element(form.d_website_url) }}
+                        {{ form_element(form.d_classification) }}
+                    </div>
+                    <div id="e-pi-approval" class="requirement-option" hidden>
+                        <p>
+                            SOTERIA PI approval. PI, not staff, should do approval; PI should note the reason why this
+                            exceptional case was approved.
+                        </p>
+                        <b>No additional information is needed.</b>
+                    </div>
+                </div>
 
-        <div>
-            <p>
-                Click submit and we will follow up by creating a ticket and sending you an email at the provided address.
-            </p>
+                <div>
+                    <p>
+                        Click submit and we will follow up by creating a ticket and sending you an email at the provided
+                        address.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            {{ form.submit(class="btn btn-primary") }}
-        </div>
-    </form>
     </div>
-</div>
+
+    {% if ticket_created %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Success</h5>
+                        <a href="/account" class="btn-close"></a>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Your ticket has been created and a Soteria representative will be reaching out shortly,
+                            with more information.
+                        </p>
+                        <p>
+                            Please refer to your identified email address for future correspondence.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/account" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+    {% if ticket_created == False %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Error</h5>
+                        <a href="/account" class="btn-close"></a>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            We could not create your ticket at this time.
+                        </p>
+                        <p>
+                            Please contact <a href="mailto:support@osg-htc.org">support@osg-htc.org</a> so that we can
+                            get your account upgraded in the meantime.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/account" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+
 
 {% endblock %}
