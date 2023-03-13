@@ -2,9 +2,7 @@ $primary: #00364d;
 $secondary: #4aaed9;
 $light: lighten($secondary, 40%);
 
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
-$font-family-base: 'Titillium Web', sans-serif;
-
+$font-family-base: 'Helvetica Neue', 'Helvetica', sans-serif;
 @import "bootstrap/bootstrap-grid";
 @import "bootstrap/bootstrap";
 @import "variables";
@@ -62,5 +60,64 @@ body.subpage {
 .home {
   #registration {
     display: flex;
+  }
+}
+
+.image-card {
+  & > div:first-child {
+    display:flex;
+    img {
+      margin: auto;
+      overflow: visible;
+      border-radius: 50%;
+      padding: 15px;
+      background-color: #00364d;
+      height: 60px;
+      width: auto;
+      box-shadow: 1px 1px 8px grey;
+    }
+  }
+}
+
+.project-card {
+  margin-bottom: 1rem;
+  color:black;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  transition: box-shadow .4s;
+  .description {
+    img.repo-block {
+      height: 1.2rem;
+      padding-right: .3rem;
+    }
+  }
+  &:hover {
+    box-shadow: 0 1px 10px rgba(0,0,0,0.5);
+  }
+}
+
+.image-text-row {
+  display: flex;
+  img {
+    width: 1.3rem;
+    padding-right: .3rem;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    margin: auto;
+  }
+}
+
+.project-list {
+
+}
+
+.paginator {
+  display:flex;
+  div {
+    margin: 0 auto;
+  }
+  img {
+    cursor: pointer;
+    height: 1rem;
+    margin: 0rem .2rem;
   }
 }

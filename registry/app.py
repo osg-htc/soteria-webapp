@@ -13,6 +13,7 @@ import registry.api.v1
 import registry.cli
 import registry.util
 import registry.website
+import registry.harbor_wrapper
 
 __all__ = ["create_app"]
 
@@ -48,6 +49,7 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
+    app.register_blueprint(registry.harbor_wrapper.bp, url_prefix="/harbor")
 
 
 def define_assets(app: flask.Flask) -> None:

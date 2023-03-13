@@ -9,9 +9,6 @@
     {% assets "soteria_css" %}
     <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css">
     {% endassets %}
-    <script crossorigin="anonymous"
-            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-            src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% assets "soteria_js_main" %}
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
@@ -22,10 +19,10 @@
 </head>
 <body class="{% block page_class %}{% endblock %} d-flex flex-column">
 {{ navbar() }}
-<div class="{% block body_class %}{% endblock %} mb-auto">
+<main class="{% block body_class %}{% endblock %} mb-auto">
     {% block body %}
     {% endblock %}
-</div>
+</main>
 {{ footer() }}
 {% block scripts %}
 {% endblock %}
