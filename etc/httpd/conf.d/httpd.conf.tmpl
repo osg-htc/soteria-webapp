@@ -55,6 +55,17 @@ TraceEnable Off
     AuthType none
   </LocationMatch>
 
+
+  <Location "/public">
+    Require all granted
+    AuthType none
+  </Location>
+
+  <Location "/harbor">
+    Require all granted
+    AuthType none
+  </Location>
+
   <Location "/static">
     Require all granted
     AuthType none

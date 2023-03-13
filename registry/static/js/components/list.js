@@ -28,7 +28,7 @@ export const PaginateHandle = ({page, setPage, pageSize, url, ...props}) => {
         } else if(page < displayedPages) {
             return [...Array(displayedPages).keys()]
         } else {
-            return [...Array(displayedPages).keys()].map(x => x + (page - 10))
+            return [...Array(displayedPages).keys()].map(x => x + (page - displayedPages))
         }
     }
 
