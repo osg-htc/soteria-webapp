@@ -60,8 +60,19 @@ def status() -> flask.Response:
     return flask.make_response("No-op ok!")
 
 
+@bp.route("/public/projects")
+def public_projects():
+    return flask.render_template("projects.html")
+
+@bp.route("/public/projects/<project>/repositories")
+def public_project_repositories(project: str):
+    return flask.render_template("project-repositories.html", project=project)
+
+
 @bp.route("/<page>")
-@bp.route("/", defaults={"page": "index"})
+@bp.route("/", defaults={
+    "page": "index"
+})
 def show(page: str) -> flask.Response:
     """
     Renders pages that do not require any special handling.
