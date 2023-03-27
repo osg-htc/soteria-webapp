@@ -21,7 +21,13 @@ from wtforms.validators import (
     ValidationError
 )
 
-from registry.util import get_fresh_desk_api, get_admin_harbor_api, get_harbor_user
+from registry.util import (
+    get_fresh_desk_api,
+    get_admin_harbor_api,
+    get_harbor_user,
+    get_harbor_projects,
+    is_soteria_researcher
+)
 
 requirement_choices = [
     ("", "Select Requirement Met"),
@@ -40,8 +46,7 @@ def validate_visibility(form, field):
     def project_is_public(project: dict):
         return project.get('metadata', 'false').get('public', 'false') == 'true'
 
-    harbor_user = get_harbor_user()
-    users_projects = get_admin_harbor_api().list_projects(owner=harbor_user['username']).json()
+    users_projects = get_harbor_projects()
 
     public_projects = list(filter(project_is_public, users_projects))
     private_projects = list(filter(lambda x: not project_is_public(x), users_projects))
@@ -69,6 +74,9 @@ class CreateProjectForm(FlaskForm):
     submit = SubmitField("Submit")
 
     def validate(self, *args, **kwargs):
+        if not is_soteria_researcher():
+            return False
+
         self.project_name.validate(self)
         self.visibility.validate(self)
 
@@ -79,9 +87,11 @@ class CreateProjectForm(FlaskForm):
 
     def submit_request(self):
 
+        harbor_user = get_harbor_user()
         harbor_api = get_admin_harbor_api()
 
         response = harbor_api.create_project(self.project_name.data, self.visibility.data == "public")
+        harbor_api.add_project_member(response['project_id'], harbor_user['username'], role_id=4)
 
         return response
 

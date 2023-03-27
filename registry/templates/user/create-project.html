@@ -26,6 +26,12 @@
     {% assets "soteria_js_account" %}
         <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
+    <script type="module">
+        import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
+        import { useEffect, useState, useRef, useMemo, useReducer } from 'https://cdn.skypack.dev/preact@10.4.7/hooks'
+
+
+    </script>
 {% endblock %}
 {% block title %}Create Project{% endblock %}
 {% block page_class %}subpage{% endblock %}

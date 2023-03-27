@@ -83,6 +83,26 @@ class HarborAPI:
         """
         return self._request("GET", f"{self._api_base_url}{route}", **kwargs)
 
+    def _get_all(self, route, **kwargs):
+        """
+        Iterates all pages and retrieves all resource in a route
+        """
+        PAGE_SIZE = 100
+
+        info_response = self._get(route, params={'page_size': 1})
+        number_of_pages = (int(info_response.headers.get('x-total-count')) // PAGE_SIZE) + 1
+
+        resource = []
+        for i in range(1, number_of_pages + 1):
+            resource.extend(
+                self._get(route, **{
+                    **kwargs,
+                    'params': {'page': i, 'page_size': PAGE_SIZE, **kwargs.get("params", {})}
+                }).json()
+            )
+
+        return resource
+
     def _head(self, route, **kwargs):
         """
         Logs and sends an HTTP GET request for the given route.
@@ -97,20 +117,11 @@ class HarborAPI:
 
         return self._request("POST", f"{self._api_base_url}{route}", **kwargs)
 
-    def get_all_users(self):
+    def get_all_users(self, **kwargs):
         """
-        Get all users.
+        Get all users, internal use only
         """
-        PAGE_SIZE = 100
-
-        info_response = self._get(f"/users", params={'page_size': 1})
-        number_of_pages = (int(info_response.headers.get('x-total-count')) // PAGE_SIZE) + 1
-
-        users = []
-        for i in range(1, number_of_pages + 1):
-            users.extend(self._get(f"/users", params={'page': i, 'page_size': PAGE_SIZE}).json())
-
-        return users
+        return self._get_all("/users", **kwargs)
 
     def get_user(self, user_id):
         """
@@ -134,6 +145,12 @@ class HarborAPI:
         if not r.ok:
             return r.json()
         return self.get_project(name)
+
+    def get_all_projects(self, **kwargs):
+        """
+        Get all projects, purely internal function
+        """
+        return self._get_all("/projects", **kwargs)
 
     def get_project(self, project_name_or_id: Union[int, str]):
         """
@@ -178,6 +195,10 @@ class HarborAPI:
                 return member
 
         return None
+
+    def get_all_project_members(self, project_id: Union[str, int]):
+
+        return self._get_all(f"/projects/{project_id}/members")
 
     def delete_project_member(self, project_id: int, username: str):
         member = self.get_project_member(project_id, username)

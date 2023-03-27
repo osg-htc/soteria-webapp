@@ -157,18 +157,7 @@ def get_projects(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
-    api = registry.util.get_admin_harbor_api()
-    harbor_user = registry.util.get_harbor_user()
-
-    api_response = api.list_projects(**{**flask.request.args, 'owner': harbor_user['username']})
-
-    response = flask.jsonify(api_response.json())
-
-    for k, v in api_response.headers.items():
-        if k not in response.headers:
-            response.headers.add(k, v)
-
-    return response
+    return flask.jsonify(registry.util.get_harbor_projects())
 
 
 @bp.route("/users/<user_id>/starter_project", methods=["POST"])

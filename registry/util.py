@@ -146,6 +146,26 @@ def get_harbor_user() -> Any:
     return None
 
 
+# @cache.cached(key_prefix=get_subiss)
+def get_harbor_projects() -> Any:
+    """Returns the users harbor projects - O(m*n)"""
+
+    harbor_api = get_admin_harbor_api()
+    harbor_user = get_harbor_user()
+
+    user_projects = []
+    for project in harbor_api.get_all_projects():
+
+        project_members = harbor_api.get_all_project_members(project['project_id'])
+
+        for project_member in project_members:
+            if harbor_user['user_id'] == project_member['entity_id']:
+                user_projects.append(project)
+
+    return user_projects
+
+
+
 def get_idp_name() -> Optional[str]:
     update_request_environ()
 
