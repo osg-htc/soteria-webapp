@@ -13,6 +13,7 @@ import ldap3  # type: ignore[import]
 
 import registry.freshdesk
 import registry.harbor
+from registry.cache import cache
 
 __all__ = [
     "configure_logging",
@@ -110,6 +111,22 @@ def get_comanage_groups() -> List[str]:
     return []
 
 
+def get_subiss() -> Optional[str]:
+    """
+    Returns the concatenation of the current user's `sub` and `iss`.
+    """
+    update_request_environ()
+
+    sub: str = flask.request.environ.get("OIDC_CLAIM_sub", "")
+    iss: str = flask.request.environ.get("OIDC_CLAIM_iss", "")
+
+    if sub and iss:
+        return sub + iss
+
+    return None
+
+
+@cache.cached(key_prefix=get_subiss)
 def get_harbor_user() -> Any:
     """
     Returns the current users's Harbor account.
@@ -119,6 +136,8 @@ def get_harbor_user() -> Any:
     subiss = get_subiss()
 
     for user in api.get_all_users():
+        logging.info(user)
+
         details = api.get_user(user["user_id"])
 
         if subiss == details["oidc_user_meta"]["subiss"]:
@@ -174,21 +193,6 @@ def get_starter_project_name() -> Optional[str]:
 
     if user:
         return user["username"].lower()
-
-    return None
-
-
-def get_subiss() -> Optional[str]:
-    """
-    Returns the concatenation of the current user's `sub` and `iss`.
-    """
-    update_request_environ()
-
-    sub: str = flask.request.environ.get("OIDC_CLAIM_sub", "")
-    iss: str = flask.request.environ.get("OIDC_CLAIM_iss", "")
-
-    if sub and iss:
-        return sub + iss
 
     return None
 

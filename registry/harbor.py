@@ -101,7 +101,16 @@ class HarborAPI:
         """
         Get all users.
         """
-        return self._get("/users").json()
+        PAGE_SIZE = 100
+
+        info_response = self._get(f"/users", params={'page_size': 1})
+        number_of_pages = (int(info_response.headers.get('x-total-count')) // PAGE_SIZE) + 1
+
+        users = []
+        for i in range(1, number_of_pages + 1):
+            users.extend(self._get(f"/users", params={'page': i, 'page_size': PAGE_SIZE}).json())
+
+        return users
 
     def get_user(self, user_id):
         """
@@ -109,14 +118,14 @@ class HarborAPI:
         """
         return self._get(f"/users/{user_id}").json()
 
-    def create_project(self, name: str, *, storage_limit: int = 5368709120):
+    def create_project(self, name: str, public: bool = False, *, storage_limit: int = 5368709120):
         ## 5368709120 bytes = 1024 * 1024 * 1024
         """
         Create a new private project, with the given user as an administrator.
         """
         payload = {
             "project_name": name,
-            "public": False,
+            "public": public,
             "storage_limit": storage_limit,
         }
 
@@ -131,6 +140,21 @@ class HarborAPI:
         Get a new project, either by name or by ID.
         """
         return self._get(f"/projects/{project_name_or_id}").json()
+
+    def list_projects(
+            self, q: str=None, page: int=None, page_size: int=None, sort: str=None, name: str=None,
+            public: bool=None, owner: str=None, with_detail: bool=None
+    ):
+        return self._get("/projects", params={
+            "q": q,
+            "page": page,
+            "page_size": page_size,
+            "sort": sort,
+            "name": name,
+            "public": public,
+            "owner": owner,
+            "with_detail": with_detail
+        })
 
     def add_project_member(self, project_id: int, username: str, role_id: int = 2):
         payload = {

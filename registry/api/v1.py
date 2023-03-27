@@ -149,21 +149,26 @@ def verify_orcid(user_id: str):
     return make_ok_response(data)
 
 
-## FIXME: Old routes
+@bp.route("/users/<user_id>/projects")
+def get_projects(user_id: str):
+    """
+    Lists all current users related projects - TODO: Add researchers projects to members return
+    """
+    if user_id != "current":
+        return make_error_response(400, "Malformed user ID")
 
+    api = registry.util.get_admin_harbor_api()
+    harbor_user = registry.util.get_harbor_user()
 
-# def api_response(
-#     ok: bool, data: Any = None, errors: Optional[List[Dict[str, str]]] = None
-# ):
-#     body = {"status": "ok" if ok else "error"}
-#
-#     if data:
-#         body["data"] = data
-#
-#     if errors:
-#         body["errors"] = errors  # type: ignore[assignment]
-#
-#     return flask.make_response(body)
+    api_response = api.list_projects(**{**flask.request.args, 'owner': harbor_user['username']})
+
+    response = flask.jsonify(api_response.json())
+
+    for k, v in api_response.headers.items():
+        if k not in response.headers:
+            response.headers.add(k, v)
+
+    return response
 
 
 @bp.route("/users/<user_id>/starter_project", methods=["POST"])
