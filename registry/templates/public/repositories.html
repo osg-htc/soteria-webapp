@@ -1,0 +1,43 @@
+{% extends "layout/base.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block js_extension %}<script src="/static/js/project.js" type="module" defer></script>{% endblock %}
+{% block title %}SOTERIA: Public Projects{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
+            {{ title(project + " Repositories") }}
+            <div id="repositories"></div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script type="module">
+    import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
+    import { ImageCard, ImageTextRow, RepositoryCard} from "/static/js/components/card.js";
+    import { HarborList} from "/static/js/components/list.js";
+
+    const RepositoryList = () => {
+
+        return (
+            h(HarborList, {
+                url: "/harbor/get/projects/{{ project }}/repositories",
+                card: RepositoryCard,
+                cardOptions: {},
+                pageSize:10,
+                paginatorOptions: {
+                    className: "pt-3",
+                },
+                sortOptions: {
+                    "": "Default",
+                    "-update_time": "Recently Updated"
+                }
+            })
+        )
+    }
+
+    render(h(RepositoryList, {}), document.getElementById("repositories"))
+</script>
+{% endblock %}

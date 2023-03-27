@@ -8,6 +8,7 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     TimeField,
+    RadioField
 )
 from wtforms.validators import (
     URL,
@@ -17,9 +18,10 @@ from wtforms.validators import (
     Length,
     NumberRange,
     Regexp,
+    ValidationError
 )
 
-from registry.util import get_fresh_desk_api
+from registry.util import get_fresh_desk_api, get_admin_harbor_api, get_harbor_user
 
 requirement_choices = [
     ("", "Select Requirement Met"),
@@ -29,6 +31,59 @@ requirement_choices = [
     ("d-institution-non-R1-HBCU-TCU", "Non R1, HBCU, or TCU institute member"),
     ("e-pi-approval", "SOTERIA PI approval"),
 ]
+
+MAX_PRIVATE_PROJECTS = 2
+MAX_PUBLIC_PROJECTS = 3
+
+
+def validate_visibility(form, field):
+    def project_is_public(project: dict):
+        return project.get('metadata', 'false').get('public', 'false') == 'true'
+
+    harbor_user = get_harbor_user()
+    users_projects = get_admin_harbor_api().list_projects(owner=harbor_user['username']).json()
+
+    public_projects = list(filter(project_is_public, users_projects))
+    private_projects = list(filter(lambda x: not project_is_public(x), users_projects))
+
+    if field.data == 'private' and len(private_projects) >= MAX_PRIVATE_PROJECTS:
+        raise ValidationError(
+            f"You have been allocated the maximum amount of private projects, contact support if you need more."
+        )
+
+    elif field.data == 'public' and len(public_projects) >= MAX_PUBLIC_PROJECTS:
+        raise ValidationError(
+            f"You have been allocated the maximum amount of public projects, contact support if you need more."
+        )
+
+    return True
+
+
+class CreateProjectForm(FlaskForm):
+    project_name = StringField("Name", validators=[InputRequired()])
+    visibility = RadioField(
+        "Visibility",
+        choices=[("public", "Public"), ("private", "Private")],
+        validators=[validate_visibility]
+    )
+    submit = SubmitField("Submit")
+
+    def validate(self, *args, **kwargs):
+        self.project_name.validate(self)
+        self.visibility.validate(self)
+
+        if self.errors:
+            return False
+
+        return True
+
+    def submit_request(self):
+
+        harbor_api = get_admin_harbor_api()
+
+        response = harbor_api.create_project(self.project_name.data, self.visibility.data == "public")
+
+        return response
 
 
 class ResearcherApprovalForm(FlaskForm):

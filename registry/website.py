@@ -15,7 +15,7 @@ import jinja2
 import registry.util
 from registry.util import get_fresh_desk_api
 
-from .forms import ResearcherApprovalForm
+from .forms import ResearcherApprovalForm, CreateProjectForm
 
 __all__ = ["bp"]
 
@@ -51,6 +51,23 @@ def researcher_registration() -> flask.Response:
 
     return flask.make_response(html)
 
+@bp.route("/projects/create", methods=["GET", "POST"])
+def create_project() -> flask.Response:
+    projects_creation_form = CreateProjectForm(flask.request.form)
+
+    if projects_creation_form.validate_on_submit():
+        project_created = projects_creation_form.submit_request()
+        html = flask.render_template(
+            "/user/create-project.html",
+            form=projects_creation_form,
+            project_created=project_created
+        )
+
+    else:
+        html = flask.render_template("/user/create-project.html", form=projects_creation_form)
+
+    return flask.make_response(html)
+
 
 @bp.route("/status")
 def status() -> flask.Response:
@@ -60,13 +77,9 @@ def status() -> flask.Response:
     return flask.make_response("No-op ok!")
 
 
-@bp.route("/public/projects")
-def public_projects():
-    return flask.render_template("projects.html")
-
-@bp.route("/public/projects/<project>/repositories")
-def public_project_repositories(project: str):
-    return flask.render_template("project-repositories.html", project=project)
+@bp.route("/projects")
+def user_projects():
+    return flask.render_template("/user/projects.html")
 
 
 @bp.route("/<page>")

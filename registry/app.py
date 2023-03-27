@@ -14,6 +14,8 @@ import registry.cli
 import registry.util
 import registry.website
 import registry.harbor_wrapper
+import registry.public
+from registry.cache import cache
 
 __all__ = ["create_app"]
 
@@ -50,6 +52,7 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
     app.register_blueprint(registry.harbor_wrapper.bp, url_prefix="/harbor")
+    app.register_blueprint(registry.public.bp, url_prefix="/public")
 
 
 def define_assets(app: flask.Flask) -> None:
@@ -131,6 +134,8 @@ def create_app() -> flask.Flask:
     register_blueprints(app)
     define_assets(app)
     add_context_processor(app)
+
+    cache.init_app(app)
 
     app.logger.info("Created and configured app!")
 

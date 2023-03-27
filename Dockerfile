@@ -51,8 +51,6 @@ COPY set_version.py wsgi.py /srv/
 
 RUN (cd /srv/ && env FLASK_APP="registry" ${PY_EXE} -m flask assets build) \
     #
-    && find /srv/ -name ".*" -exec rm -rf {} \; -prune \
-    #
     && rm -rf /srv/instance/* \
     && chown apache:apache /srv/instance/ \
     && ${PY_EXE} /srv/set_version.py

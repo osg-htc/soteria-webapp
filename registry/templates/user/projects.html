@@ -1,0 +1,42 @@
+{% extends "layout/base.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block title %}My Projects{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
+            {{ title("My Projects") }}
+            <div id="projects"></div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script type="module" async>
+    import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
+    import { ImageCard, ImageTextRow, ProjectCard } from "../static/js/components/card.js";
+    import { HarborList} from "../static/js/components/list.js";
+
+    const ProjectList = () => {
+
+        return (
+            h(HarborList, {
+                url: "/api/v1/users/current/projects",
+                card: ProjectCard,
+                cardOptions: {},
+                pageSize:10,
+                paginatorOptions: {
+                    className: "pt-3"
+                },
+                sortOptions: {
+                    "": "Default",
+                    "-update_time": "Recently Updated"
+                }
+            })
+        )
+    }
+
+    render(h(ProjectList, {}), document.getElementById("projects"))
+</script>
+{% endblock %}
