@@ -9,11 +9,12 @@ from typing import Any, Dict
 import flask
 import flask_assets  # type: ignore[import]
 
+import registry.api.debug
 import registry.api.v1
 import registry.cli
+import registry.harbor_wrapper
 import registry.util
 import registry.website
-import registry.harbor_wrapper
 
 __all__ = ["create_app"]
 
@@ -37,11 +38,7 @@ def load_config(app: flask.Flask) -> None:
         "LDAP_URL",
         "LDAP_USERNAME",
     ]:
-        ## FIXME (baydemir): Python 3.8: Use assignment expressions
-
-        val = os.environ.get(key)
-
-        if val is not None:
+        if (val := os.environ.get(key)) is not None:
             app.config[key] = val
 
 
@@ -50,6 +47,9 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
     app.register_blueprint(registry.harbor_wrapper.bp, url_prefix="/harbor")
+
+    if app.config.get("SOTERIA_DEBUG"):
+        app.register_blueprint(registry.api.debug.bp, url_prefix="/api/debug")
 
 
 def define_assets(app: flask.Flask) -> None:
@@ -135,8 +135,3 @@ def create_app() -> flask.Flask:
     app.logger.info("Created and configured app!")
 
     return app
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True, use_reloader=True, port=9876)
-
