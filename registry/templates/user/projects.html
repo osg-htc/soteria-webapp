@@ -24,15 +24,8 @@
             h(HarborList, {
                 url: "/api/v1/users/current/projects",
                 card: ProjectCard,
-                cardOptions: {},
-                pageSize:10,
-                paginatorOptions: {
-                    className: "pt-3"
-                },
-                sortOptions: {
-                    "": "Default",
-                    "-update_time": "Recently Updated"
-                }
+                cardOptions: (data) => { return { href: `/public/projects/${data['name']}/repositories`, ...data} },
+                pageSize:10
             })
         )
     }

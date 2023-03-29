@@ -1,5 +1,6 @@
 import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
 import { useEffect, useState, useRef, useMemo, useReducer } from 'https://cdn.skypack.dev/preact@10.4.7/hooks'
+import { buildOptions } from "/static/js/components/util.js";
 
 export const PaginateHandle = ({page, setPage, pageSize, url, ...props}) => {
 
@@ -91,7 +92,7 @@ export const SortHandle = ({options, setSort, ...props}) => {
 
 }
 
-export const HarborList = ({url, card, cardOptions, paginatorOptions, sortOptions}) => {
+export const HarborList = ({url, card, queryOptions, cardOptions, paginatorOptions, sortOptions}) => {
 
     let [data, setData] = useState([]);
     let [page, setPage] = useState(1);
@@ -127,19 +128,21 @@ export const HarborList = ({url, card, cardOptions, paginatorOptions, sortOption
     return (
         h("div", {},
             h("div", {className:"row justify-content-between mb-3"},
-                h(QueryHandle, {className: "col-6", setQuery: setQuery}),
-                h(SortHandle, {
+                ... queryOptions ? [h(QueryHandle, {className: "col-6", setQuery: setQuery})] : [],
+                ... sortOptions ? [h(SortHandle, {
                     className: "col-auto",
                     options: sortOptions,
                     setSort: setSort
-                })
+                })] : []
             ),
             ...data.map((p) => {
                 return (
-                    h(card, {...cardOptions, ...p})
+                    h(card, buildOptions(cardOptions, p))
                 )
             }),
-            h(PaginateHandle, {page: page, setPage: setPage, pageSize: pageSize, url: endpointUrl, ...paginatorOptions})
+            ... paginatorOptions ? [
+                h(PaginateHandle, {page: page, setPage: setPage, pageSize: pageSize, url: endpointUrl, ...paginatorOptions})
+            ] : []
         )
     )
 

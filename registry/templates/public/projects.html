@@ -24,7 +24,7 @@
             h(HarborList, {
                 url: "/harbor/get/projects",
                 card: ProjectCard,
-                cardOptions: {href: `/public/projects/${name}/repositories`},
+                cardOptions: (data) => { return { href: `/public/projects/${data['name']}/repositories`, ...data} },
                 pageSize:10,
                 paginatorOptions: {
                     className: "pt-3"
