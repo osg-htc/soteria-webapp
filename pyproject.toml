@@ -61,6 +61,7 @@ ldap3 = "~2.9"
 libsass = "~0.21"
 requests = "~2.28"
 typing-extensions = "~4.3"
+Flask-Cache = "^0.13.1"
 
 
 [tool.poetry.dev-dependencies]
