@@ -6,13 +6,17 @@ import logging
 import logging.config
 import logging.handlers
 import pathlib
+import re
 from typing import Any, List, Optional
 
 import flask
 import ldap3  # type: ignore[import]
+import requests.exceptions
 
 import registry.freshdesk
 import registry.harbor
+from registry.harbor import HarborRoleIds
+import registry.comanage
 from registry.cache import cache
 
 __all__ = [
@@ -99,7 +103,7 @@ def get_comanage_groups() -> List[str]:
             conn.search(
                 ldap_base_dn,
                 f"(&(objectClass=inetOrgPerson)(uid={sub}))",
-                attributes=["isMemberOf"],
+                attributes=["*"],
             )
 
             if len(conn.entries) == 1:
@@ -109,6 +113,12 @@ def get_comanage_groups() -> List[str]:
                 flask.current_app.logger.error("???")
 
     return []
+
+
+def get_coperson_id():
+    """Get the Comamange Person id for the current user"""
+    comanage_api = get_admin_comanage_api()
+    return comanage_api.get_persons(identifier=get_sub()).json()['CoPeople'][0]['Id']
 
 
 def get_subiss() -> Optional[str]:
@@ -146,24 +156,63 @@ def get_harbor_user() -> Any:
     return None
 
 
-# @cache.cached(key_prefix=get_subiss)
 def get_harbor_projects() -> Any:
     """Returns the users harbor projects - O(m*n)"""
 
+    comanage_api = registry.util.get_admin_comanage_api()
+    harbor_api = registry.util.get_admin_harbor_api()
+
+    coperson_id = registry.util.get_coperson_id()
+
+    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()['CoGroups']
+
+    owner_pattern = re.compile('^soteria-(.*?)-owners')
+    owned_project_names = [owner_pattern.match(g['Name']).group(1) for g in comanage_groups if owner_pattern.match(g['Name'])]
+
+    owned_projects = []
+    for project_name in owned_project_names:
+        owned_projects.append(harbor_api.get_project(project_name))
+
+    return owned_projects
+
+
+def create_project(name: str, public: bool):
+    """Create a researcher project"""
+
     harbor_api = get_admin_harbor_api()
-    harbor_user = get_harbor_user()
+    comanage_api = get_admin_comanage_api()
 
-    user_projects = []
-    for project in harbor_api.get_all_projects():
+    project = harbor_api.create_project(name, public)
 
-        project_members = harbor_api.get_all_project_members(project['project_id'])
+    if not ('name' in project and project['name'] == name):
+        return project
 
-        for project_member in project_members:
-            if harbor_user['user_id'] == project_member['entity_id']:
-                user_projects.append(project)
+    comanage_person = comanage_api.get_persons(identifier=get_sub()).json()
 
-    return user_projects
+    if len(comanage_person['CoPeople']) == 0:
+        raise LookupError("Could not find a Comanage account associated with this user")
 
+    coperson_id = comanage_person['CoPeople'][0]['Id']
+
+    # Create the groups in Harbor
+    harbor_api.create_project_member(name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-owners")
+    harbor_api.create_project_member(name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-maintainers")
+    harbor_api.create_project_member(name, HarborRoleIds.developer, group_name=f"soteria-{name}-developers")
+    harbor_api.create_project_member(name, HarborRoleIds.guest, group_name=f"soteria-{name}-guests")
+
+    # Create the groups in Comanage
+    owner_group = comanage_api.create_group(f"soteria-{name}-owners").json()
+    maintainer_group = comanage_api.create_group(f"soteria-{name}-maintainers").json()
+    developer_group = comanage_api.create_group(f"soteria-{name}-developers").json()
+    guest_group = comanage_api.create_group(f"soteria-{name}-guests").json()
+
+    # Add the researcher to the groups
+    comanage_api.add_group_member(owner_group['Id'], coperson_id, member=True, owner=False)
+    comanage_api.add_group_member(maintainer_group['Id'], coperson_id, member=True, owner=True)
+    comanage_api.add_group_member(developer_group['Id'], coperson_id, member=True, owner=True)
+    comanage_api.add_group_member(guest_group['Id'], coperson_id, member=True, owner=True)
+
+    return project
 
 
 def get_idp_name() -> Optional[str]:
@@ -176,6 +225,24 @@ def get_name() -> Optional[str]:
     update_request_environ()
 
     return flask.request.environ.get("OIDC_CLAIM_name")
+
+
+def get_email() -> Optional[str]:
+    update_request_environ()
+
+    return flask.request.environ.get('OIDC_CLAIM_email')
+
+
+def get_eppn() -> Optional[str]:
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_eppn")
+
+
+def get_sub() -> Optional[str]:
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_sub")
 
 
 def get_orcid_id() -> Optional[str]:
@@ -250,6 +317,20 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
         basic_auth=(
             flask.current_app.config["HARBOR_ADMIN_USERNAME"],
             flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
+        ),
+    )
+
+
+def get_admin_comanage_api():
+    """
+    Returns a Comanage API instance authenticated as an admin.
+    """
+    return registry.comanage.ComanageAPI(
+        flask.current_app.config["REGISTRY_API_URL"],
+        flask.current_app.config["REGISTRY_CO_ID"],
+        basic_auth=(
+            flask.current_app.config["REGISTRY_API_USERNAME"],
+            flask.current_app.config["REGISTRY_API_PASSWORD"],
         ),
     )
 

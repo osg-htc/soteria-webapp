@@ -152,7 +152,7 @@ def verify_orcid(user_id: str):
 @bp.route("/users/<user_id>/projects")
 def get_projects(user_id: str):
     """
-    Lists all current users related projects - TODO: Add researchers projects to members return
+    Lists all current users related projects
     """
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")

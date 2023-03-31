@@ -19,3 +19,6 @@
 ## PyCharm's project files and default virtual environment.
 /.idea/
 /venv/
+
+## Test config
+/registry/tests/config.py

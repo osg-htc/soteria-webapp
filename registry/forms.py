@@ -26,7 +26,8 @@ from registry.util import (
     get_admin_harbor_api,
     get_harbor_user,
     get_harbor_projects,
-    is_soteria_researcher
+    is_soteria_researcher,
+    create_project
 )
 
 requirement_choices = [
@@ -86,12 +87,7 @@ class CreateProjectForm(FlaskForm):
         return True
 
     def submit_request(self):
-
-        harbor_user = get_harbor_user()
-        harbor_api = get_admin_harbor_api()
-
-        response = harbor_api.create_project(self.project_name.data, self.visibility.data == "public")
-        harbor_api.add_project_member(response['project_id'], harbor_user['username'], role_id=4)
+        response = create_project(self.project_name.data, self.visibility.data == "public")
 
         return response
 

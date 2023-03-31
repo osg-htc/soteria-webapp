@@ -3,11 +3,18 @@ Wrapper for Harbor's API.
 """
 
 import logging
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union, Literal
 
 import requests
 
 __all__ = ["HarborAPI"]
+
+
+class HarborRoleIds:
+    project_admin = 1
+    developer = 2
+    guest = 3
+    maintainer = 4
 
 
 class HarborAPI:
@@ -146,6 +153,9 @@ class HarborAPI:
             return r.json()
         return self.get_project(name)
 
+    def delete_project(self, name: str):
+        return self._delete(f"/projects/{name}")
+
     def get_all_projects(self, **kwargs):
         """
         Get all projects, purely internal function
@@ -185,6 +195,27 @@ class HarborAPI:
             return r.json()
         return self.get_project_member(project_id, username)
 
+    def create_project_member(self, project_name_or_id: str, role: Literal[1,2,3,4], group_id: int = None,
+                              group_name: str = None, user_id: int = None, username: str = None):
+        """Add/Create a new project member ( user or group )"""
+
+        if sum(map(lambda x: x is not None, [group_name, group_id, username, user_id])) != 1:
+            raise ValueError("Exactly one of group_name, group_id, username, and user_id can be input.")
+
+        data = {
+            "role_id": role,
+            "member_group": {
+                "group_name": group_name,
+                "id": group_id
+            },
+            "member_user": {
+                "username": username,
+                "user_id": user_id
+            }
+        }
+
+        return self._post(f"/projects/{project_name_or_id}/members", json=data)
+
     def get_project_member(self, project_id: int, username: str):
         params = {"entityname": username}
 
@@ -209,3 +240,6 @@ class HarborAPI:
             return r.json()
 
         return {}
+
+    def delete_usergroup(self, usergroup_id: int):
+        return self._delete(f"/usergroups/{usergroup_id}")
