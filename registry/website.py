@@ -23,14 +23,22 @@ bp = flask.Blueprint("website", __name__)
 
 
 @bp.route("/account")
-def index() -> flask.Response:
+def index():
     user = {
         "name": registry.util.get_name() or "<not available>",
         "orcid_id": registry.util.get_orcid_id() or "<not available>",
+        "email": registry.util.get_email() or "<not available>",
+        'status': registry.util.get_status() or "<not available>",
     }
 
-    html = flask.render_template("account.html", user=user)
-    return flask.make_response(html)
+    return flask.render_template(
+        "/user/account.html",
+        user=user,
+        is_researcher=registry.util.is_soteria_researcher(),
+        is_member=registry.util.is_soteria_member(),
+        is_affiliate=registry.util.is_soteria_affiliate(),
+        registry_url=flask.current_app.config['REGISTRY_HOMEPAGE_URL']
+    )
 
 
 @bp.route("/researcher-registration", methods=["GET", "POST"])
@@ -79,7 +87,11 @@ def status() -> flask.Response:
 
 @bp.route("/projects")
 def user_projects():
-    return flask.render_template("/user/projects.html")
+    return flask.render_template(
+        "/user/projects.html",
+        is_researcher=registry.util.is_soteria_researcher(),
+        harbor_url=flask.current_app.config['HARBOR_HOMEPAGE_URL']
+    )
 
 
 @bp.route("/<page>")

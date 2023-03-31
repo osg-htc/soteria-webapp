@@ -54,12 +54,12 @@ def validate_visibility(form, field):
 
     if field.data == 'private' and len(private_projects) >= MAX_PRIVATE_PROJECTS:
         raise ValidationError(
-            f"You have been allocated the maximum amount of private projects, contact support if you need more."
+            f"You have reached the maximum allocation of Private Projects, contact support@osg-htc.org for more."
         )
 
     elif field.data == 'public' and len(public_projects) >= MAX_PUBLIC_PROJECTS:
         raise ValidationError(
-            f"You have been allocated the maximum amount of public projects, contact support if you need more."
+            f"You have reached the maximum allocation of Public Projects, contact support@osg-htc.org for more."
         )
 
     return True
@@ -87,9 +87,7 @@ class CreateProjectForm(FlaskForm):
         return True
 
     def submit_request(self):
-        response = create_project(self.project_name.data, self.visibility.data == "public")
-
-        return response
+        return create_project(self.project_name.data, self.visibility.data == "public")
 
 
 class ResearcherApprovalForm(FlaskForm):

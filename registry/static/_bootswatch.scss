@@ -125,8 +125,6 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;50
 @include btn(light, $light, $white);
 
 .btn {
-  text-transform: uppercase;
-  border: none;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
   transition: color .4s, background-color .4s, border-color .4s, box-shadow .4s;
 

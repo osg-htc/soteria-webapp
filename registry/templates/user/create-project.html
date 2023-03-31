@@ -26,25 +26,17 @@
     {% assets "soteria_js_account" %}
         <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    <script type="module">
-        import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
-        import { useEffect, useState, useRef, useMemo, useReducer } from 'https://cdn.skypack.dev/preact@10.4.7/hooks'
-
-
-    </script>
 {% endblock %}
 {% block title %}Create Project{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body_class %}container{% endblock %}
 {% block body %}
-    {{ title("Create Project") }}
-    <div class="row">
-        <div class="col-12 col-md-10 col-xl-8">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-xl-7">
+            {{ title("Create Project") }}
             <form method="POST">
                 <p>
-                    Researcher status is available for all SOTERIA members that meet certain criteria.
-                    You can find these requirements listed out in the
-                    <a href="{{ config.DOCS_URL }}/users/researcher/#requirements">documentation</a>.
+                    Researchers can create 3 Public and 2 Private projects.
                 </p>
                 <hr>
                 <div class="mb-2">

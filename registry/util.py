@@ -7,7 +7,7 @@ import logging.config
 import logging.handlers
 import pathlib
 import re
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Literal
 
 import flask
 import ldap3  # type: ignore[import]
@@ -244,6 +244,13 @@ def get_sub() -> Optional[str]:
 
     return flask.request.environ.get("OIDC_CLAIM_sub")
 
+def get_status() -> Literal['Researcher', 'Member', 'Affiliate']:
+    if is_soteria_researcher():
+        return 'Researcher'
+    elif is_soteria_member():
+        return 'Member'
+    else:
+        return 'Affiliate'
 
 def get_orcid_id() -> Optional[str]:
     """
@@ -270,7 +277,9 @@ def get_orcid_id() -> Optional[str]:
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+                orcid = conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+
+                return orcid[0] if len(orcid) != 0 else None
 
     return None
 

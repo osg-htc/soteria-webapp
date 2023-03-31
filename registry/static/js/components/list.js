@@ -125,16 +125,20 @@ export const HarborList = ({url, card, queryOptions, cardOptions, paginatorOptio
 
     }, [page, query, sort])
 
+    if(data.length == 0){
+        return h("box", {className: "shine rounded project-card", style:"height:100px; width: 100%;"})
+    }
+
     return (
         h("div", {},
-            h("div", {className:"row justify-content-between mb-3"},
+            ... queryOptions || sortOptions ? [h("div", {className:"row justify-content-between mb-3"},
                 ... queryOptions ? [h(QueryHandle, {className: "col-6", setQuery: setQuery})] : [],
                 ... sortOptions ? [h(SortHandle, {
                     className: "col-auto",
                     options: sortOptions,
                     setSort: setSort
                 })] : []
-            ),
+            )] : [],
             ...data.map((p) => {
                 return (
                     h(card, buildOptions(cardOptions, p))

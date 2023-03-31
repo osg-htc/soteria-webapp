@@ -8,10 +8,6 @@ $font-family-base: 'Helvetica Neue', 'Helvetica', sans-serif;
 @import "variables";
 @import "bootswatch";
 
-div.col-12:not(:last-child){
-  margin-bottom: 1rem;
-}
-
 footer {
   .row{
     align-content: center;
@@ -119,5 +115,30 @@ body.subpage {
     cursor: pointer;
     height: 1rem;
     margin: 0rem .2rem;
+  }
+}
+
+.shine {
+  background: #f6f7f800;
+  background-image: linear-gradient(to right, #f6f7f800 0%, $primary 20%, #f6f7f800 40%, #f6f7f800 100%);
+  background-repeat: no-repeat;
+  background-size: 1920px 1080px;
+  display: inline-block;
+  position: relative;
+
+  -webkit-animation-duration: 1s;
+  -webkit-animation-fill-mode: forwards;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: placeholderShimmer;
+  -webkit-animation-timing-function: linear;
+  }
+
+@-webkit-keyframes placeholderShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+
+  100% {
+    background-position: 468px 0;
   }
 }
