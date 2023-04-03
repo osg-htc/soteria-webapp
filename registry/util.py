@@ -136,17 +136,21 @@ def get_subiss() -> Optional[str]:
     return None
 
 
-@cache.cached(key_prefix=get_subiss)
-def get_harbor_user() -> Any:
-    """
-    Returns the current users's Harbor account.
-    """
-    api = get_admin_harbor_api()
+def get_harbor_user():
 
     subiss = get_subiss()
 
-    for user in api.get_all_users():
-        logging.info(user)
+    return get_harbor_user_by_subiss(subiss)
+
+
+@cache.memoize()
+def get_harbor_user_by_subiss(subiss: str) -> Any:
+    """
+    Returns the current user's Harbor account.
+    """
+    api = get_admin_harbor_api()
+
+    for user in api.get_all_users(params={"sort": "-creation_time"}):
 
         details = api.get_user(user["user_id"])
 

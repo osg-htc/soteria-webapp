@@ -1,5 +1,6 @@
 import flask
 import pytest
+from pytest_mock import MockerFixture
 
 from registry.app import create_app
 from registry import util
@@ -41,6 +42,25 @@ class TestUtil:
     def test_get_harbor_projects(self, app):
         with app.test_request_context():
             assert len(util.get_harbor_projects()) == 2
+
+    def test_bust_get_harbor_user_cache(self, app, client, mocker: MockerFixture):
+
+        spy = mocker.spy(util, "get_admin_harbor_api")
+
+        response = client.get("/api/v1/users/current/harbor_id")
+
+        assert spy.call_count == 1
+
+        with app.test_request_context():
+            original_user = util.get_harbor_user()
+
+        response = client.get("/api/v1/users/current/harbor_id")
+
+        assert spy.call_count == 2
+
+        original_user = util.get_harbor_user()
+
+        assert spy.call_count == 2
 
     def test_create_project(self, app):
         with app.test_request_context():

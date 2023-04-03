@@ -9,6 +9,7 @@ import flask
 from typing_extensions import Literal
 
 import registry.util
+from registry.cache import cache
 
 __all__ = ["bp"]
 
@@ -124,6 +125,7 @@ def check_user_harbor_id(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
+    cache.delete_memoized(registry.util.get_harbor_user_by_subiss, registry.util.get_subiss())
     harbor_user = registry.util.get_harbor_user()
 
     username = harbor_user["username"] if harbor_user else None
