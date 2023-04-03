@@ -40,6 +40,7 @@ def load_config(app: flask.Flask) -> None:
         "LDAP_PASSWORD",
         "LDAP_URL",
         "LDAP_USERNAME",
+        "SECRET_KEY"
     ]:
         ## FIXME (baydemir): Python 3.8: Use assignment expressions
 
