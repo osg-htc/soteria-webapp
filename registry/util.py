@@ -46,7 +46,9 @@ def configure_logging(filename: pathlib.Path) -> None:
     logging.config.dictConfig(
         {
             "version": 1,
-            "formatters": {"default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}},
+            "formatters": {
+                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
+            },
             "handlers": {
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -94,7 +96,6 @@ def get_comanage_groups() -> List[str]:
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
         with ldap3.Connection(server, ldap_username, ldap_password) as conn:
-
             conn.search(
                 ldap_base_dn,
                 f"(&(objectClass=inetOrgPerson)(uid={sub}))",
@@ -115,15 +116,17 @@ def get_harbor_user() -> Any:
     Returns the current users's Harbor account.
     """
     api = get_admin_harbor_api()
-
+    email = flask.request.environ.get("OIDC_CLAIM_email")
     subiss = get_subiss()
 
-    for user in api.get_all_users():
-        details = api.get_user(user["user_id"])
+    flask.current_app.logger.debug(
+        "Searching for: email=%s subiss=%s",
+        email,
+        subiss,
+    )
 
-        if subiss == details["oidc_user_meta"]["subiss"]:
-            return details
-
+    if email and subiss:
+        return api.search_for_user(email=email, subiss=subiss)
     return None
 
 
@@ -156,7 +159,6 @@ def get_orcid_id() -> Optional[str]:
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
         with ldap3.Connection(server, ldap_username, ldap_password) as conn:
-
             conn.search(
                 ldap_base_dn,
                 f"(&(objectClass=inetOrgPerson)(uid={sub}))",
@@ -164,7 +166,9 @@ def get_orcid_id() -> Optional[str]:
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+                return conn.entries[0].entry_attributes_as_dict[
+                    "eduPersonOrcid"
+                ]
 
     return None
 
@@ -184,8 +188,8 @@ def get_subiss() -> Optional[str]:
     """
     update_request_environ()
 
-    sub: str = flask.request.environ.get("OIDC_CLAIM_sub", "")
-    iss: str = flask.request.environ.get("OIDC_CLAIM_iss", "")
+    sub = flask.request.environ.get("OIDC_CLAIM_sub", "")
+    iss = flask.request.environ.get("OIDC_CLAIM_iss", "")
 
     if sub and iss:
         return sub + iss
@@ -234,4 +238,6 @@ def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
     """
     Returns a Fresh Desk API instance
     """
-    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESHDESK_API_KEY"])
+    return registry.freshdesk.FreshDeskAPI(
+        flask.current_app.config["FRESHDESK_API_KEY"]
+    )
