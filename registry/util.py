@@ -152,6 +152,8 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
 
     for user in api.get_all_users(params={"sort": "-creation_time"}):
 
+        flask.current_app.logger.info(user)
+
         details = api.get_user(user["user_id"])
 
         if subiss == details["oidc_user_meta"]["subiss"]:

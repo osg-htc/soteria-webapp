@@ -129,7 +129,7 @@ export const HarborList = ({url, card, queryOptions, cardOptions, paginatorOptio
         return h("box", {className: "shine rounded project-card", style:"height:100px; width: 100%;"})
     }
 
-    if(data.length == 0){
+    if(data.length === 0){
         return h("box", {className: "rounded project-card d-flex bg-primary", style:"height:100px; width: 100%;"}, [
             h("span", {className: "m-auto text-light"}, "No Results")
         ])

@@ -125,6 +125,9 @@ def check_user_harbor_id(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
+    flask.current_app.logger.info("Subiss Below:")
+    flask.current_app.logger.info(registry.util.get_subiss())
+
     cache.delete_memoized(registry.util.get_harbor_user_by_subiss, registry.util.get_subiss())
     harbor_user = registry.util.get_harbor_user()
 
