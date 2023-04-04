@@ -109,7 +109,7 @@ function reportStatusProject(status, textStatus, jqXHR) {
         harbor_projects_url = status.data.harbor.projects_url;
         project_name = status.data.project.name;
 
-        message = "You have a private project on " + harbor_name +
+        message = "You have a private project on " + harbor_name + " " +
             "with the name <a href='" + harbor_projects_url + "'>" + project_name + "</a>.";
     }
 

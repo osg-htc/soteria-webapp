@@ -44,6 +44,8 @@ local: \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
 
+	mkdir -p instance/log
+
 	# Run `docker compose build --no-cache --pull` manually to ensure
 	# that the base image and additional packages are up to date. The
 	# build in this Makefile aims to be quick by using Docker's cache.

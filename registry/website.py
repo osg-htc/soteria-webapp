@@ -13,7 +13,7 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import get_fresh_desk_api
+from registry.util import get_freshdesk_api
 
 from .forms import ResearcherApprovalForm
 
@@ -43,11 +43,13 @@ def researcher_registration() -> flask.Response:
         html = flask.render_template(
             "researcher-registration.html",
             form=researcher_form,
-            ticket_created=ticket_created
+            ticket_created=ticket_created,
         )
 
     else:
-        html = flask.render_template("researcher-registration.html", form=researcher_form)
+        html = flask.render_template(
+            "researcher-registration.html", form=researcher_form
+        )
 
     return flask.make_response(html)
 
@@ -64,15 +66,14 @@ def status() -> flask.Response:
 def public_projects():
     return flask.render_template("projects.html")
 
+
 @bp.route("/public/projects/<project>/repositories")
 def public_project_repositories(project: str):
     return flask.render_template("project-repositories.html", project=project)
 
 
 @bp.route("/<page>")
-@bp.route("/", defaults={
-    "page": "index"
-})
+@bp.route("/", defaults={"page": "index"})
 def show(page: str) -> flask.Response:
     """
     Renders pages that do not require any special handling.

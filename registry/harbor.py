@@ -3,12 +3,9 @@ Wrapper for Harbor's API.
 """
 
 import logging
-from typing import Any, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
-import flask
 import requests
-
-import registry.util
 
 __all__ = ["HarborAPI"]
 
@@ -106,39 +103,53 @@ class HarborAPI:
 
         return self._request("POST", f"{self._api_base_url}{route}", **kwargs)
 
-    def search_for_user(self, email: str, subiss: str) -> Any:
-        """
-        Uses the given email to search for a user with the given "subiss".
-        """
-        params = {"q": f"email=~{email}"}
-        users = self._request(
-            "GET",
-            f"{self._api_base_url}/users",
-            params=params,
-        ).json()
+    #
+    # ----------------------------------------------------------------------
+    #
 
-        for user in users:
-            full_data = self.get_user(user["user_id"])
+    def get_user(self, user_id: int):
+        """
+        Returns a user's profile.
+        """
+        return self._get(f"/users/{user_id}").json()
 
-            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+    def get_all_users(self):
+        """
+        Returns a list of all users.
+
+        Might not include data populated via OIDC.
+        """
+        # FIXME (baydemir): Page through the results, and yield one at a time.
+        params = {
+            "page_size": 100,
+            "sort": "-update_time",
+        }
+        return self._get("/users", params=params).json()
+
+    def search_for_user(self, email: str, subiss: str):
+        """
+        Returns a user with the given email address and "subiss".
+        """
+        params = {
+            "page_size": 100,
+            "q": f"email=~{email}",  # email addresses are not case sensitive
+        }
+        users = self._get("/users", params=params).json()
+
+        for u in users:
+            user = self.get_user(u["user_id"])
+
+            if user.get("oidc_user_meta", {}).get("subiss", "") == subiss:
                 return user
 
         return None
 
-    def get_all_users(self):
-        """
-        Get all users.
-        """
-        return self._get("/users").json()
-
-    def get_user(self, user_id):
-        """
-        Get a user's profile.
-        """
-        return self._get(f"/users/{user_id}").json()
+    #
+    # ----------------------------------------------------------------------
+    #
 
     def create_project(self, name: str, *, storage_limit: int = 5368709120):
-        # 5368709120 bytes = 5 * 1024 * 1024 * 1024
+        # 5 GiB = 5368709120 bytes = 5 * 1024 * 1024 * 1024
         """
         Create a new private project, with the given user as an administrator.
         """
@@ -147,18 +158,21 @@ class HarborAPI:
             "public": False,
             "storage_limit": storage_limit,
         }
-
         r = self._post("/projects", json=payload)
 
         if not r.ok:
             return r.json()
         return self.get_project(name)
 
-    def get_project(self, project_name_or_id: Union[int, str]):
+    def get_project(self, project_id_or_name: Union[int, str]):
         """
-        Get a new project, either by name or by ID.
+        Get a new project, either by ID or by name.
         """
-        return self._get(f"/projects/{project_name_or_id}").json()
+        return self._get(f"/projects/{project_id_or_name}").json()
+
+    #
+    # ----------------------------------------------------------------------
+    #
 
     def add_project_member(
         self,
@@ -185,7 +199,6 @@ class HarborAPI:
         for member in r:
             if member["entity_name"] == username:
                 return member
-
         return None
 
     def delete_project_member(self, project_id: int, username: str):
@@ -195,5 +208,4 @@ class HarborAPI:
 
         if not r.ok:
             return r.json()
-
         return {}

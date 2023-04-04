@@ -19,7 +19,7 @@ from wtforms.validators import (
     Regexp,
 )
 
-from registry.util import get_fresh_desk_api
+from registry.util import get_freshdesk_api
 
 requirement_choices = [
     ("", "Select Requirement Met"),
@@ -32,19 +32,33 @@ requirement_choices = [
 
 
 class ResearcherApprovalForm(FlaskForm):
-    email = StringField("Institute Affiliated Email", validators=[InputRequired()])
+    email = StringField(
+        "Institute Affiliated Email", validators=[InputRequired()]
+    )
     criteria = SelectField(
-        "Requirement Met", choices=requirement_choices, validators=[InputRequired()]
+        "Requirement Met",
+        choices=requirement_choices,
+        validators=[InputRequired()],
     )
 
-    b_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
-    b_publication_doi = StringField("Publication DOI", validators=[InputRequired()])
+    b_website_url = StringField(
+        "Website URL", validators=[URL(), InputRequired()]
+    )
+    b_publication_doi = StringField(
+        "Publication DOI", validators=[InputRequired()]
+    )
 
     c_grant_number = StringField("Grant Number", validators=[InputRequired()])
-    c_funding_agency = StringField("Funding Agency", validators=[InputRequired()])
+    c_funding_agency = StringField(
+        "Funding Agency", validators=[InputRequired()]
+    )
 
-    d_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
-    d_classification = StringField("Institution Classification", validators=[InputRequired()])
+    d_website_url = StringField(
+        "Website URL", validators=[URL(), InputRequired()]
+    )
+    d_classification = StringField(
+        "Institution Classification", validators=[InputRequired()]
+    )
 
     submit = SubmitField()
 
@@ -61,7 +75,6 @@ class ResearcherApprovalForm(FlaskForm):
         csrf = False  # CSRF not needed because no data gets modified
 
     def validate(self):
-
         self.email.validate(self)
 
         if not self.criteria.validate(self):
@@ -84,7 +97,7 @@ class ResearcherApprovalForm(FlaskForm):
         return []
 
     def submit_request(self):
-        api = get_fresh_desk_api()
+        api = get_freshdesk_api()
         selected_requirement = next(
             x[1] for x in requirement_choices if x[0] == self.criteria.data
         )

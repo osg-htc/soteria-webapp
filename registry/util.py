@@ -6,7 +6,6 @@ import logging
 import logging.config
 import logging.handlers
 import pathlib
-from typing import Any, List, Optional
 
 import flask
 import ldap3  # type: ignore[import]
@@ -28,6 +27,7 @@ __all__ = [
     "is_soteria_researcher",
     #
     "get_admin_harbor_api",
+    "get_freshdesk_api",
 ]
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s"
@@ -73,18 +73,29 @@ def configure_logging(filename: pathlib.Path) -> None:
     )
 
 
+#
+# --------------------------------------------------------------------------
+#
+
+
 def update_request_environ() -> None:
     """
-    Add mock data to the current request's environment if debugging is enabled.
+    Adds mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
         mock_oidc_claim = flask.current_app.config.get("MOCK_OIDC_CLAIM", {})
         flask.request.environ.update(mock_oidc_claim)
 
 
-def get_comanage_groups() -> List[str]:
+def get_comanage_groups():
+    """
+    Returns a list of the current user's groups in COmanage.
+
+    Queries LDAP to ensure that the list is up to date.
+    """
     update_request_environ()
 
+    groups = []
     sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
     if sub:
@@ -103,46 +114,39 @@ def get_comanage_groups() -> List[str]:
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+                groups = conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+            else:
+                flask.current_app.logger.error(
+                    "Found %s entries for the sub: %s",
+                    len(conn.entries),
+                    sub,
+                )
 
-            if len(conn.entries) > 1:
-                flask.current_app.logger.error("???")
-
-    return []
+    return groups
 
 
-def get_harbor_user() -> Any:
+def get_email():
     """
-    Returns the current users's Harbor account.
+    Returns the current user's email address.
     """
-    api = get_admin_harbor_api()
-    email = flask.request.environ.get("OIDC_CLAIM_email")
-    subiss = get_subiss()
+    update_request_environ()
 
-    flask.current_app.logger.debug(
-        "Searching for: email=%s subiss=%s",
-        email,
-        subiss,
-    )
-
-    if email and subiss:
-        return api.search_for_user(email=email, subiss=subiss)
-    return None
+    return flask.request.environ.get("OIDC_CLAIM_email")
 
 
-def get_idp_name() -> Optional[str]:
+def get_idp_name():
     update_request_environ()
 
     return flask.request.environ.get("OIDC_CLAIM_idp_name")
 
 
-def get_name() -> Optional[str]:
+def get_name():
     update_request_environ()
 
     return flask.request.environ.get("OIDC_CLAIM_name")
 
 
-def get_orcid_id() -> Optional[str]:
+def get_orcid_id():
     """
     Returns the current user's ORCID iD.
     """
@@ -173,16 +177,7 @@ def get_orcid_id() -> Optional[str]:
     return None
 
 
-def get_starter_project_name() -> Optional[str]:
-    user = get_harbor_user()
-
-    if user:
-        return user["username"].lower()
-
-    return None
-
-
-def get_subiss() -> Optional[str]:
+def get_subiss():
     """
     Returns the concatenation of the current user's `sub` and `iss`.
     """
@@ -194,6 +189,49 @@ def get_subiss() -> Optional[str]:
     if sub and iss:
         return sub + iss
 
+    return None
+
+
+#
+# --------------------------------------------------------------------------
+#
+
+
+def get_harbor_user():
+    """
+    Returns the current users's Harbor account.
+    """
+    harbor_user = None
+
+    api = get_admin_harbor_api()
+    email = flask.request.environ.get("OIDC_CLAIM_email")
+    subiss = get_subiss()
+
+    flask.current_app.logger.debug(
+        "Searching for: email=%s subiss=%s",
+        email,
+        subiss,
+    )
+
+    if not harbor_user and (email and subiss):
+        harbor_user = api.search_for_user(email=email, subiss=subiss)
+
+    if not harbor_user:
+        for user in api.get_all_users():
+            full_data = api.get_user(user["user_id"])
+
+            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+                harbor_user = full_data
+                break
+
+    return harbor_user
+
+
+def get_starter_project_name():
+    user = get_harbor_user()
+
+    if user:
+        return user["username"].lower()
     return None
 
 
@@ -221,6 +259,11 @@ def is_soteria_researcher() -> bool:
     return "CO:COU:SOTERIA-Researchers:members:all" in groups
 
 
+#
+# --------------------------------------------------------------------------
+#
+
+
 def get_admin_harbor_api() -> registry.harbor.HarborAPI:
     """
     Returns a Harbor API instance authenticated as an admin.
@@ -234,9 +277,9 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
     )
 
 
-def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
+def get_freshdesk_api() -> registry.freshdesk.FreshDeskAPI:
     """
-    Returns a Fresh Desk API instance
+    Returns a Freshdesk API instance.
     """
     return registry.freshdesk.FreshDeskAPI(
         flask.current_app.config["FRESHDESK_API_KEY"]
