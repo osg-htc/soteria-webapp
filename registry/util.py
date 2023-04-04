@@ -154,7 +154,8 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
 
         details = api.get_user(user["user_id"])
 
-        flask.current_app.logger.info(details)
+        flask.current_app.logger.info(details["oidc_user_meta"]["subiss"], subiss)
+        flask.current_app.logger.info(subiss == details["oidc_user_meta"]["subiss"])
 
         if subiss == details["oidc_user_meta"]["subiss"]:
             return details
