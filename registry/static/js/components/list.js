@@ -94,7 +94,7 @@ export const SortHandle = ({options, setSort, ...props}) => {
 
 export const HarborList = ({url, card, queryOptions, cardOptions, paginatorOptions, sortOptions}) => {
 
-    let [data, setData] = useState([]);
+    let [data, setData] = useState(undefined);
     let [page, setPage] = useState(1);
     let [pageSize, setPageSize] = useState(10);
     let [query, setQuery] = useState("");
@@ -125,8 +125,14 @@ export const HarborList = ({url, card, queryOptions, cardOptions, paginatorOptio
 
     }, [page, query, sort])
 
-    if(data.length == 0){
+    if(data == null){
         return h("box", {className: "shine rounded project-card", style:"height:100px; width: 100%;"})
+    }
+
+    if(data.length == 0){
+        return h("box", {className: "rounded project-card d-flex bg-primary", style:"height:100px; width: 100%;"}, [
+            h("span", {className: "m-auto text-light"}, "No Results")
+        ])
     }
 
     return (
