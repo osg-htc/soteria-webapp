@@ -99,16 +99,16 @@ class HarborAPI:
         info_response = self._get(route, params={'page_size': 1})
         number_of_pages = (int(info_response.headers.get('x-total-count')) // PAGE_SIZE) + 1
 
-        resource = []
         for i in range(1, number_of_pages + 1):
-            resource.extend(
-                self._get(route, **{
-                    **kwargs,
-                    'params': {'page': i, 'page_size': PAGE_SIZE, **kwargs.get("params", {})}
-                }).json()
-            )
+            values = self._get(route, **{
+                **kwargs,
+                'params': {'page': i, 'page_size': PAGE_SIZE, **kwargs.get("params", {})}
+            }).json()
+            for value in values:
+                yield value
 
-        return resource
+
+
 
     def _head(self, route, **kwargs):
         """
