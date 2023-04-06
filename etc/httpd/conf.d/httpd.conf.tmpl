@@ -14,7 +14,7 @@
 # It must be processed by gomplate <https://gomplate.ca/>.
 #
 
-ServerName {{ getenv "SERVER_NAME" }}
+ServerName {{ getenv "EXTERNAL_HOSTNAME" }}
 Listen 8443
 
 ## Minimize information sent about this server.
@@ -26,12 +26,14 @@ TraceEnable Off
 ## Redirect all non-SSL requests.
 
 <VirtualHost *:80>
-  Redirect permanent / https://{{ getenv "SERVER_NAME" }}/
+  Redirect permanent / https://{{ getenv "EXTERNAL_HOSTNAME" }}/
 </VirtualHost>
 
+## Default name-based virtual host.
+
 <VirtualHost *:8443>
-  ServerName {{ getenv "SERVER_NAME" }}
-  ServerAdmin {{ getenv "SERVER_ADMIN" }}
+  ServerName {{ getenv "EXTERNAL_HOSTNAME" }}
+  ServerAdmin {{ getenv "SUPPORT_EMAIL" }}
 
   ## Deny access to the file system.
 
@@ -55,21 +57,10 @@ TraceEnable Off
     AuthType none
   </LocationMatch>
 
-
-  <Location "/public">
+  <LocationMatch "^/(harbor|public|static)/">
     Require all granted
     AuthType none
-  </Location>
-
-  <Location "/harbor">
-    Require all granted
-    AuthType none
-  </Location>
-
-  <Location "/static">
-    Require all granted
-    AuthType none
-  </Location>
+  </LocationMatch>
 
   ## Configure logging.
 
@@ -92,10 +83,10 @@ TraceEnable Off
 
   ## Configure OIDC.
 
-  OIDCProviderMetadataURL https://cilogon.org/.well-known/openid-configuration
+  OIDCProviderMetadataURL https://{{ getenv "CILOGON_HOSTNAME" }}/.well-known/openid-configuration
   OIDCClientID {{ ds "secrets" "id" }}
   OIDCClientSecret {{ ds "secrets" "secret" }}
-  OIDCRedirectURI https://{{ getenv "SERVER_NAME" }}/callback
+  OIDCRedirectURI https://{{ getenv "EXTERNAL_HOSTNAME" }}/callback
 
   OIDCScope "openid profile email org.cilogon.userinfo"
 

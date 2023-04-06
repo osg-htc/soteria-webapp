@@ -85,8 +85,9 @@ secrets/httpd.conf: \
 	# might be symlinked to somewhere outside of the build tree.
 
 	docker run --rm \
-	  -e SERVER_ADMIN=someone@example.com \
-	  -e SERVER_NAME=localhost:${SOTERIA_WEBAPP_PORT} \
+	  -e CILOGON_HOSTNAME=cilogon.org \
+	  -e EXTERNAL_HOSTNAME=localhost:${SOTERIA_WEBAPP_PORT} \
+	  -e SUPPORT_EMAIL=someone@example.com \
 	  -v "$(PWD)"/etc/httpd/conf.d:/input \
 	  -v "$(PWD)"/secrets:/output \
 	  -v "$(PWD)"/secrets/oidc/id:/oidc/id \

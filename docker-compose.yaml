@@ -11,9 +11,8 @@ services:
       args:
         GITHUB_REF: refs/tags/v0.local-repository
 
-
-    platform: linux/amd64
     image: soteria-webapp:dev
+    platform: linux/amd64
     container_name: soteria-webapp
     restart: always
 
