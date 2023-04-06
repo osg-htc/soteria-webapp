@@ -95,9 +95,9 @@ flask==2.2.3 ; python_full_version >= "3.9.7" and python_full_version < "3.10.0"
 idna==3.4 ; python_full_version >= "3.9.7" and python_full_version < "3.10.0" \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
     --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
-importlib-metadata==6.0.0 ; python_full_version >= "3.9.7" and python_version < "3.10" \
-    --hash=sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad \
-    --hash=sha256:e354bedeb60efa6affdcc8ae121b73544a7aa74156d047311948f6d711cd378d
+importlib-metadata==6.1.0 ; python_full_version >= "3.9.7" and python_version < "3.10" \
+    --hash=sha256:43ce9281e097583d758c2c708c4376371261a02c34682491a8e98352365aad20 \
+    --hash=sha256:ff80f3b5394912eb1b108fcfd444dc78b7f1f3e16b16188054bd01cb9cb86f09
 itsdangerous==2.1.2 ; python_full_version >= "3.9.7" and python_full_version < "3.10.0" \
     --hash=sha256:2c2349112351b88699d8d4b6b075022c0808887cb7ad10069318a8b0bc88db44 \
     --hash=sha256:5dbbc68b317e5e42f327f9021763545dc3fc3bfe22e6deb96aaf1fc38874156a
