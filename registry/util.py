@@ -7,17 +7,17 @@ import logging.config
 import logging.handlers
 import pathlib
 import re
-from typing import Any, List, Optional, Literal
+from typing import Any, List, Literal, Optional
 
 import flask
 import ldap3  # type: ignore[import]
 import requests.exceptions
 
+import registry.comanage
 import registry.freshdesk
 import registry.harbor
-from registry.harbor import HarborRoleIds
-import registry.comanage
 from registry.cache import cache
+from registry.harbor import HarborRoleIds
 
 __all__ = [
     "configure_logging",
@@ -33,6 +33,7 @@ __all__ = [
     "is_soteria_researcher",
     #
     "get_admin_harbor_api",
+    "get_freshdesk_api",
 ]
 
 LOG_FORMAT = "[%(asctime)s] %(levelname)s %(module)s:%(lineno)d %(message)s"
@@ -51,7 +52,9 @@ def configure_logging(filename: pathlib.Path) -> None:
     logging.config.dictConfig(
         {
             "version": 1,
-            "formatters": {"default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}},
+            "formatters": {
+                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
+            },
             "handlers": {
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -76,18 +79,29 @@ def configure_logging(filename: pathlib.Path) -> None:
     )
 
 
+#
+# --------------------------------------------------------------------------
+#
+
+
 def update_request_environ() -> None:
     """
-    Add mock data to the current request's environment if debugging is enabled.
+    Adds mock data to the current request's environment if debugging is enabled.
     """
     if flask.current_app.config.get("SOTERIA_DEBUG"):
         mock_oidc_claim = flask.current_app.config.get("MOCK_OIDC_CLAIM", {})
         flask.request.environ.update(mock_oidc_claim)
 
 
-def get_comanage_groups() -> List[str]:
+def get_comanage_groups():
+    """
+    Returns a list of the current user's groups in COmanage.
+
+    Queries LDAP to ensure that the list is up to date.
+    """
     update_request_environ()
 
+    groups = []
     sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
     if sub:
@@ -99,7 +113,6 @@ def get_comanage_groups() -> List[str]:
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
         with ldap3.Connection(server, ldap_username, ldap_password) as conn:
-
             conn.search(
                 ldap_base_dn,
                 f"(&(objectClass=inetOrgPerson)(uid={sub}))",
@@ -107,18 +120,23 @@ def get_comanage_groups() -> List[str]:
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+                groups = conn.entries[0].entry_attributes_as_dict["isMemberOf"]
+            else:
+                flask.current_app.logger.error(
+                    "Found %s entries for the sub: %s",
+                    len(conn.entries),
+                    sub,
+                )
 
-            if len(conn.entries) > 1:
-                flask.current_app.logger.error("???")
-
-    return []
+    return groups
 
 
 def get_coperson_id():
     """Get the Comamange Person id for the current user"""
     comanage_api = get_admin_comanage_api()
-    return comanage_api.get_persons(identifier=get_sub()).json()['CoPeople'][0]['Id']
+    return comanage_api.get_persons(identifier=get_sub()).json()["CoPeople"][0][
+        "Id"
+    ]
 
 
 def get_subiss() -> Optional[str]:
@@ -137,7 +155,6 @@ def get_subiss() -> Optional[str]:
 
 
 def get_harbor_user():
-
     subiss = get_subiss()
 
     return get_harbor_user_by_subiss(subiss)
@@ -151,7 +168,6 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
     api = get_admin_harbor_api()
 
     for user in api.get_all_users(params={"sort": "-creation_time"}):
-
         details = api.get_user(user["user_id"])
 
         flask.current_app.logger.info(details)
@@ -170,10 +186,16 @@ def get_harbor_projects() -> Any:
 
     coperson_id = registry.util.get_coperson_id()
 
-    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()['CoGroups']
+    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()[
+        "CoGroups"
+    ]
 
-    owner_pattern = re.compile('^soteria-(.*?)-owners')
-    owned_project_names = [owner_pattern.match(g['Name']).group(1) for g in comanage_groups if owner_pattern.match(g['Name'])]
+    owner_pattern = re.compile("^soteria-(.*?)-owners")
+    owned_project_names = [
+        owner_pattern.match(g["Name"]).group(1)
+        for g in comanage_groups
+        if owner_pattern.match(g["Name"])
+    ]
 
     owned_projects = []
     for project_name in owned_project_names:
@@ -190,53 +212,66 @@ def create_project(name: str, public: bool):
 
     project = harbor_api.create_project(name, public)
 
-    if not ('name' in project and project['name'] == name):
+    if not ("name" in project and project["name"] == name):
         return project
 
     comanage_person = comanage_api.get_persons(identifier=get_sub()).json()
 
-    if len(comanage_person['CoPeople']) == 0:
-        raise LookupError("Could not find a Comanage account associated with this user")
+    if len(comanage_person["CoPeople"]) == 0:
+        raise LookupError(
+            "Could not find a Comanage account associated with this user"
+        )
 
-    coperson_id = comanage_person['CoPeople'][0]['Id']
+    coperson_id = comanage_person["CoPeople"][0]["Id"]
 
     # Create the groups in Harbor
-    harbor_api.create_project_member(name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-owners")
-    harbor_api.create_project_member(name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-maintainers")
-    harbor_api.create_project_member(name, HarborRoleIds.developer, group_name=f"soteria-{name}-developers")
-    harbor_api.create_project_member(name, HarborRoleIds.guest, group_name=f"soteria-{name}-guests")
+    harbor_api.create_project_member(
+        name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-owners"
+    )
+    harbor_api.create_project_member(
+        name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-maintainers"
+    )
+    harbor_api.create_project_member(
+        name, HarborRoleIds.developer, group_name=f"soteria-{name}-developers"
+    )
+    harbor_api.create_project_member(
+        name, HarborRoleIds.guest, group_name=f"soteria-{name}-guests"
+    )
 
     # Create the groups in Comanage
     owner_group = comanage_api.create_group(f"soteria-{name}-owners").json()
-    maintainer_group = comanage_api.create_group(f"soteria-{name}-maintainers").json()
-    developer_group = comanage_api.create_group(f"soteria-{name}-developers").json()
+    maintainer_group = comanage_api.create_group(
+        f"soteria-{name}-maintainers"
+    ).json()
+    developer_group = comanage_api.create_group(
+        f"soteria-{name}-developers"
+    ).json()
     guest_group = comanage_api.create_group(f"soteria-{name}-guests").json()
 
     # Add the researcher to the groups
-    comanage_api.add_group_member(owner_group['Id'], coperson_id, member=True, owner=False)
-    comanage_api.add_group_member(maintainer_group['Id'], coperson_id, member=True, owner=True)
-    comanage_api.add_group_member(developer_group['Id'], coperson_id, member=True, owner=True)
-    comanage_api.add_group_member(guest_group['Id'], coperson_id, member=True, owner=True)
+    comanage_api.add_group_member(
+        owner_group["Id"], coperson_id, member=True, owner=False
+    )
+    comanage_api.add_group_member(
+        maintainer_group["Id"], coperson_id, member=True, owner=True
+    )
+    comanage_api.add_group_member(
+        developer_group["Id"], coperson_id, member=True, owner=True
+    )
+    comanage_api.add_group_member(
+        guest_group["Id"], coperson_id, member=True, owner=True
+    )
 
     return project
 
 
-def get_idp_name() -> Optional[str]:
+def get_email():
+    """
+    Returns the current user's email address.
+    """
     update_request_environ()
 
-    return flask.request.environ.get("OIDC_CLAIM_idp_name")
-
-
-def get_name() -> Optional[str]:
-    update_request_environ()
-
-    return flask.request.environ.get("OIDC_CLAIM_name")
-
-
-def get_email() -> Optional[str]:
-    update_request_environ()
-
-    return flask.request.environ.get('OIDC_CLAIM_email')
+    return flask.request.environ.get("OIDC_CLAIM_email")
 
 
 def get_eppn() -> Optional[str]:
@@ -245,20 +280,34 @@ def get_eppn() -> Optional[str]:
     return flask.request.environ.get("OIDC_CLAIM_eppn")
 
 
+def get_idp_name():
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_idp_name")
+
+
+def get_name():
+    update_request_environ()
+
+    return flask.request.environ.get("OIDC_CLAIM_name")
+
+
 def get_sub() -> Optional[str]:
     update_request_environ()
 
     return flask.request.environ.get("OIDC_CLAIM_sub")
 
-def get_status() -> Literal['Researcher', 'Member', 'Affiliate']:
-    if is_soteria_researcher():
-        return 'Researcher'
-    elif is_soteria_member():
-        return 'Member'
-    else:
-        return 'Affiliate'
 
-def get_orcid_id() -> Optional[str]:
+def get_status() -> Literal["Researcher", "Member", "Affiliate"]:
+    if is_soteria_researcher():
+        return "Researcher"
+    elif is_soteria_member():
+        return "Member"
+    else:
+        return "Affiliate"
+
+
+def get_orcid_id():
     """
     Returns the current user's ORCID iD.
     """
@@ -275,7 +324,6 @@ def get_orcid_id() -> Optional[str]:
         server = ldap3.Server(ldap_url, get_info=ldap3.ALL)
 
         with ldap3.Connection(server, ldap_username, ldap_password) as conn:
-
             conn.search(
                 ldap_base_dn,
                 f"(&(objectClass=inetOrgPerson)(uid={sub}))",
@@ -283,19 +331,68 @@ def get_orcid_id() -> Optional[str]:
             )
 
             if len(conn.entries) == 1:
-                orcid = conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
-
-                return orcid[0] if len(orcid) != 0 else None
+                return conn.entries[0].entry_attributes_as_dict[
+                    "eduPersonOrcid"
+                ]
 
     return None
 
 
-def get_starter_project_name() -> Optional[str]:
+def get_subiss():
+    """
+    Returns the concatenation of the current user's `sub` and `iss`.
+    """
+    update_request_environ()
+
+    sub = flask.request.environ.get("OIDC_CLAIM_sub", "")
+    iss = flask.request.environ.get("OIDC_CLAIM_iss", "")
+
+    if sub and iss:
+        return sub + iss
+
+    return None
+
+
+#
+# --------------------------------------------------------------------------
+#
+
+
+def get_harbor_user():
+    """
+    Returns the current users's Harbor account.
+    """
+    harbor_user = None
+
+    api = get_admin_harbor_api()
+    email = flask.request.environ.get("OIDC_CLAIM_email")
+    subiss = get_subiss()
+
+    flask.current_app.logger.debug(
+        "Searching for: email=%s subiss=%s",
+        email,
+        subiss,
+    )
+
+    if not harbor_user and (email and subiss):
+        harbor_user = api.search_for_user(email=email, subiss=subiss)
+
+    if not harbor_user:
+        for user in api.get_all_users():
+            full_data = api.get_user(user["user_id"])
+
+            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+                harbor_user = full_data
+                break
+
+    return harbor_user
+
+
+def get_starter_project_name():
     user = get_harbor_user()
 
     if user:
         return user["username"].lower()
-
     return None
 
 
@@ -321,6 +418,11 @@ def is_soteria_researcher() -> bool:
     groups = get_comanage_groups()
 
     return "CO:COU:SOTERIA-Researchers:members:all" in groups
+
+
+#
+# --------------------------------------------------------------------------
+#
 
 
 def get_admin_harbor_api() -> registry.harbor.HarborAPI:
@@ -350,8 +452,10 @@ def get_admin_comanage_api():
     )
 
 
-def get_fresh_desk_api() -> registry.freshdesk.FreshDeskAPI:
+def get_freshdesk_api() -> registry.freshdesk.FreshDeskAPI:
     """
-    Returns a Fresh Desk API instance
+    Returns a Freshdesk API instance.
     """
-    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESHDESK_API_KEY"])
+    return registry.freshdesk.FreshDeskAPI(
+        flask.current_app.config["FRESHDESK_API_KEY"]
+    )

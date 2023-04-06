@@ -40,26 +40,8 @@
                 {{ registration_card(id, title, message, action) }}
             </div>
             <div class="col-12">
-                {% set id = "hub" %}
-                {% set title = "2. Create a " ~ config.HARBOR_NAME ~ " Account" %}
-                {% set action = "Check for " ~ config.HARBOR_NAME ~ " Account" %}
-                {% set message %}
-                <p>
-                    SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> for its
-                    container registry.
-                </p>
-                <p>
-                    <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Create an account there</a> by logging in
-                    via OIDC and, when prompted by CILogon, selecting the same identity provider that you chose when
-                    logging into SOTERIA. Then come back to this page and click the button below to confirm that SOTERIA
-                    can find your {{ config.HARBOR_NAME }} account.
-                </p>
-                {% endset %}
-                {{ registration_card(id, title, message, action) }}
-            </div>
-            <div class="col-12">
                 {% set id = "orcid" %}
-                {% set title = "3. Link Your ORCID iD" %}
+                {% set title = "2. Link Your ORCID iD" %}
                 {% set action = "Check for ORCID iD" %}
                 {% set message %}
                 <p>
@@ -71,6 +53,24 @@
                     one.
                     Then, <a
                         href="{{ config.ORCID_ID_ENROLLMENT_URL }}">link it to SOTERIA</a>.
+                </p>
+                {% endset %}
+                {{ registration_card(id, title, message, action) }}
+            </div>
+            <div class="col-12">
+                {% set id = "hub" %}
+                {% set title = "3. Create a " ~ config.HARBOR_NAME ~ " Account" %}
+                {% set action = "Check for " ~ config.HARBOR_NAME ~ " Account" %}
+                {% set message %}
+                <p>
+                    SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> for its
+                    container registry.
+                </p>
+                <p>
+                    <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Create an account there</a> by logging in
+                    via OIDC and, when prompted by CILogon, selecting the same identity provider that you chose when
+                    logging into SOTERIA. Then come back to this page and click the button below to confirm that SOTERIA
+                    can find your {{ config.HARBOR_NAME }} account.
                 </p>
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}

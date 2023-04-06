@@ -1,24 +1,18 @@
 ## Temporary files created by vim.
 *.swp
 
-## Cache directories created by the eponymous tools.
-/.mypy/
-/.pylint/
-
-## Local configuration file for pyenv.
+## Configuration file for pyenv.
 /.python-version
 
-## Build artifacts.
-/dist
+## Build artifacts created by poetry.
+/dist/
 
 ## Flask's configuration and run-time artifacts, which might contain passwords.
 /instance/
 /registry/static/.webassets-cache/
 /registry/static/assets/
 
-## PyCharm's project files and default virtual environment.
+## Directories used by various IDEs.
 /.idea/
+/.vscode/
 /venv/
-
-## Test config
-/registry/tests/config.py

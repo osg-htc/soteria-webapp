@@ -13,8 +13,8 @@ all: reformat lint build
 #---------------------------------------------------------------------------
 
 reformat:
-	poetry run isort $(PY_FILES)
-	poetry run black $(PY_FILES)
+	poetry run isort -q $(PY_FILES)
+	poetry run black -q $(PY_FILES)
 
 lint:
 	-poetry run bandit -qr $(PY_FILES)
@@ -30,9 +30,10 @@ build:
 	poetry build
 
 clean:
-	rm -rf .mypy/ .pylint/
+	rm -rf .mypy_cache/
 	rm -rf dist/$(PY_WHEEL_BASENAME)-*.tar.gz
 	rm -rf dist/$(PY_WHEEL_BASENAME)-*.whl
+	rm -rf instance/log
 	-docker image rm soteria-webapp:dev
 
 #---------------------------------------------------------------------------
@@ -42,6 +43,8 @@ local: \
 		secrets/httpd.conf \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
+
+	mkdir -p instance/log
 
 	# Run `docker compose build --no-cache --pull` manually to ensure
 	# that the base image and additional packages are up to date. The

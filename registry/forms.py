@@ -2,13 +2,13 @@ import logging
 
 from flask_wtf import FlaskForm
 from wtforms import (
+    RadioField,
     SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
     TextAreaField,
     TimeField,
-    RadioField
 )
 from wtforms.validators import (
     URL,
@@ -18,16 +18,16 @@ from wtforms.validators import (
     Length,
     NumberRange,
     Regexp,
-    ValidationError
+    ValidationError,
 )
 
 from registry.util import (
-    get_fresh_desk_api,
+    create_project,
     get_admin_harbor_api,
-    get_harbor_user,
+    get_freshdesk_api,
     get_harbor_projects,
+    get_harbor_user,
     is_soteria_researcher,
-    create_project
 )
 
 requirement_choices = [
@@ -45,19 +45,24 @@ MAX_PUBLIC_PROJECTS = 3
 
 def validate_visibility(form, field):
     def project_is_public(project: dict):
-        return project.get('metadata', 'false').get('public', 'false') == 'true'
+        return project.get("metadata", "false").get("public", "false") == "true"
 
     users_projects = get_harbor_projects()
 
     public_projects = list(filter(project_is_public, users_projects))
-    private_projects = list(filter(lambda x: not project_is_public(x), users_projects))
+    private_projects = list(
+        filter(lambda x: not project_is_public(x), users_projects)
+    )
 
-    if field.data == 'private' and len(private_projects) >= MAX_PRIVATE_PROJECTS:
+    if (
+        field.data == "private"
+        and len(private_projects) >= MAX_PRIVATE_PROJECTS
+    ):
         raise ValidationError(
             f"You have reached the maximum allocation of Private Projects, contact support@osg-htc.org for more."
         )
 
-    elif field.data == 'public' and len(public_projects) >= MAX_PUBLIC_PROJECTS:
+    elif field.data == "public" and len(public_projects) >= MAX_PUBLIC_PROJECTS:
         raise ValidationError(
             f"You have reached the maximum allocation of Public Projects, contact support@osg-htc.org for more."
         )
@@ -70,7 +75,7 @@ class CreateProjectForm(FlaskForm):
     visibility = RadioField(
         "Visibility",
         choices=[("public", "Public"), ("private", "Private")],
-        validators=[validate_visibility]
+        validators=[validate_visibility],
     )
     submit = SubmitField("Submit")
 
@@ -87,23 +92,39 @@ class CreateProjectForm(FlaskForm):
         return True
 
     def submit_request(self):
-        return create_project(self.project_name.data, self.visibility.data == "public")
+        return create_project(
+            self.project_name.data, self.visibility.data == "public"
+        )
 
 
 class ResearcherApprovalForm(FlaskForm):
-    email = StringField("Institute Affiliated Email", validators=[InputRequired()])
+    email = StringField(
+        "Institute Affiliated Email", validators=[InputRequired()]
+    )
     criteria = SelectField(
-        "Requirement Met", choices=requirement_choices, validators=[InputRequired()]
+        "Requirement Met",
+        choices=requirement_choices,
+        validators=[InputRequired()],
     )
 
-    b_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
-    b_publication_doi = StringField("Publication DOI", validators=[InputRequired()])
+    b_website_url = StringField(
+        "Website URL", validators=[URL(), InputRequired()]
+    )
+    b_publication_doi = StringField(
+        "Publication DOI", validators=[InputRequired()]
+    )
 
     c_grant_number = StringField("Grant Number", validators=[InputRequired()])
-    c_funding_agency = StringField("Funding Agency", validators=[InputRequired()])
+    c_funding_agency = StringField(
+        "Funding Agency", validators=[InputRequired()]
+    )
 
-    d_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
-    d_classification = StringField("Institution Classification", validators=[InputRequired()])
+    d_website_url = StringField(
+        "Website URL", validators=[URL(), InputRequired()]
+    )
+    d_classification = StringField(
+        "Institution Classification", validators=[InputRequired()]
+    )
 
     submit = SubmitField()
 
@@ -120,7 +141,6 @@ class ResearcherApprovalForm(FlaskForm):
         csrf = False  # CSRF not needed because no data gets modified
 
     def validate(self):
-
         self.email.validate(self)
 
         if not self.criteria.validate(self):
@@ -143,7 +163,7 @@ class ResearcherApprovalForm(FlaskForm):
         return []
 
     def submit_request(self):
-        api = get_fresh_desk_api()
+        api = get_freshdesk_api()
         selected_requirement = next(
             x[1] for x in requirement_choices if x[0] == self.criteria.data
         )

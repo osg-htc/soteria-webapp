@@ -13,9 +13,9 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import get_fresh_desk_api
+from registry.util import get_freshdesk_api
 
-from .forms import ResearcherApprovalForm, CreateProjectForm
+from .forms import CreateProjectForm, ResearcherApprovalForm
 
 __all__ = ["bp"]
 
@@ -28,7 +28,7 @@ def index():
         "name": registry.util.get_name() or "<not available>",
         "orcid_id": registry.util.get_orcid_id() or "<not available>",
         "email": registry.util.get_email() or "<not available>",
-        'status': registry.util.get_status() or "<not available>",
+        "status": registry.util.get_status() or "<not available>",
     }
 
     return flask.render_template(
@@ -37,7 +37,7 @@ def index():
         is_researcher=registry.util.is_soteria_researcher(),
         is_member=registry.util.is_soteria_member(),
         is_affiliate=registry.util.is_soteria_affiliate(),
-        registry_url=flask.current_app.config['REGISTRY_HOMEPAGE_URL']
+        registry_url=flask.current_app.config["REGISTRY_HOMEPAGE_URL"],
     )
 
 
@@ -51,13 +51,16 @@ def researcher_registration() -> flask.Response:
         html = flask.render_template(
             "researcher-registration.html",
             form=researcher_form,
-            ticket_created=ticket_created
+            ticket_created=ticket_created,
         )
 
     else:
-        html = flask.render_template("researcher-registration.html", form=researcher_form)
+        html = flask.render_template(
+            "researcher-registration.html", form=researcher_form
+        )
 
     return flask.make_response(html)
+
 
 @bp.route("/projects/create", methods=["GET", "POST"])
 def create_project() -> flask.Response:
@@ -68,11 +71,13 @@ def create_project() -> flask.Response:
         html = flask.render_template(
             "/user/create-project.html",
             form=projects_creation_form,
-            project_created=project_created
+            project_created=project_created,
         )
 
     else:
-        html = flask.render_template("/user/create-project.html", form=projects_creation_form)
+        html = flask.render_template(
+            "/user/create-project.html", form=projects_creation_form
+        )
 
     return flask.make_response(html)
 
@@ -90,14 +95,22 @@ def user_projects():
     return flask.render_template(
         "/user/projects.html",
         is_researcher=registry.util.is_soteria_researcher(),
-        harbor_url=flask.current_app.config['HARBOR_HOMEPAGE_URL']
+        harbor_url=flask.current_app.config["HARBOR_HOMEPAGE_URL"],
     )
 
 
+@bp.route("/public/projects")
+def public_projects():
+    return flask.render_template("projects.html")
+
+
+@bp.route("/public/projects/<project>/repositories")
+def public_project_repositories(project: str):
+    return flask.render_template("project-repositories.html", project=project)
+
+
 @bp.route("/<page>")
-@bp.route("/", defaults={
-    "page": "index"
-})
+@bp.route("/", defaults={"page": "index"})
 def show(page: str) -> flask.Response:
     """
     Renders pages that do not require any special handling.

@@ -62,7 +62,9 @@ def make_ok_response(data: DataObject) -> flask.Response:
 
 
 def make_error_response(code: int, message: str) -> flask.Response:
-    response = ErrorResponse("errors", [{"code": str(code), "message": message}])
+    response = ErrorResponse(
+        "errors", [{"code": str(code), "message": message}]
+    )
     if 400 <= code < 600:
         return flask.make_response(dataclasses.asdict(response), code)
     return flask.make_response(dataclasses.asdict(response))
@@ -71,6 +73,16 @@ def make_error_response(code: int, message: str) -> flask.Response:
 def make_errors_response(errors: Any) -> flask.Response:
     response = ErrorResponse("errors", errors)
     return flask.make_response(dataclasses.asdict(response), 500)
+
+
+@bp.after_request
+def disable_caching(resp: flask.Response) -> flask.Response:
+    """
+    Sets the response's headers to prevent storing responses at the client.
+    """
+    resp.headers["Cache-Control"] = "no-store"
+
+    return resp
 
 
 @bp.route("/ping", methods=["GET", "POST", "PUT", "DELETE"])
@@ -83,7 +95,9 @@ def ping():
 
 @bp.route("/version")
 def version() -> flask.Response:
-    version_string = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")
+    version_string = flask.current_app.config.get(
+        "SOTERIA_VERSION", "<not set>"
+    )
 
     return make_ok_response({"version": version_string})
 
@@ -128,7 +142,9 @@ def check_user_harbor_id(user_id: str):
     flask.current_app.logger.info("Subiss Below:")
     flask.current_app.logger.info(registry.util.get_subiss())
 
-    cache.delete_memoized(registry.util.get_harbor_user_by_subiss, registry.util.get_subiss())
+    cache.delete_memoized(
+        registry.util.get_harbor_user_by_subiss, registry.util.get_subiss()
+    )
     harbor_user = registry.util.get_harbor_user()
 
     username = harbor_user["username"] if harbor_user else None
@@ -183,7 +199,9 @@ def create_user_starter_project(user_id: str):
     if not orcid_id:
         errors.append({"code": "PREREQUISITE", "message": "Missing ORCID iD"})
     if not harbor_user:
-        errors.append({"code": "PREREQUISITE", "message": "Missing Harbor user"})
+        errors.append(
+            {"code": "PREREQUISITE", "message": "Missing Harbor user"}
+        )
     if errors:
         return make_errors_response(errors)
 
@@ -240,9 +258,12 @@ def check_user_starter_project(user_id: str):
 
     harbor = {
         "name": flask.current_app.config["HARBOR_NAME"],
-        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"] + "/harbor/projects",
+        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"]
+        + "/harbor/projects",
     }
 
     if "errors" in response:
         return make_ok_response({"verified": False})
-    return make_ok_response({"verified": True, "harbor": harbor, "project": response})
+    return make_ok_response(
+        {"verified": True, "harbor": harbor, "project": response}
+    )

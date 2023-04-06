@@ -2,13 +2,14 @@
 **/*.swp
 
 ## Configuration and cache directories for various tools.
-/.*
+.*
 
 ## Flask's configuration and run-time artifacts, which might contain passwords.
-/instance/
-/registry/static/.webassets-cache/
-/registry/static/assets/
+instance/
+registry/static/.webassets-cache/
+registry/static/assets/
 
-## PyCharm's project files and default virtual environment.
-/.idea/
-/venv/
+## Directories used by various IDEs.
+.idea/
+.vscode/
+venv/

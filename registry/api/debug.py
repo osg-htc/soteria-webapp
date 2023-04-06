@@ -1,5 +1,5 @@
 """
-Routes for interrogating and debugging the application.
+Routes for debugging the application.
 """
 
 import json
@@ -9,6 +9,16 @@ import flask
 __all__ = ["bp"]
 
 bp = flask.Blueprint("debug", __name__)
+
+
+@bp.after_request
+def disable_caching(resp: flask.Response) -> flask.Response:
+    """
+    Sets the response's headers to prevent storing responses at the client.
+    """
+    resp.headers["Cache-Control"] = "no-store"
+
+    return resp
 
 
 @bp.route("/environ")
