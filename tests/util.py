@@ -13,13 +13,13 @@ from pytest_mock import MockerFixture
 
 from registry import util
 from registry.app import create_app
-from registry.comanage import ComanageAPI
+from registry.comanage import COmanageAPI
 from registry.harbor import HarborAPI
 
 harbor_api = HarborAPI(
     HARBOR_API_URL, (HARBOR_ADMIN_USERNAME, HARBOR_ADMIN_PASSWORD)
 )
-comanage_api = ComanageAPI(
+comanage_api = COmanageAPI(
     REGISTRY_API_URL,
     REGISTRY_CO_ID,
     (REGISTRY_API_USERNAME, REGISTRY_API_PASSWORD),

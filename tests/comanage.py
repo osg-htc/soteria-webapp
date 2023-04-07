@@ -8,9 +8,9 @@ from config import (
     REGISTRY_CO_ID,
 )
 
-from registry.comanage import ComanageAPI
+from registry.comanage import COmanageAPI
 
-api = ComanageAPI(
+api = COmanageAPI(
     REGISTRY_API_URL,
     REGISTRY_CO_ID,
     (REGISTRY_API_USERNAME, REGISTRY_API_PASSWORD),

@@ -17,7 +17,7 @@ import registry.comanage
 import registry.freshdesk
 import registry.harbor
 from registry.cache import cache
-from registry.harbor import HarborRoleIds
+from registry.harbor import HarborRoleID
 
 __all__ = [
     "configure_logging",
@@ -226,16 +226,16 @@ def create_project(name: str, public: bool):
 
     # Create the groups in Harbor
     harbor_api.create_project_member(
-        name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-owners"
+        name, HarborRoleID.MAINTAINER, group_name=f"soteria-{name}-owners"
     )
     harbor_api.create_project_member(
-        name, HarborRoleIds.maintainer, group_name=f"soteria-{name}-maintainers"
+        name, HarborRoleID.MAINTAINER, group_name=f"soteria-{name}-maintainers"
     )
     harbor_api.create_project_member(
-        name, HarborRoleIds.developer, group_name=f"soteria-{name}-developers"
+        name, HarborRoleID.DEVELOPER, group_name=f"soteria-{name}-developers"
     )
     harbor_api.create_project_member(
-        name, HarborRoleIds.guest, group_name=f"soteria-{name}-guests"
+        name, HarborRoleID.GUEST, group_name=f"soteria-{name}-guests"
     )
 
     # Create the groups in Comanage
@@ -442,7 +442,7 @@ def get_admin_comanage_api():
     """
     Returns a Comanage API instance authenticated as an admin.
     """
-    return registry.comanage.ComanageAPI(
+    return registry.comanage.COmanageAPI(
         flask.current_app.config["REGISTRY_API_URL"],
         flask.current_app.config["REGISTRY_CO_ID"],
         basic_auth=(
