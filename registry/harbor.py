@@ -93,14 +93,20 @@ class HarborAPI(registry.api_client.GenericAPI):
     # ----------------------------------------------------------------------
     #
 
-    def create_project(self, name: str, *, storage_limit: int = 5368709120):
+    def create_project(
+        self,
+        name: str,
+        is_public: bool = False,
+        *,
+        storage_limit: int = 5368709120,
+    ):
         # 5 GiB = 5368709120 bytes = 5 * 1024 * 1024 * 1024
         """
         Create a new private project, with the given user as an administrator.
         """
         payload = {
             "project_name": name,
-            "public": False,
+            "public": is_public,
             "storage_limit": storage_limit,
         }
         r = self._post("/projects", json=payload)

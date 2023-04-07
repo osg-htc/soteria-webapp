@@ -18,7 +18,7 @@ class TestHarborApi:
         assert response.status_code == 200
 
     def test_create_project(self):
-        response = api.create_project("pytest-create-project", public=True)
+        response = api.create_project("pytest-create-project", is_public=True)
 
         assert response["name"] == "pytest-create-project"
 

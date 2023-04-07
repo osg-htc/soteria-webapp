@@ -7,11 +7,10 @@ import logging.config
 import logging.handlers
 import pathlib
 import re
-from typing import Any, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 import flask
 import ldap3  # type: ignore[import]
-import requests.exceptions
 
 import registry.comanage
 import registry.freshdesk
@@ -165,17 +164,30 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
     """
     Returns the current user's Harbor account.
     """
+    harbor_user = None
+
     api = get_admin_harbor_api()
+    email = flask.request.environ.get("OIDC_CLAIM_email")
+    subiss = get_subiss()
 
-    for user in api.get_all_users(params={"sort": "-creation_time"}):
-        details = api.get_user(user["user_id"])
+    flask.current_app.logger.debug(
+        "Searching for: email=%s subiss=%s",
+        email,
+        subiss,
+    )
 
-        flask.current_app.logger.info(details)
+    if not harbor_user and (email and subiss):
+        harbor_user = api.search_for_user(email=email, subiss=subiss)
 
-        if subiss == details["oidc_user_meta"]["subiss"]:
-            return details
+    if not harbor_user:
+        for user in api.get_all_users(params={"sort": "-creation_time"}):
+            full_data = api.get_user(user["user_id"])
 
-    return None
+            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+                harbor_user = full_data
+                break
+
+    return harbor_user
 
 
 def get_harbor_projects() -> Any:
@@ -338,54 +350,9 @@ def get_orcid_id():
     return None
 
 
-def get_subiss():
-    """
-    Returns the concatenation of the current user's `sub` and `iss`.
-    """
-    update_request_environ()
-
-    sub = flask.request.environ.get("OIDC_CLAIM_sub", "")
-    iss = flask.request.environ.get("OIDC_CLAIM_iss", "")
-
-    if sub and iss:
-        return sub + iss
-
-    return None
-
-
 #
 # --------------------------------------------------------------------------
 #
-
-
-def get_harbor_user():
-    """
-    Returns the current users's Harbor account.
-    """
-    harbor_user = None
-
-    api = get_admin_harbor_api()
-    email = flask.request.environ.get("OIDC_CLAIM_email")
-    subiss = get_subiss()
-
-    flask.current_app.logger.debug(
-        "Searching for: email=%s subiss=%s",
-        email,
-        subiss,
-    )
-
-    if not harbor_user and (email and subiss):
-        harbor_user = api.search_for_user(email=email, subiss=subiss)
-
-    if not harbor_user:
-        for user in api.get_all_users():
-            full_data = api.get_user(user["user_id"])
-
-            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
-                harbor_user = full_data
-                break
-
-    return harbor_user
 
 
 def get_starter_project_name():
