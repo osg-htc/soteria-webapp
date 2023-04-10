@@ -140,7 +140,7 @@ class ResearcherApprovalForm(FlaskForm):
     class Meta:
         csrf = False  # CSRF not needed because no data gets modified
 
-    def validate(self):
+    def validate(self, **kwargs):
         self.email.validate(self)
 
         if not self.criteria.validate(self):
