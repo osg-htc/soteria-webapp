@@ -349,9 +349,8 @@ def get_orcid_id():
             )
 
             if len(conn.entries) == 1:
-                return conn.entries[0].entry_attributes_as_dict[
-                    "eduPersonOrcid"
-                ]
+                orcid = conn.entries[0].entry_attributes_as_dict["eduPersonOrcid"]
+                return orcid[0] if len(orcid) != 0 else None
 
     return None
 
