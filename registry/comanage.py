@@ -33,7 +33,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
         self._co_id = co_id
 
     def get_group(self, group_id: int):
-        return self._get(f"co_groups/{group_id}.json")
+        return self._get(f"/co_groups/{group_id}.json")
 
     def get_groups(
         self,
@@ -41,7 +41,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
         search_identifier: Optional[str] = None,
     ):
         return self._get(
-            "co_groups.json",
+            "/co_groups.json",
             params={
                 "coid": self._co_id,
                 "copersonid": coperson_id,
@@ -78,10 +78,10 @@ class COmanageAPI(registry.api_client.GenericAPI):
             ],
         }
 
-        return self._post("co_groups.json", json=data)
+        return self._post("/co_groups.json", json=data)
 
     def delete_group(self, group_id: int):
-        return self._delete(f"co_groups/{group_id}.json")
+        return self._delete(f"/co_groups/{group_id}.json")
 
     def create_person(
         self,
@@ -125,10 +125,10 @@ class COmanageAPI(registry.api_client.GenericAPI):
             ],
         }
 
-        return self._post("co_people.json", json=data)
+        return self._post("/co_people.json", json=data)
 
     def get_person(self, person_id: int):
-        return self._get(f"co_people/{person_id}.json")
+        return self._get(f"/co_people/{person_id}.json")
 
     def get_persons(
         self,
@@ -141,10 +141,10 @@ class COmanageAPI(registry.api_client.GenericAPI):
             "search.identifier": identifier,
         }
 
-        return self._get("co_people.json", params=params)
+        return self._get("/co_people.json", params=params)
 
     def delete_person(self, person_id: int):
-        return self._delete(f"co_people/{person_id}.json")
+        return self._delete(f"/co_people/{person_id}.json")
 
     def get_group_members(
         self,
@@ -158,7 +158,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
 
         params = {"cogroupid": co_group_id, "copersonid": coperson_id}
 
-        return self._get("co_group_members.json", params=params)
+        return self._get("/co_group_members.json", params=params)
 
     def add_group_member(
         self,
@@ -185,4 +185,4 @@ class COmanageAPI(registry.api_client.GenericAPI):
             ],
         }
 
-        return self._post("co_group_members.json", json=data)
+        return self._post("/co_group_members.json", json=data)

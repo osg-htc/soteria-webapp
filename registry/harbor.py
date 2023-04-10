@@ -10,7 +10,7 @@ import registry.api_client
 __all__ = ["HarborAPI"]
 
 
-class HarborRoleID(enum.Enum):
+class HarborRoleID(enum.IntEnum):
     PROJECT_ADMIN = 1
     DEVELOPER = 2
     GUEST = 3

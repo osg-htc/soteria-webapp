@@ -127,6 +127,12 @@ def get_comanage_groups():
                     sub,
                 )
 
+    flask.current_app.logger.debug(
+        "Found the following groups for %s: %s",
+        sub,
+        groups,
+    )
+
     return groups
 
 
@@ -372,7 +378,7 @@ def has_organizational_identity() -> bool:
 def is_soteria_affiliate() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-All:members:all" in groups
+    return "CO:COU:SOTERIA-Affiliates:members:all" in groups
 
 
 def is_soteria_member() -> bool:

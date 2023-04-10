@@ -101,12 +101,12 @@ def user_projects():
 
 @bp.route("/public/projects")
 def public_projects():
-    return flask.render_template("projects.html")
+    return flask.render_template("/public/projects.html")
 
 
 @bp.route("/public/projects/<project>/repositories")
 def public_project_repositories(project: str):
-    return flask.render_template("project-repositories.html", project=project)
+    return flask.render_template("/public/repositories.html", project=project)
 
 
 @bp.route("/<page>")
