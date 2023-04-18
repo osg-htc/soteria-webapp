@@ -26,7 +26,7 @@ FRESHDESK_API_KEY = "keep this a secret!"
 #
 HARBOR_NAME = "Example Harbor Instance"
 HARBOR_HOMEPAGE_URL = "https://harbor.example.com"
-HARBOR_API_URL = "https://harbor.example.com/api/v2.0"
+HARBOR_API_URL = f"{HARBOR_HOMEPAGE_URL}/api/v2.0"
 
 #
 # The username and password for the Harbor instance's "admin" account.
@@ -55,10 +55,25 @@ MOD_AUTH_OPENIDC_SESSION_COOKIE_NAME = "mod_auth_openidc_session"
 ORCID_ID_ENROLLMENT_URL = "https://registry.example.com/enroll/orcid"
 
 #
-# The COmanage registry's name and homepage URL.
+# The COmanage instance's name, homepage URL, CO ID, and API base URL.
 #
 REGISTRY_NAME = "Example COmanage Registry"
 REGISTRY_HOMEPAGE_URL = "https://registry.example.com"
+REGISTRY_CO_ID = 0
+REGISTRY_API_URL = f"{REGISTRY_HOMEPAGE_URL}/registry"
+
+#
+# The username and password for the COmanage instance's API user.
+# Environment variables of the same name will override the values set here.
+#
+REGISTRY_API_USERNAME = "co_0.soteria"
+REGISTRY_API_PASSWORD = "keep this a secret!"
+
+#
+# A random string that may be used for security related purposes.
+# An environment variable of the same name will override the value set here.
+#
+SECRET_KEY = "keep this a secret!"
 
 #
 # Where a user should go to enroll in the SOTERIA COU.
