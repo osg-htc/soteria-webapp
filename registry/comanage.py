@@ -141,7 +141,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
             "search.identifier": identifier,
         }
 
-        return self._get("/co_people.json", params=params)
+        return self._get("co_people.json", params=params)
 
     def delete_person(self, person_id: int):
         return self._delete(f"/co_people/{person_id}.json")
@@ -169,6 +169,9 @@ class COmanageAPI(registry.api_client.GenericAPI):
         valid_through: Optional[datetime.datetime] = None,
         valid_from: Optional[datetime.datetime] = None,
     ):
+        valid_from = valid_from.isoformat() if valid_from else None
+        valid_through = valid_through.isoformat() if valid_through else None
+
         data = {
             "RequestType": "CoGroupMembers",
             "Version": "1.0",

@@ -36,9 +36,8 @@ class TestHarborApi:
 
         response = api.get_all_project_members(project["project_id"])
 
-        assert isinstance(response, list)
         assert "pytest-create-project-member" in set(
-            [x["entity_name"] for x in response]
+            [x["entity_name"] for x in [*response]]
         )
 
     def test_delete_usergroup(self):

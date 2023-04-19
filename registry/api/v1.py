@@ -3,6 +3,7 @@ SOTERIA API version 1.
 """
 
 import dataclasses
+import datetime
 from typing import Any, Dict, List, Optional, Union
 
 import flask
@@ -10,6 +11,7 @@ from typing_extensions import Literal
 
 import registry.util
 from registry.cache import cache
+from registry.harbor import HarborRoleID
 
 __all__ = ["bp"]
 
@@ -190,7 +192,6 @@ def create_user_starter_project(user_id: str):
         return make_error_response(400, "Malformed user ID")
 
     api = registry.util.get_admin_harbor_api()
-    whoami = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
     errors = []
 
     orcid_id = registry.util.get_orcid_id()
@@ -205,25 +206,35 @@ def create_user_starter_project(user_id: str):
     if errors:
         return make_errors_response(errors)
 
-    username = harbor_user["username"]
     projectname = registry.util.get_starter_project_name()
 
-    project = api.create_project(projectname)
+    project = api.create_project(projectname, is_public=False)
 
     if "errors" in project:
         return make_errors_response(project["errors"])
 
-    project_id = project["project_id"]
+    coperson_id = registry.util.get_coperson_id()
 
-    response = api.add_project_member(project_id, username)
+    project_expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
 
-    if "errors" in response:
-        return make_errors_response(response["errors"])
+    try:
+        registry.util.create_permission_group(
+            group_name=f"soteria-{projectname}-temporary",
+            project_name=projectname,
+            harbor_role_id=HarborRoleID.DEVELOPER,
+            comanage_person_id=coperson_id,
+            comanage_group_member=True,
+            comanage_group_owner=False,
+            valid_through=project_expiration_date
+        )
+    except Exception as error:
+        return make_errors_response([{
+            "code": "Error", "message": error
+        }])
 
-    response = api.delete_project_member(project_id, whoami)
-
-    if "errors" in response:
-        return make_errors_response(response["errors"])
+    # Try to delete admin from project, but ignore if it doesn't work
+    harbor_admin_username = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
+    api.delete_project_member(project['project_id'], harbor_admin_username)
 
     return make_ok_response({"project_name": project["name"]})
 

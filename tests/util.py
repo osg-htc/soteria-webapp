@@ -14,7 +14,7 @@ from pytest_mock import MockerFixture
 from registry import util
 from registry.app import create_app
 from registry.comanage import COmanageAPI
-from registry.harbor import HarborAPI
+from registry.harbor import HarborAPI, HarborRoleID
 
 harbor_api = HarborAPI(
     HARBOR_API_URL, (HARBOR_ADMIN_USERNAME, HARBOR_ADMIN_PASSWORD)
@@ -76,9 +76,61 @@ class TestUtil:
 
         assert spy.call_count == 2
 
+    def test_create_permission_group(self, app):
+        with app.test_request_context():
+            project_name = "test-project-17"
+            group_name = "test-group-project-17"
+
+            project = harbor_api.create_project(project_name, True)
+
+            util.create_permission_group(
+                group_name=group_name,
+                project_name=project_name,
+                harbor_role_id=HarborRoleID.DEVELOPER,
+                comanage_person_id=util.get_coperson_id(),
+                comanage_group_member=True,
+                comanage_group_owner=False
+            )
+
+            # Harbor Tests
+            project_members_generator = harbor_api.get_all_project_members(
+                project_id=project["project_id"]
+            )
+            project_members = [*project_members_generator]
+
+            for member in project_members:
+                if member["entity_name"] == group_name:
+                    assert member["role_id"] == HarborRoleID.DEVELOPER
+
+            harbor_api.delete_project(project_name)
+
+            # COmanage Tests
+            coperson_id = util.get_coperson_id()
+
+            response = comanage_api.get_groups(coperson_id=coperson_id)
+
+            cogroups = response.json()["CoGroups"]
+            soteria_cogroups = [
+                *filter(lambda x: x["Name"] == group_name, cogroups)
+            ]
+
+            for cogroup in soteria_cogroups:
+                group_members_response = comanage_api.get_group_members(
+                    co_group_id=cogroup["Id"]
+                )
+                group_members = group_members_response.json()["CoGroupMembers"]
+
+                assert group_members[0]["Person"]["Id"] == coperson_id
+                assert group_members[0]["Member"] == True
+                assert group_members[0]["Owner"] == False
+
+                # Clean up as we go
+                comanage_api.delete_group(cogroup["Id"])
+
+
     def test_create_project(self, app):
         with app.test_request_context():
-            project_name = "test-project-12"
+            project_name = "test-project-14"
 
             util.create_project(project_name, False)
 
@@ -92,11 +144,13 @@ class TestUtil:
                 f"soteria-{project_name}-developers",
                 f"soteria-{project_name}-guests",
             }
-            project_members = harbor_api.get_all_project_members(
+            project_members_generator = harbor_api.get_all_project_members(
                 project_id=project["project_id"]
             )
 
-            assert len(project_members) == 5
+            project_members = [*project_members_generator]
+
+            assert len([*project_members]) == 5
 
             for member in project_members:
                 assert (
@@ -113,7 +167,7 @@ class TestUtil:
             # Comanage
             coperson_id = util.get_coperson_id()
 
-            response = comanage_api.get_groups(co_person_id=coperson_id)
+            response = comanage_api.get_groups(coperson_id=coperson_id)
 
             cogroups = response.json()["CoGroups"]
             soteria_cogroups = [
