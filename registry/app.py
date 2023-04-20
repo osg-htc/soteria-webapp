@@ -145,6 +145,7 @@ def create_app() -> flask.Flask:
     return app
 
 
+# Use to test locally
 if __name__ == '__main__':
     app = create_app()
     app.run(debug=True, use_reloader=True, port=9876)

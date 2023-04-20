@@ -3,11 +3,12 @@ Wrapper for Harbor's API.
 """
 
 import enum
+import typing
 from typing import Optional, Union
 
 import registry.api_client
 
-__all__ = ["HarborAPI"]
+__all__ = ["HarborAPI", "HarborRoleID"]
 
 
 class HarborRoleID(enum.IntEnum):
@@ -24,7 +25,7 @@ class HarborAPI(registry.api_client.GenericAPI):
     All calls will be made using the credentials provided to the constructor.
     """
 
-    def _get_all(self, route, **kwargs):
+    def _get_all(self, route, **kwargs) -> typing.Generator[dict, None, None]:
         """
         Iterates all pages and retrieves all resource in a route
         """
@@ -50,7 +51,7 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         return self._get(f"/users/{user_id}").json()
 
-    def get_all_users(self, **kwargs):
+    def get_all_users(self, **kwargs) -> typing.Generator[dict, None, None]:
         """
         Returns a list of all users.
 
@@ -108,7 +109,7 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         return self._get(f"/projects/{project_id_or_name}").json()
 
-    def get_all_projects(self, **kwargs):
+    def get_all_projects(self, **kwargs) -> typing.Generator[dict, None, None]:
         """
         Get all projects, purely internal function
         """
@@ -181,7 +182,7 @@ class HarborAPI(registry.api_client.GenericAPI):
                 return member
         return None
 
-    def get_all_project_members(self, project_id: Union[str, int]):
+    def get_all_project_members(self, project_id: Union[str, int]) -> typing.Generator[dict, None, None]:
         return self._get_all(f"/projects/{project_id}/members")
 
     def delete_project_member(self, project_id: int, username: str):

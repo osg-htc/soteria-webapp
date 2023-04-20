@@ -7,6 +7,7 @@ import logging.config
 import logging.handlers
 import pathlib
 import re
+import datetime
 from typing import Any, Literal, Optional
 
 import flask
@@ -137,7 +138,7 @@ def get_comanage_groups():
 
 
 def get_coperson_id():
-    """Get the Comamange Person id for the current user"""
+    """Get the Comanage Person id for the current user"""
     comanage_api = get_admin_comanage_api()
     return comanage_api.get_persons(identifier=get_sub()).json()["CoPeople"][0][
         "Id"
@@ -226,12 +227,103 @@ def create_project(name: str, public: bool):
     """Create a researcher project"""
 
     harbor_api = get_admin_harbor_api()
-    comanage_api = get_admin_comanage_api()
 
     project = harbor_api.create_project(name, public)
 
     if not ("name" in project and project["name"] == name):
         return project
+
+    coperson_id = get_coperson_id()
+
+    try:
+        create_permission_group(
+            group_name=f"soteria-{name}-owners",
+            project_name=name,
+            harbor_role_id=HarborRoleID.MAINTAINER,
+            comanage_person_id=coperson_id,
+            comanage_group_member=True,
+            comanage_group_owner=False
+        )
+        create_permission_group(
+            group_name=f"soteria-{name}-maintainers",
+            project_name=name,
+            harbor_role_id=HarborRoleID.MAINTAINER,
+            comanage_person_id=coperson_id,
+            comanage_group_member=True,
+            comanage_group_owner=True
+        )
+        create_permission_group(
+            group_name=f"soteria-{name}-developers",
+            project_name=name,
+            harbor_role_id=HarborRoleID.DEVELOPER,
+            comanage_person_id=coperson_id,
+            comanage_group_member=True,
+            comanage_group_owner=True
+        )
+        create_permission_group(
+            group_name=f"soteria-{name}-guests",
+            project_name=name,
+            harbor_role_id=HarborRoleID.GUEST,
+            comanage_person_id=coperson_id,
+            comanage_group_member=True,
+            comanage_group_owner=True
+        )
+    except Exception as error:
+        flask.current_app.logger.error(error)
+
+    return project
+
+
+def create_permission_group(
+        group_name: str,
+        project_name: str,
+        harbor_role_id: HarborRoleID,
+        comanage_person_id: int,
+        comanage_group_member: bool,
+        comanage_group_owner: bool,
+        valid_through: Optional[datetime.datetime] = None
+):
+    """
+    Creates a permissions group and assign provides access to the provided COmanage person
+    """
+
+    harbor_api = get_admin_harbor_api()
+    comanage_api = get_admin_comanage_api()
+
+    # Create Group in Harbor
+    response = harbor_api.create_project_member(
+        project_id_or_name=project_name,
+        role=harbor_role_id,
+        group_name=group_name
+    )
+
+    if not response.ok:
+        raise Exception(f"Could not create Harbor group: {response.text}")
+
+    # Create the group in Comanage
+    response = comanage_api.create_group(group_name)
+
+    if not response.ok:
+        raise Exception(f"Could not create COmanage group: {response.text}")
+
+    comanage_group = response.json()
+
+    # Add the researcher to the groups
+    response = comanage_api.add_group_member(
+        comanage_group["Id"],
+        comanage_person_id,
+        member=comanage_group_member,
+        owner=comanage_group_owner,
+        valid_through=valid_through
+    )
+
+    if not response.ok:
+        raise Exception(f"Could not add person to COmanage Group: {response.text}")
+
+
+def get_comanage_person():
+    """Get current users Comanage Person data"""
+    comanage_api = get_admin_comanage_api()
 
     comanage_person = comanage_api.get_persons(identifier=get_sub()).json()
 
@@ -240,48 +332,7 @@ def create_project(name: str, public: bool):
             "Could not find a Comanage account associated with this user"
         )
 
-    coperson_id = comanage_person["CoPeople"][0]["Id"]
-
-    # Create the groups in Harbor
-    harbor_api.create_project_member(
-        name, HarborRoleID.MAINTAINER, group_name=f"soteria-{name}-owners"
-    )
-    harbor_api.create_project_member(
-        name, HarborRoleID.MAINTAINER, group_name=f"soteria-{name}-maintainers"
-    )
-    harbor_api.create_project_member(
-        name, HarborRoleID.DEVELOPER, group_name=f"soteria-{name}-developers"
-    )
-    harbor_api.create_project_member(
-        name, HarborRoleID.GUEST, group_name=f"soteria-{name}-guests"
-    )
-
-    # Create the groups in Comanage
-    owner_group = comanage_api.create_group(f"soteria-{name}-owners").json()
-    maintainer_group = comanage_api.create_group(
-        f"soteria-{name}-maintainers"
-    ).json()
-    developer_group = comanage_api.create_group(
-        f"soteria-{name}-developers"
-    ).json()
-    guest_group = comanage_api.create_group(f"soteria-{name}-guests").json()
-
-    # Add the researcher to the groups
-    comanage_api.add_group_member(
-        owner_group["Id"], coperson_id, member=True, owner=False
-    )
-    comanage_api.add_group_member(
-        maintainer_group["Id"], coperson_id, member=True, owner=True
-    )
-    comanage_api.add_group_member(
-        developer_group["Id"], coperson_id, member=True, owner=True
-    )
-    comanage_api.add_group_member(
-        guest_group["Id"], coperson_id, member=True, owner=True
-    )
-
-    return project
-
+    return comanage_person["CoPeople"][0]
 
 def get_email():
     """
@@ -364,7 +415,7 @@ def get_starter_project_name():
     user = get_harbor_user()
 
     if user:
-        return user["username"].lower()
+        return user["username"].lower() + "_temporary"
     return None
 
 
