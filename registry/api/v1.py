@@ -287,9 +287,9 @@ def webhook_for_harbor():
 
     if (
         auth
-        and auth.type == "Bearer"
+        and auth.type.lower() == "bearer"
         and auth.token
-        in flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
+        == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
     ):
         payload = flask.request.get_json()
 

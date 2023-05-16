@@ -80,6 +80,7 @@ TraceEnable Off
   WSGIDaemonProcess WebApp display-name=WebApp processes=2 home=/srv
   WSGIProcessGroup WebApp
   WSGIScriptAlias / "/srv/wsgi.py"
+  WSGIPassAuthorization On
 
   ## Configure OIDC.
 
