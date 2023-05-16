@@ -42,6 +42,7 @@ def load_config(app: flask.Flask) -> None:
         "LDAP_URL",
         "LDAP_USERNAME",
         "SECRET_KEY",
+        "WEBHOOKS_HARBOR_BEARER_TOKEN",
     ]:
         if (val := os.environ.get(key)) is not None:
             app.config[key] = val
@@ -146,6 +147,6 @@ def create_app() -> flask.Flask:
 
 
 # Use to test locally
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = create_app()
     app.run(debug=True, use_reloader=True, port=9876)

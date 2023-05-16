@@ -81,6 +81,12 @@ SECRET_KEY = "keep this a secret!"
 SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enroll/existing"
 SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
 
+#
+# Bearer token that must be presented to invoke the Harbor webhook.
+# An environment variable of the same name will override the value set here.
+#
+WEBHOOKS_HARBOR_BEARER_TOKEN = "keep this a secret!"
+
 
 # ======================
 # Optional Configuration

@@ -283,8 +283,20 @@ def check_user_starter_project(user_id: str):
 
 @bp.route("/webhooks/harbor", methods=["POST"])
 def webhook_for_harbor():
-    payload = flask.request.get_json()
+    auth = flask.request.authorization
 
-    flask.current_app.logger.info(
-        f"Webhook called from Harbor: {json.dumps(payload)}"
-    )
+    if (
+        auth
+        and auth.type == "Bearer"
+        and auth.token
+        in flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
+    ):
+        payload = flask.request.get_json()
+
+        flask.current_app.logger.info(
+            f"Webhook called from Harbor: {json.dumps(payload)}"
+        )
+
+        return make_ok_response({"message": "webhook completed succesfully"})
+
+    return make_error_response(401, "Missing authorization")
