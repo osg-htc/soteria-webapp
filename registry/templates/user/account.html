@@ -19,9 +19,11 @@
         <li class="nav-item">
             <a class="nav-link" href="#actions">Actions</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/projects">Projects</a>
-        </li>
+        {% if is_registered %}
+            <li class="nav-item">
+                <a class="nav-link" href="/projects">Projects</a>
+            </li>
+        {% endif %}
     </ul>
 </nav>
 <div class="row mb-3">
@@ -57,7 +59,28 @@
     <div class="col-12">
         <h2 id="actions">Actions</h2>
     </div>
-    {% if not is_researcher %}
+    {% if not is_registered %}
+        <div class="affiliate-member-action col-12 col-md-6 mb-4" id="soteria-registration">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h4 class="text-danger">Complete Soteria Registration</h4>
+                    </div>
+                    <p>
+                        Your account has yet to complete the registration flow and will be prevented from accessing
+                        SOTERIA features. This flow makes sure that you have linked the appropriate accounts, so you can
+                        use all of SOTERIA's features.
+                    </p>
+                    <div>
+                        <a type="button" class="btn btn-primary" href="/registration">
+                            Complete Soteria Registration
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% if not is_researcher and is_registered %}
         <div class="affiliate-member-action col-12 col-md-6 mb-4" id="researcher-registration">
             <div class="card">
                 <div class="card-body">
