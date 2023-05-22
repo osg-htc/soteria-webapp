@@ -199,29 +199,35 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
 
 
 def get_harbor_projects() -> Any:
-    """Returns the users harbor projects - O(m*n)"""
+    """Returns the users harbor projects - O(n)"""
 
     comanage_api = registry.util.get_admin_comanage_api()
     harbor_api = registry.util.get_admin_harbor_api()
 
     coperson_id = registry.util.get_coperson_id()
 
-    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()[
-        "CoGroups"
-    ]
+    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()["CoGroups"]
+    comanage_group_names = map(lambda x: x['Name'], comanage_groups)
 
     owner_pattern = re.compile("^soteria-(.*?)-owners")
-    owned_project_names = [
-        owner_pattern.match(g["Name"]).group(1)
-        for g in comanage_groups
-        if owner_pattern.match(g["Name"])
-    ]
+    temporary_pattern = re.compile("^soteria-(.*?)-temporary")
+    developer_pattern = re.compile("^soteria-(.*?)-developers")
+    maintainer_pattern = re.compile("^soteria-(.*?)-maintainers")
+    guest_pattern = re.compile("^soteria-(.*?)-guests")
 
-    owned_projects = []
-    for project_name in owned_project_names:
-        owned_projects.append(harbor_api.get_project(project_name))
+    patterns = [owner_pattern, temporary_pattern, developer_pattern, maintainer_pattern, guest_pattern]
 
-    return owned_projects
+    project_names = []
+    for group_name in comanage_group_names:
+        for pattern in patterns:
+            if pattern.match(group_name):
+                project_names.append(pattern.match(group_name).group(1))
+
+    projects = []
+    for project_name in project_names:
+        projects.append(harbor_api.get_project(project_name))
+
+    return projects
 
 
 def create_project(name: str, public: bool):
