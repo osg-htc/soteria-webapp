@@ -154,5 +154,43 @@
             </div>
         </div>
     {% endif %}
+    {% if is_registered and not has_starter_project %}
+        <div class="affiliate-member-action col-12 col-md-6 mb-4" id="affiliate-project">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h4>Create Sandbox Project</h4>
+                    </div>
+                    <p>
+                        Soteria registrants are provided access to a temporary project on the container hub.
+                        This project is 5GB in size and will last for 30 days.
+                    </p>
+                    <p>
+                        To gain access to long-lived and named projects register as a researcher!
+                    </p>
+                    <p id="allocate-project">
+                        <button id="allocate-project" class="btn btn-secondary">Allocate Project</button>
+                    </p>
+                    <div id="post-project-creation" class="alert alert-success" role="alert" hidden>
+                        Project allocated, view now on your <a href="/projects">Projects Page.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        document.getElementById("allocate-project").addEventListener('click', createTemporaryProject)
+
+        async function createTemporaryProject() {
+            let res = await fetch("/api/v1/users/current/starter_project", {method: 'POST'})
+
+            if( res.ok ){
+                document.getElementById("post-project-creation").hidden = false
+                document.getElementById("allocate-project").hidden = true
+            }
+        }
+    </script>
 {% endblock %}

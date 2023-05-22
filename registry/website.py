@@ -43,6 +43,9 @@ def index():
         "status": registry.util.get_status() or "<not available>",
     }
 
+    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name())
+    has_starter_project = not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
+
     return flask.render_template(
         "/user/account.html",
         user=user,
@@ -50,6 +53,7 @@ def index():
         is_member=registry.util.is_soteria_member(),
         is_affiliate=registry.util.is_soteria_affiliate(),
         is_registered=registry.util.is_registered(),
+        has_starter_project=has_starter_project,
         registry_url=flask.current_app.config["REGISTRY_HOMEPAGE_URL"],
     )
 
