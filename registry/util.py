@@ -428,19 +428,19 @@ def has_organizational_identity() -> bool:
 def is_soteria_affiliate() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-Affiliates:members:all" in groups
+    return "CO:COU:SOTERIA-Affiliates:members:active" in groups
 
 
 def is_soteria_member() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-Collaborators:members:all" in groups
+    return "CO:COU:SOTERIA-Collaborators:members:active" in groups
 
 
 def is_soteria_researcher() -> bool:
     groups = get_comanage_groups()
 
-    return "CO:COU:SOTERIA-Researchers:members:all" in groups
+    return "CO:COU:SOTERIA-Researchers:members:active" in groups
 
 
 #
