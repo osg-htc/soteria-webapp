@@ -50,7 +50,7 @@ TraceEnable Off
     AuthType openid-connect
   </Location>
 
-  ## ...but relax restrictions on public and static content.
+  ## ...but relax restrictions on public and static content...
 
   <LocationMatch "^(/|/about)$">
     Require all granted
@@ -58,6 +58,13 @@ TraceEnable Off
   </LocationMatch>
 
   <LocationMatch "^/(harbor|public|static)/">
+    Require all granted
+    AuthType none
+  </LocationMatch>
+
+  ## ...and let the Flask app handle authentication for webhooks.
+
+  <LocationMatch "^/api/v1/webhooks/">
     Require all granted
     AuthType none
   </LocationMatch>
@@ -80,6 +87,7 @@ TraceEnable Off
   WSGIDaemonProcess WebApp display-name=WebApp processes=2 home=/srv
   WSGIProcessGroup WebApp
   WSGIScriptAlias / "/srv/wsgi.py"
+  WSGIPassAuthorization On
 
   ## Configure OIDC.
 

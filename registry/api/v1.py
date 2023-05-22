@@ -4,6 +4,7 @@ SOTERIA API version 1.
 
 import dataclasses
 import datetime
+import json
 from typing import Any, Dict, List, Optional, Union
 
 import flask
@@ -217,7 +218,9 @@ def create_user_starter_project(user_id: str):
 
     coperson_id = registry.util.get_coperson_id()
 
-    project_expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
+    project_expiration_date = datetime.datetime.now() + datetime.timedelta(
+        days=30
+    )
 
     try:
         registry.util.create_permission_group(
@@ -227,16 +230,14 @@ def create_user_starter_project(user_id: str):
             comanage_person_id=coperson_id,
             comanage_group_member=True,
             comanage_group_owner=False,
-            valid_through=project_expiration_date
+            valid_through=project_expiration_date,
         )
     except Exception as error:
-        return make_errors_response([{
-            "code": "Error", "message": error
-        }])
+        return make_errors_response([{"code": "Error", "message": error}])
 
     # Try to delete admin from project, but ignore if it doesn't work
     harbor_admin_username = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
-    api.delete_project_member(project['project_id'], harbor_admin_username)
+    api.delete_project_member(project["project_id"], harbor_admin_username)
 
     return make_ok_response({"project_name": project["name"]})
 
@@ -280,3 +281,24 @@ def check_user_starter_project(user_id: str):
     return make_ok_response(
         {"verified": True, "harbor": harbor, "project": response}
     )
+
+
+@bp.route("/webhooks/harbor", methods=["POST"])
+def webhook_for_harbor():
+    auth = flask.request.authorization
+
+    if (
+        auth
+        and auth.type.lower() == "bearer"
+        and auth.token
+        == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
+    ):
+        payload = flask.request.get_json()
+
+        flask.current_app.logger.info(
+            f"Webhook called from Harbor: {json.dumps(payload)}"
+        )
+
+        return make_ok_response({"message": "webhook completed succesfully"})
+
+    return make_error_response(401, "Missing authorization")

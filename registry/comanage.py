@@ -141,7 +141,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
             "search.identifier": identifier,
         }
 
-        return self._get("co_people.json", params=params)
+        return self._get("/co_people.json", params=params)
 
     def delete_person(self, person_id: int):
         return self._delete(f"/co_people/{person_id}.json")
