@@ -222,6 +222,7 @@ def get_harbor_projects() -> Any:
         for pattern in patterns:
             if pattern.match(group_name):
                 project_names.append(pattern.match(group_name).group(1))
+                break
 
     projects = []
     for project_name in project_names:
