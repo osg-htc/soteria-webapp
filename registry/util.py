@@ -217,12 +217,11 @@ def get_harbor_projects() -> Any:
 
     patterns = [owner_pattern, temporary_pattern, developer_pattern, maintainer_pattern, guest_pattern]
 
-    project_names = []
+    project_names = set()
     for group_name in comanage_group_names:
         for pattern in patterns:
             if pattern.match(group_name):
-                project_names.append(pattern.match(group_name).group(1))
-                break
+                project_names.add(pattern.match(group_name).group(1))
 
     projects = []
     for project_name in project_names:
