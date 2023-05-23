@@ -236,7 +236,7 @@ def create_project(name: str, public: bool):
 
     harbor_api = get_admin_harbor_api()
 
-    project = harbor_api.create_project(name, public)
+    project = harbor_api.create_project(name, public, storage_limit=(100*(1024**3)))
 
     if not ("name" in project and project["name"] == name):
         return project
