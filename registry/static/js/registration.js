@@ -2,19 +2,50 @@
  * Event handlers.
  */
 
+let isEnrolled = false;
+let linkedOrcid = false;
+let linkedHub = false;
+
+function onRegistrationCompletion(){
+    if(isEnrolled && linkedHub && linkedOrcid){
+        document.getElementById("registration-complete").hidden = false
+    }
+}
+
+
 function onReady() {
     $("#enrollment a.check").click(checkEnrollment);
     $("#hub a.check").click(checkHub);
     $("#orcid a.check").click(checkORCID);
-    $("#project a.check").click(createProject);  // create the project only when asked
 
+    checkAll()
+
+    window.addEventListener("focus", checkAll)
+    updateChecks()
+}
+
+function updateChecks(){
+    let complete = checkAll()
+    if(!complete){
+        setTimeout(updateChecks, 10000)
+    }
+}
+
+function checkAll() {
     checkEnrollment();
     checkHub();
     checkORCID();
-    checkProject();
+
+    return isEnrolled && linkedHub && linkedOrcid
 }
 
 function checkEnrollment() {
+
+    // Save a check if it is verified
+    if(isEnrolled){
+        return true
+    }
+
     startCheck("enrollment");
     $.ajax({
         "url": "/api/v1/users/current/enrollment",
@@ -24,6 +55,12 @@ function checkEnrollment() {
 }
 
 function checkHub() {
+
+    // Save a check if it is verified
+    if(linkedHub){
+        return
+    }
+
     startCheck("hub");
     $.ajax({
         "url": "/api/v1/users/current/harbor_id",
@@ -33,6 +70,12 @@ function checkHub() {
 }
 
 function checkORCID() {
+
+    // Save a check if it is verified
+    if(linkedOrcid){
+        return
+    }
+
     startCheck("orcid");
     $.ajax({
         "url": "/api/v1/users/current/orcid_id",
@@ -41,24 +84,6 @@ function checkORCID() {
     });
 }
 
-function checkProject() {
-    startCheck("project");
-    $.ajax({
-        "url": "/api/v1/users/current/starter_project",
-        "success": reportStatusProject,
-        "error": reportError.bind(null, "project")
-    });
-}
-
-function createProject() {
-    startCheck("project");
-    $.ajax({
-        "url": "/api/v1/users/current/starter_project",
-        "type": "POST",
-        "success": checkProject,
-        "error": reportError.bind(null, "project")
-    });
-}
 
 /*
  * Providing feedback to the user.
@@ -74,6 +99,9 @@ function reportStatusEnrollment(status, textStatus, jqXHR) {
 
     showMainMessage(elementId, message);
     endCheck(elementId, isVerified(status));
+
+    isEnrolled = isVerified(status)
+    onRegistrationCompletion()
 }
 
 function reportStatusHub(status, textStatus, jqXHR) {
@@ -86,6 +114,9 @@ function reportStatusHub(status, textStatus, jqXHR) {
 
     showMainMessage(elementId, message);
     endCheck(elementId, isVerified(status));
+
+    linkedHub = isVerified(status)
+    onRegistrationCompletion()
 }
 
 function reportStatusORCID(status, textStatus, jqXHR) {
@@ -98,33 +129,19 @@ function reportStatusORCID(status, textStatus, jqXHR) {
 
     showMainMessage(elementId, message);
     endCheck(elementId, isVerified(status));
-}
 
-function reportStatusProject(status, textStatus, jqXHR) {
-    let message;
-    let elementId = "project";
-
-    if (isVerified(status)) {
-        harbor_name = status.data.harbor.name;
-        harbor_projects_url = status.data.harbor.projects_url;
-        project_name = status.data.project.name;
-
-        message = "You have a private project on " + harbor_name + " " +
-            "with the name <a href='" + harbor_projects_url + "'>" + project_name + "</a>.";
-    }
-
-    showMainMessage(elementId, message);
-    endCheck(elementId, isVerified(status), true);
-}
-
-function reportError(elementId, jqXHR, textStatus, errorThrown) {
-    showSubMessage(elementId, errorThrown, true);
-    endCheck(elementId, false);
+    linkedOrcid = isVerified(status)
+    onRegistrationCompletion()
 }
 
 /*
  * Assorted helper functions.
  */
+
+function reportError(elementId, jqXHR, textStatus, errorThrown) {
+    showSubMessage(elementId, errorThrown, true);
+    endCheck(elementId, false);
+}
 
 function isVerified(status) {
     try {
@@ -165,3 +182,5 @@ function showSubMessage(elementId, message, error = false) {
     message = message === undefined ? "" : message;
     $("#" + elementId + " .sub-message").html(message);
 }
+
+onReady()

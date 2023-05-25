@@ -1,10 +1,7 @@
 {% macro registration_card_header(title) %}
 <div class="card-header">
-    <div class="row">
-        <div class="col align-self-center">
-            <h4 class="mt-1 mb-1">{{ title }}</h4>
-        </div>
-        <div class="col-2 align-self-center">
+    <div class="row gx-0">
+        <div class="col-auto pe-3 align-self-center">
             <div class="row justify-content-end">
                 <div class="col-auto status-icon">
                     <div class="loading" hidden>
@@ -13,20 +10,24 @@
                         </div>
                     </div>
                     <div class="failure">
-                        <svg class="bi bi-x-lg" fill="currentColor" height="16" viewBox="0 0 16 16"
-                             width="16" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="bi bi-x-lg" fill="currentColor" height="24" viewBox="0 0 16 16"
+                             width="24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1.293 1.293a1 1 0 0 1 1.414 0L8 6.586l5.293-5.293a1 1 0 1 1 1.414 1.414L9.414 8l5.293 5.293a1 1 0 0 1-1.414 1.414L8 9.414l-5.293 5.293a1 1 0 0 1-1.414-1.414L6.586 8 1.293 2.707a1 1 0 0 1 0-1.414z"/>
                         </svg>
                     </div>
                     <div class="success" hidden>
-                        <svg class="bi bi-check-lg" fill="currentColor" height="16" viewBox="0 0 16 16"
-                             width="16" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="bi bi-check-lg" fill="currentColor" height="24" viewBox="0 0 16 16"
+                             width="24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"/>
                         </svg>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col align-self-center">
+            <h3 class="mt-1 mb-1">{{ title }}</h3>
+        </div>
+
     </div>
 </div>
 {% endmacro %}
@@ -42,10 +43,7 @@
     </div>
     <div class="row justify-content-between">
         <div class="col">
-            <p class="sub-message"></p>
-        </div>
-        <div class="col-auto">
-            <a class="btn btn-secondary mr-2 check">{{ action }}</a>
+            <span class="sub-message"></span>
         </div>
     </div>
 </div>

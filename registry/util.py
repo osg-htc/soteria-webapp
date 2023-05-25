@@ -83,7 +83,6 @@ def configure_logging(filename: pathlib.Path) -> None:
 # --------------------------------------------------------------------------
 #
 
-
 def update_request_environ() -> None:
     """
     Adds mock data to the current request's environment if debugging is enabled.
@@ -161,16 +160,10 @@ def get_subiss() -> Optional[str]:
 
 
 def get_harbor_user():
-    subiss = get_subiss()
-
-    return get_harbor_user_by_subiss(subiss)
-
-
-@cache.memoize()
-def get_harbor_user_by_subiss(subiss: str) -> Any:
     """
     Returns the current user's Harbor account.
     """
+
     harbor_user = None
 
     api = get_admin_harbor_api()
@@ -187,40 +180,55 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
         harbor_user = api.search_for_user(email=email, subiss=subiss)
 
     if not harbor_user:
-        for user in api.get_all_users(params={"sort": "-creation_time"}):
-            full_data = api.get_user(user["user_id"])
-
-            if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
-                harbor_user = full_data
-                break
+        harbor_user = get_harbor_user_by_subiss(subiss)
 
     return harbor_user
 
 
+@cache.memoize()
+def get_harbor_user_by_subiss(subiss: str) -> Any:
+    api = get_admin_harbor_api()
+
+    for user in api.get_all_users(params={"sort": "-creation_time"}):
+        full_data = api.get_user(user["user_id"])
+
+        if full_data.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+            return full_data
+
+    return None
+
+
 def get_harbor_projects() -> Any:
-    """Returns the users harbor projects - O(m*n)"""
+    """Returns the users harbor projects - O(n)"""
 
     comanage_api = registry.util.get_admin_comanage_api()
     harbor_api = registry.util.get_admin_harbor_api()
 
     coperson_id = registry.util.get_coperson_id()
 
-    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()[
-        "CoGroups"
-    ]
+    comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()["CoGroups"]
+    comanage_group_names = map(lambda x: x['Name'], comanage_groups)
 
     owner_pattern = re.compile("^soteria-(.*?)-owners")
-    owned_project_names = [
-        owner_pattern.match(g["Name"]).group(1)
-        for g in comanage_groups
-        if owner_pattern.match(g["Name"])
-    ]
+    temporary_pattern = re.compile("^soteria-(.*?)-temporary")
+    developer_pattern = re.compile("^soteria-(.*?)-developers")
+    maintainer_pattern = re.compile("^soteria-(.*?)-maintainers")
+    guest_pattern = re.compile("^soteria-(.*?)-guests")
 
-    owned_projects = []
-    for project_name in owned_project_names:
-        owned_projects.append(harbor_api.get_project(project_name))
+    patterns = [owner_pattern, temporary_pattern, developer_pattern, maintainer_pattern, guest_pattern]
 
-    return owned_projects
+    project_names = []
+    for group_name in comanage_group_names:
+        for pattern in patterns:
+            if pattern.match(group_name):
+                project_names.append(pattern.match(group_name).group(1))
+                break
+
+    projects = []
+    for project_name in project_names:
+        projects.append(harbor_api.get_project(project_name))
+
+    return projects
 
 
 def create_project(name: str, public: bool):
@@ -367,13 +375,17 @@ def get_sub() -> Optional[str]:
     return flask.request.environ.get("OIDC_CLAIM_sub")
 
 
-def get_status() -> Literal["Researcher", "Member", "Affiliate"]:
+def get_status() -> Literal["Researcher", "Member", "Affiliate", "Registration Incomplete", None]:
     if is_soteria_researcher():
         return "Researcher"
     elif is_soteria_member():
         return "Member"
-    else:
+    elif is_soteria_affiliate():
         return "Affiliate"
+    elif not is_registered():
+        return "Registration Incomplete"
+    else:
+        return None
 
 
 def get_orcid_id():
@@ -423,6 +435,20 @@ def has_organizational_identity() -> bool:
     groups = get_comanage_groups()
 
     return "CO:members:all" in groups
+
+def is_registered() -> bool:
+    orcid_id = get_orcid_id()
+    harbor_user = get_harbor_user()
+    is_in_soteria = is_in_soteria_cou()
+
+    return all([is_in_soteria, orcid_id is not None, harbor_user is not None])
+
+
+def is_in_soteria_cou():
+    """Checks that a researcher is in the SOTERIA group, which is a superset of SOTERIA COU Groups"""
+    groups = get_comanage_groups()
+
+    return "SOTERIA" in groups
 
 
 def is_soteria_affiliate() -> bool:

@@ -3,93 +3,118 @@
 {% from "macros/registration.html" import registration_card %}
 {% block js_extension %}
     {% assets "soteria_js_registration" %}
-        <script src="{{ ASSET_URL }}"></script>
+        <script src="{{ ASSET_URL }}" defer></script>
     {% endassets %}
 {% endblock %}
 {% block title %}SOTERIA: Registration{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body_class %}container{% endblock %}
 {% block body %}
-{{ title("Registration") }}
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-12 col-lg-10 col-xl-8">
+        {{ title("Registration") }}
         <div class="row mb-2">
             <div class="col">
                 <p>
-                    Follow the steps below to register for <a href="{{ config.DOCS_URL }}/users/affiliate">Affiliate
-                    status</a> in SOTERIA. This grants you access to a private project on <a href="{{
-                    config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> with a 5 GiB quota.
+                    Registering for SOTERIA enables researchers to add you to existing projects as well as giving you
+                    a temporary sandbox project.
+                </p>
+                <p>
+                    The registration process will take you through linking the accounts that allow researchers
+                    to manage project access, link research to images, and store their images with SOTERIA.
                 </p>
             </div>
         </div>
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 {% set id = "enrollment" %}
-                {% set title = "1. Join the SOTERIA Group" %}
-                {% set action = "Check for Group Membership" %}
+                {% set title = "1. Link COmanage Account" %}
                 {% set message %}
                 <p>
-                    SOTERIA is managed as group under the OSG organization on <a href="https://www.cilogon.org/home">CILogon</a>.
+                    Navigate to the form below to link ( and create if necessary ) your COmanage account.
                 </p>
                 <p>
-                    <a href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">Fill out this form</a> to join the
-                    group of SOTERIA users. When prompted by CILogon, select the same identity provider that you
-                    used initially to log into SOTERIA.
+                    When prompted by CILogon, select the same identity provider that you
+                    used to log into SOTERIA.
                 </p>
+                    <a class="btn btn-primary" href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">
+                        Link COmanage Account
+                    </a>
+                </p>
+                <hr>
+                <div>
+                    <b>SOTERIA uses COmanage to allow researchers to manage project access.</b>
+                </div>
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 {% set id = "orcid" %}
-                {% set title = "2. Link Your ORCID iD" %}
-                {% set action = "Check for ORCID iD" %}
+                {% set title = "2. Link ORCiD Account" %}
                 {% set message %}
-                <p>
-                    <a href="https://info.orcid.org/what-is-orcid/">ORCID iDs</a> help uniquely
-                    identify you amongst SOTERIA's community of researchers.
-                </p>
-                <p>
-                    First, <a href="https://orcid.org/register">register for an ORCID iD</a> if you do not already have
-                    one.
-                    Then, <a
-                        href="{{ config.ORCID_ID_ENROLLMENT_URL }}">link it to SOTERIA</a>.
-                </p>
+
+                <ol>
+                    <li>
+                        <p class="mb-2">Register for an ORCiD Account ( skip if registered )</p>
+                        <a class="btn btn-primary mb-3" href="https://orcid.org/register">Register for ORCiD</a>
+                    </li>
+                    <li>
+                        <p class="mb-2">Link your ORCiD to COmanage</p>
+                        <a class="btn btn-primary" href="{{ config.ORCID_ID_ENROLLMENT_URL }}">Link ORCiD</a>
+                    </li>
+                </ol>
+                <hr>
+                <div>
+                    <b>
+                        <a href="https://info.orcid.org/what-is-orcid/">ORCiD</a> helps uniquely
+                        identify SOTERIA's community of researchers and their research.
+                    </b>
+                </div>
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-3">
                 {% set id = "hub" %}
                 {% set title = "3. Create a " ~ config.HARBOR_NAME ~ " Account" %}
                 {% set action = "Check for " ~ config.HARBOR_NAME ~ " Account" %}
                 {% set message %}
                 <p>
-                    SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> for its
-                    container registry.
+                    Navigate to <b>OSG Hub</b> and login via OIDC Provider.
                 </p>
                 <p>
-                    <a href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Create an account there</a> by logging in
-                    via OIDC and, when prompted by CILogon, selecting the same identity provider that you chose when
-                    logging into SOTERIA. Then come back to this page and click the button below to confirm that SOTERIA
-                    can find your {{ config.HARBOR_NAME }} account.
+                    When prompted by CILogon, select the same identity provider that you
+                    used to log into SOTERIA.
                 </p>
+                <p>
+                    After logging into the container hub come back to this page to confirm we have
+                    found your account.
+                </p>
+                <p>
+                    <a class="btn btn-primary" href="{{ config.HARBOR_HOMEPAGE_URL }}" target='_blank'>Login to OSG Hub</a>
+                </p>
+                <hr>
+                <div>
+                    <b>
+                        SOTERIA uses <a href="{{ config.HARBOR_HOMEPAGE_URL }}">{{ config.HARBOR_NAME }}</a> for its
+                        container registry.
+                    </b>
+                </div>
                 {% endset %}
                 {{ registration_card(id, title, message, action) }}
             </div>
-            <div class="col-12">
-                {% set id = "project" %}
-                {% set title = "4. Create Your Project" %}
-                {% set action = "Create Project" %}
-                {% set message %}
-                <p>
-                    If you have completed the previous steps, you may click the button below to create your project.
-                </p>
-                {% endset %}
-                {{ registration_card(id, title, message, action) }}
+            <div id="registration-complete" class="col-12" hidden>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-center">
+                            <svg class="bi bi-check-lg" fill="green" height="24" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112 6.82-8.69a.486.486 0 0 1 .04-.045z"></path>
+                            </svg>
+                            Registration Complete
+                        </h3>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
-{% block scripts %}
-<script>$(document).ready(onReady());</script>
 {% endblock %}

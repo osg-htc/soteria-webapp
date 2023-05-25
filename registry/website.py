@@ -13,13 +13,25 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import get_freshdesk_api
+from registry.util import get_freshdesk_api, is_soteria_affiliate
+from registry.security import researcher_required, registration_required
 
 from .forms import CreateProjectForm, ResearcherApprovalForm
 
 __all__ = ["bp"]
 
 bp = flask.Blueprint("website", __name__)
+
+
+def affiliate_required(f):
+    def wrapper():
+        if not is_soteria_affiliate():
+            return flask.make_response(flask.render_template("error.html"), 403)
+
+        return f()
+
+    return wrapper
+
 
 
 @bp.route("/account")
@@ -31,17 +43,23 @@ def index():
         "status": registry.util.get_status() or "<not available>",
     }
 
+    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name())
+    has_starter_project = not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
+
     return flask.render_template(
         "/user/account.html",
         user=user,
         is_researcher=registry.util.is_soteria_researcher(),
         is_member=registry.util.is_soteria_member(),
         is_affiliate=registry.util.is_soteria_affiliate(),
+        is_registered=registry.util.is_registered(),
+        has_starter_project=has_starter_project,
         registry_url=flask.current_app.config["REGISTRY_HOMEPAGE_URL"],
     )
 
 
 @bp.route("/researcher-registration", methods=["GET", "POST"])
+@registration_required
 def researcher_registration() -> flask.Response:
     researcher_form = ResearcherApprovalForm(flask.request.form)
 
@@ -63,6 +81,7 @@ def researcher_registration() -> flask.Response:
 
 
 @bp.route("/projects/create", methods=["GET", "POST"])
+@researcher_required
 def create_project() -> flask.Response:
     projects_creation_form = CreateProjectForm(flask.request.form)
 
@@ -91,6 +110,7 @@ def status() -> flask.Response:
 
 
 @bp.route("/projects")
+@registration_required
 def user_projects():
     return flask.render_template(
         "/user/projects.html",

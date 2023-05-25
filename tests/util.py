@@ -48,6 +48,10 @@ class TestUtil:
         with app.test_request_context():
             assert util.get_harbor_user() is not None
 
+    def test_get_coperson_id(self, app):
+        with app.test_request_context():
+            print(util.get_coperson_id())
+
     def test_get_user_from_ldap(self, app):
         with app.test_request_context():
             util.get_comanage_groups()

@@ -24,6 +24,7 @@ class UserObject:
     is_soteria_affiliate: bool
     is_soteria_member: bool
     is_soteria_researcher: bool
+    is_registered: bool
 
     harbor_id: Optional[str] = None
     harbor_username: Optional[str] = None
@@ -116,6 +117,7 @@ def get_user(user_id: str) -> flask.Response:
         is_soteria_affiliate=registry.util.is_soteria_affiliate(),
         is_soteria_member=registry.util.is_soteria_member(),
         is_soteria_researcher=registry.util.is_soteria_researcher(),
+        is_registered=registry.util.is_registered(),
         harbor_id=harbor_user.get("user_id"),
         harbor_username=harbor_user.get("username"),
         orcid_id=registry.util.get_orcid_id(),
