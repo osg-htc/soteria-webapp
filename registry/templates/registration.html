@@ -30,17 +30,31 @@
                 {% set id = "enrollment" %}
                 {% set title = "1. Link COmanage Account" %}
                 {% set message %}
-                <p>
-                    Navigate to the form below to link ( and create if necessary ) your COmanage account.
-                </p>
-                <p>
-                    When prompted by CILogon, select the same identity provider that you
-                    used to log into SOTERIA.
-                </p>
-                    <a class="btn btn-primary" href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">
-                        Link COmanage Account
-                    </a>
-                </p>
+                {% if has_organizational_identity %}
+                    <p>
+                        Navigate to the form below to link your COmanage account.
+                    </p>
+                    <p>
+                        When prompted by CILogon, select the same identity provider that you
+                        used to log into SOTERIA.
+                    </p>
+                        <a class="btn btn-primary" href="{{ config.SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL }}">
+                            Link COmanage Account
+                        </a>
+                    </p>
+                {% else %}
+                    <p>
+                        Navigate to the form below to create and link your COmanage account.
+                    </p>
+                    <p>
+                        When prompted by CILogon, select the same identity provider that you
+                        used to log into SOTERIA.
+                    </p>
+                        <a class="btn btn-primary" href="{{ config.SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL }}">
+                            Link COmanage Account
+                        </a>
+                    </p>
+                {% endif %}
                 <hr>
                 <div>
                     <b>SOTERIA uses COmanage to allow researchers to manage project access.</b>
@@ -52,7 +66,6 @@
                 {% set id = "orcid" %}
                 {% set title = "2. Link ORCiD Account" %}
                 {% set message %}
-
                 <ol>
                     <li>
                         <p class="mb-2">Register for an ORCiD Account ( skip if registered )</p>

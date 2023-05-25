@@ -13,7 +13,7 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import get_freshdesk_api, is_soteria_affiliate
+from registry.util import get_freshdesk_api, is_soteria_affiliate, has_organizational_identity
 from registry.security import researcher_required, registration_required
 
 from .forms import CreateProjectForm, ResearcherApprovalForm
@@ -116,6 +116,14 @@ def user_projects():
         "/user/projects.html",
         is_researcher=registry.util.is_soteria_researcher(),
         harbor_url=flask.current_app.config["HARBOR_HOMEPAGE_URL"],
+    )
+
+
+@bp.route("/registration")
+def registration():
+    return flask.render_template(
+        "/registration.html",
+        has_organizational_identity=has_organizational_identity()
     )
 
 
