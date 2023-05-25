@@ -131,7 +131,7 @@ def check_user_enrollment(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
-    enrolled = registry.util.has_organizational_identity()
+    enrolled = registry.util.is_in_soteria_cou()
     idp_name = registry.util.get_idp_name()
 
     data = {"verified": bool(enrolled), "idp_name": idp_name}

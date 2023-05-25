@@ -13,7 +13,7 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import get_freshdesk_api, is_soteria_affiliate, has_organizational_identity
+from registry.util import is_soteria_affiliate, has_organizational_identity
 from registry.security import researcher_required, registration_required
 
 from .forms import CreateProjectForm, ResearcherApprovalForm
