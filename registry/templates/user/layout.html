@@ -1,0 +1,25 @@
+{% extends "layout/base.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block js_extension %}
+    {% assets "soteria_js_account" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block body %}
+
+    {# Section to add items above the main layout #}
+    {% block nested_above_body %}{% endblock %}
+
+    {# Normal Interface #}
+    <div class="row my-3">
+        <div class="col-2">
+            {% include 'user/includes/sidebar.html' %}
+        </div>
+        <div class="col-10">
+            {% block nested_body %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

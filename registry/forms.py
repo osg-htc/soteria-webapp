@@ -23,11 +23,14 @@ from wtforms.validators import (
 
 from registry.util import (
     create_project,
+    create_starter_project,
+    has_starter_project,
     get_admin_harbor_api,
     get_freshdesk_api,
     get_harbor_projects,
     get_harbor_user,
     is_soteria_researcher,
+    is_registered
 )
 
 requirement_choices = [
@@ -68,6 +71,20 @@ def validate_visibility(form, field):
         )
 
     return True
+
+
+class CreateStarterProjectForm(FlaskForm):
+    submit = SubmitField("Create Starter")
+
+    def validate(self, extra_validators=None):
+
+        if not is_registered() or not has_starter_project():
+            return False
+
+        return True
+
+    def submit_request(self):
+        return create_starter_project()
 
 
 class CreateProjectForm(FlaskForm):

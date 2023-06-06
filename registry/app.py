@@ -65,10 +65,6 @@ def define_assets(app: flask.Flask) -> None:
 
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
-        js_main = flask_assets.Bundle(
-            "js/bootstrap.js",
-            output="assets/js/main.js",
-        )
         js_registration = flask_assets.Bundle(
             "js/registration.js",
             output="assets/js/registration.js",
@@ -84,11 +80,6 @@ def define_assets(app: flask.Flask) -> None:
         assets.manifest = False
 
         assets.config["LIBSASS_STYLE"] = "compressed"
-        js_main = flask_assets.Bundle(
-            "js/bootstrap.js",
-            filters="rjsmin",
-            output="assets/js/main.min.js",
-        )
         js_registration = flask_assets.Bundle(
             "js/registration.js",
             filters="rjsmin",
@@ -106,7 +97,6 @@ def define_assets(app: flask.Flask) -> None:
         output="assets/css/style.css",
     )
 
-    assets.register("soteria_js_main", js_main)
     assets.register("soteria_js_registration", js_registration)
     assets.register("soteria_js_account", js_account)
     assets.register("soteria_css", css)
@@ -122,7 +112,12 @@ def add_context_processor(app: flask.Flask) -> None:
         flask.g.has_session_cookie = bool(cookie)
         flask.g.logout_url = f"{root_url}callback?logout={root_url}"
 
-        return {}
+        return {
+            "is_researcher": registry.util.is_soteria_researcher(),
+            "is_registered": registry.util.is_registered(),
+            "has_starter_project": registry.util.has_starter_project(),
+
+        }
 
 
 def create_app() -> flask.Flask:

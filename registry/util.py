@@ -92,6 +92,7 @@ def update_request_environ() -> None:
         flask.request.environ.update(mock_oidc_claim)
 
 
+@cache.memoize(timeout=10)
 def get_comanage_groups():
     """
     Returns a list of the current user's groups in COmanage.
@@ -217,11 +218,11 @@ def get_harbor_projects() -> Any:
 
     patterns = [owner_pattern, temporary_pattern, developer_pattern, maintainer_pattern, guest_pattern]
 
-    project_names = []
+    project_names = set()
     for group_name in comanage_group_names:
         for pattern in patterns:
             if pattern.match(group_name):
-                project_names.append(pattern.match(group_name).group(1))
+                project_names.add(pattern.match(group_name).group(1))
                 break
 
     projects = []
@@ -230,6 +231,38 @@ def get_harbor_projects() -> Any:
 
     return projects
 
+
+def create_starter_project():
+    """Create a starter project"""
+
+    harbor_api = get_admin_harbor_api()
+
+    projectname = registry.util.get_starter_project_name()
+
+    project = harbor_api.create_project(projectname, is_public=False)
+
+    coperson_id = registry.util.get_coperson_id()
+
+    project_expiration_date = datetime.datetime.now() + datetime.timedelta(
+        days=30
+    )
+
+    registry.util.create_permission_group(
+        group_name=f"soteria-{projectname}-temporary",
+        project_name=projectname,
+        harbor_role_id=HarborRoleID.DEVELOPER,
+        comanage_person_id=coperson_id,
+        comanage_group_member=True,
+        comanage_group_owner=False,
+        valid_through=project_expiration_date,
+    )
+
+    harbor_admin_username = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
+    harbor_api.delete_project_member(project["project_id"], harbor_admin_username)
+
+    cache.delete_memoized(has_starter_project)
+
+    return project
 
 def create_project(name: str, public: bool):
     """Create a researcher project"""
@@ -429,6 +462,12 @@ def get_starter_project_name():
     if user:
         return user["username"].lower() + "_temporary"
     return None
+
+
+@cache.memoize()
+def has_starter_project():
+    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name())
+    return not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
 
 
 def has_organizational_identity() -> bool:

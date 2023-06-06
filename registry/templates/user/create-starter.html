@@ -1,0 +1,112 @@
+{% extends "user/layout.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% macro form_element(element) %}
+    {{ element.label(class="form-label") }}
+    {% if element.errors %}
+        <div class="text-danger">{% for error in element.errors %}{{ error }}{% endfor %}</div>
+    {% endif %}
+    {{ element(class="form-control") }}
+{% endmacro %}
+{% macro form_check_element(element) %}
+    {{ element.label(class='form-label') }}
+    {% if element.errors %}
+        <div class="text-danger">{% for error in element.errors %}{{ error }}{% endfor %}</div>
+    {% endif %}
+    {% for subfield in element %}
+        <div class="form-check">
+            {{ subfield(class='form-check-input') }}
+            {{ subfield.label(class='form-check-label') }}
+        </div>
+    {% endfor %}
+{% endmacro %}
+
+
+{% block js_extension %}
+    {% assets "soteria_js_account" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block title %}Create Project{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block nested_body %}
+    <h3>Create Starter Project</h3>
+    <div class="card">
+        <div class="m-3">
+            <form method="POST">
+                <p>
+                    Soteria registrants are provided access to a temporary project to experiment with.
+                    This project is 5GB in size and will last for 30 days.
+                </p>
+                <p>
+                    To gain access to long-lived and named projects register as a researcher!
+                </p>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+
+    {% if 'errors' not in project_created and project_created %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Success</h5>
+                        <a href="/account" class="btn-close"></a>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Your project has been created, and you can now find it on your projects page on OSG Hub.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/projects" class="btn btn-primary">My Projects</a>
+                        <a href="/account" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+    {% if 'errors' in project_created and project_created %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            We could not create your project at this time.
+                        </p>
+                        <p class="text-danger">
+                        {% for error in project_created['errors'] %}
+                            <span class="text-red">{{ error['code'] }}: {{ error['message'] }}</span><br>
+                        {% endfor %}
+                        </p>
+                        <p>
+                            Please contact <a href="mailto:support@osg-htc.org">support@osg-htc.org</a> so that we can
+                            get your account upgraded in the meantime.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+{% endblock %}
