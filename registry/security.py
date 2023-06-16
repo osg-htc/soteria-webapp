@@ -3,7 +3,7 @@ from functools import wraps
 import flask
 
 import registry.util
-from registry.util import is_registered, is_soteria_researcher
+from registry.util import is_registered, is_soteria_researcher, is_soteria_admin
 
 __all__ = ["researcher_required"]
 
@@ -43,3 +43,23 @@ def researcher_required(f):
         return f()
 
     return wrapper
+
+
+def admin_required(f):
+    """Checks that the user is an admin"""
+
+    @wraps(f)
+    def wrapper():
+        if not is_soteria_admin():
+            return flask.make_response(
+                flask.render_template(
+                    "error.html",
+                    code=403,
+                    message="You must be a admin to view this page."
+                ),
+                403
+            )
+
+        return f()
+
+    return wrapper()

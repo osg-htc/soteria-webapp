@@ -3,12 +3,12 @@
 <h3>&nbsp</h3>
 <ul class="nav flex-column nav-pills small">
     {{ nav_item('/account', "My Account") }}
-    <li id="projectSidebarItem" class="nav-item accordion mb-1">
+    <li id="adminSidebarItem" class="nav-item accordion mb-1">
         <div class="accordion-item border-0">
             <button class="accordion-button hover small border-0 rounded px-3 py-1 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#projectDropdown" aria-expanded="false" aria-controls="projectDropdown">
                 <small>Projects</small>
             </button>
-            <div id="projectDropdown" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#projectSidebarItem" style="">
+            <div id="projectDropdown" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#adminSidebarItem" style="">
                 <ul class="nav border-start mt-1 flex-column nav-pills">
                     {% if is_registered and not has_starter_project and not is_researcher %}
                         <li class="nav-item mb-1 pre-bar d-flex">
@@ -32,5 +32,24 @@
     {% endif %}
     {% if is_researcher %}
         {{ nav_item('https://osg-htc.org/soteria-docs/users/researcher/#actions', "User Management") }}
+    {% endif %}
+    {% if is_researcher %}
+        {{ nav_item('/robots/create', "Create Robot") }}
+    {% endif %}
+    {% if is_admin %}
+        <li id="adminSidebarItem" class="nav-item accordion mb-1">
+            <div class="accordion-item border-0">
+                <button class="accordion-button hover small border-0 rounded px-3 py-1 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#adminDropdown" aria-expanded="false" aria-controls="adminDropdown">
+                    <small>Admin</small>
+                </button>
+                <div id="adminDropdown" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#adminSidebarItem" style="">
+                    <ul class="nav border-start mt-1 flex-column nav-pills">
+                        <li class="nav-item mb-1 pre-bar d-flex">
+                            <a class="nav-link hover rounded flex-grow-1" href="/admin/statistics">Statistics</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li>
     {% endif %}
 </ul>

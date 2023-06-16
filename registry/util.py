@@ -17,7 +17,7 @@ import registry.comanage
 import registry.freshdesk
 import registry.harbor
 from registry.cache import cache
-from registry.harbor import HarborRoleID
+from registry.harbor import HarborRoleID, Harbor
 
 __all__ = [
     "configure_logging",
@@ -178,7 +178,7 @@ def get_harbor_user():
     )
 
     if not harbor_user and (email and subiss):
-        harbor_user = api.search_for_user(email=email, subiss=subiss)
+        harbor_user = Harbor(harbor_api=api).search_for_user(email=email, subiss=subiss)
 
     if not harbor_user:
         harbor_user = get_harbor_user_by_subiss(subiss)
@@ -227,7 +227,7 @@ def get_harbor_projects() -> Any:
 
     projects = []
     for project_name in project_names:
-        projects.append(harbor_api.get_project(project_name))
+        projects.append(harbor_api.get_project(project_name).json())
 
     return projects
 
@@ -236,10 +236,11 @@ def create_starter_project():
     """Create a starter project"""
 
     harbor_api = get_admin_harbor_api()
+    harbor = Harbor(harbor_api=get_admin_harbor_api())
 
     projectname = registry.util.get_starter_project_name()
 
-    project = harbor_api.create_project(projectname, is_public=False)
+    project = harbor.create_project(projectname, is_public=False)
 
     coperson_id = registry.util.get_coperson_id()
 
@@ -264,12 +265,13 @@ def create_starter_project():
 
     return project
 
+
 def create_project(name: str, public: bool):
     """Create a researcher project"""
 
-    harbor_api = get_admin_harbor_api()
+    harbor = Harbor(harbor_api=get_admin_harbor_api())
 
-    project = harbor_api.create_project(name, public)
+    project = harbor.create_project(name, public)
 
     if not ("name" in project and project["name"] == name):
         return project
@@ -508,6 +510,12 @@ def is_soteria_researcher() -> bool:
     return "CO:COU:SOTERIA-Researchers:members:active" in groups
 
 
+def is_soteria_admin() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-Admins:members:active" in groups
+
+
 #
 # --------------------------------------------------------------------------
 #
@@ -524,6 +532,11 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
             flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
         ),
     )
+
+
+def get_harbor_api() -> registry.harbor.HarborAPI:
+    """Returns a Harbor API instance not authed"""
+    return registry.harbor.HarborAPI(flask.current_app.config["HARBOR_API_URL"])
 
 
 def get_admin_comanage_api():

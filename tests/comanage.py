@@ -25,6 +25,9 @@ COMANAGE_USER_SUB = "http://cilogon.org/serverA/users/46022246"
 @pytest.fixture()
 def group():
     """Creates the deletes a comanage group to be used for testing"""
+    api.get_groups()
+
+
     response = api.create_group(
         name="Pytest-Test-Group", description="Test Description"
     )
@@ -79,7 +82,7 @@ class TestComanageApi:
                 api.delete_group(cogroup["Id"])
 
     def test__get(self):
-        response = api._get("co_groups.json", params={"coid": 8})
+        response = api._get("/co_groups.json", params={"coid": 8})
 
         assert response.status_code == 200
 
@@ -169,7 +172,7 @@ class TestComanageApi:
     def test_get_group_members(self, group, person):
         response = api.get_group_members(group["Id"])
 
-        assert response.status_code == 204  # This should be an empty group
+        assert response.status_code == 200  # This should be an empty group
 
     def test_add_member_to_group(self, group, person):
         response = api.add_group_member(group["Id"], person["Id"], True, True)

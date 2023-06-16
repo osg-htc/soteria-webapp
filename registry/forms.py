@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from flask_wtf import FlaskForm
 from wtforms import (
     RadioField,
@@ -9,6 +10,8 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     TimeField,
+    IntegerField,
+    BooleanField
 )
 from wtforms.validators import (
     URL,
@@ -30,7 +33,8 @@ from registry.util import (
     get_harbor_projects,
     get_harbor_user,
     is_soteria_researcher,
-    is_registered
+    is_registered,
+    get_harbor_projects
 )
 
 requirement_choices = [
@@ -218,3 +222,48 @@ class ResearcherApprovalForm(FlaskForm):
             return True
         else:
             return False
+
+
+class CreateRobotForm(FlaskForm):
+
+    project_name = SelectField("Project Name", validators=[InputRequired()])
+    robot_name = StringField("Robot Name", validators=[InputRequired()])
+    duration = IntegerField("Expiration (Days)", description="Enter -1 for no expiration", validators=[InputRequired()])
+    description = StringField("Description", validators=[InputRequired()])
+
+    list_repository = BooleanField("List Repository")
+    pull_repository = BooleanField("Pull Repository")
+    push_repository = BooleanField("Push Repository")
+    list_artifact = BooleanField("List Artifact")
+    read_artifact = BooleanField("Read Artifact")
+    create_artifact_label = BooleanField("Create Artifact Label")
+    list_tag = BooleanField("List Tag")
+    create_tag = BooleanField("Create Tag")
+    read_helm_chart = BooleanField("Read Helm Chart")
+    create_helm_chart_version = BooleanField("Create Helm Chart Version")
+    create_helm_chart_version_label = BooleanField("Create Helm Chart Version Label")
+
+    submit = SubmitField()
+
+    def submit_request(self) -> requests.Response:
+        harbor_api = get_admin_harbor_api()
+
+        response = harbor_api.create_project_robot_account(
+            project_name=self.project_name.data,
+            robot_name=f"{self.project_name.data}-{self.robot_name.data}",  # Prevent name collisions
+            duration=self.duration.data,
+            description=self.description.data,
+            list_repository=self.list_repository.data,
+            pull_repository=self.pull_repository.data,
+            push_repository=self.push_repository.data,
+            list_artifact=self.list_artifact.data,
+            read_artifact=self.read_artifact.data,
+            create_artifact_label=self.create_artifact_label.data,
+            list_tag=self.list_tag.data,
+            create_tag=self.create_tag.data,
+            read_helm_chart=self.read_helm_chart.data,
+            create_helm_chart_version=self.create_helm_chart_version.data,
+            create_helm_chart_version_label=self.create_helm_chart_version_label.data,
+        )
+
+        return response

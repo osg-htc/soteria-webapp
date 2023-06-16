@@ -12,7 +12,7 @@ import flask_assets  # type: ignore[import]
 import registry.api.debug
 import registry.api.v1
 import registry.cli
-import registry.harbor_wrapper
+import registry.api.harbor
 import registry.public
 import registry.util
 import registry.website
@@ -52,7 +52,7 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
-    app.register_blueprint(registry.harbor_wrapper.bp, url_prefix="/harbor")
+    app.register_blueprint(registry.api.harbor.bp, url_prefix="/harbor")
     app.register_blueprint(registry.public.bp, url_prefix="/public")
 
     if app.config.get("SOTERIA_DEBUG"):
@@ -115,8 +115,8 @@ def add_context_processor(app: flask.Flask) -> None:
         return {
             "is_researcher": registry.util.is_soteria_researcher(),
             "is_registered": registry.util.is_registered(),
+            "is_admin": registry.util.is_soteria_admin(),
             "has_starter_project": registry.util.has_starter_project(),
-
         }
 
 
