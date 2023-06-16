@@ -20,7 +20,7 @@ TEST_ROBOT_NAME = "pytest-test-robot"
 def project():
     """Creates then deletes a harbor project to be used for testing"""
 
-    response = harbor.api.create_project(name=TEST_PROJECT_NAME, is_public=False)
+    response = harbor.api.create_project(name=TEST_PROJECT_NAME, public=False)
 
     if response.status_code != 201:
         raise Exception("Error: project() fixture is broken")
@@ -66,7 +66,7 @@ class TestHarborApi:
 
     def test_create_project(self, project_clean_up):
 
-        response = api.create_project(TEST_PROJECT_NAME, is_public=True)
+        response = api.create_project(TEST_PROJECT_NAME, public=True)
 
         assert response.status_code == 201
 

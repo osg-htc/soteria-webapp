@@ -125,7 +125,7 @@ def create_starter_project() -> flask.Response:
 def create_robot() -> flask.Response:
     robot_creation_form = CreateRobotForm(flask.request.form)
 
-    robot_creation_form.project_name.choices = [*map(lambda p: (p['name'], p['name']), registry.util.get_harbor_projects())]
+    robot_creation_form.project_name.choices = [*map(lambda p: (p['name'], p['name']), registry.util.get_harbor_projects(owner=True))]
 
     if robot_creation_form.validate_on_submit():
         response = robot_creation_form.submit_request()

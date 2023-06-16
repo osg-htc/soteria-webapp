@@ -39,15 +39,20 @@ class Harbor:
         else:
             self.api = HarborAPI(api_base_url=api_base_url, basic_auth=basic_auth)
 
-    def create_project(self, *args, **kwargs):
+    def create_project(self,
+        name: str,
+        public: bool = False,
+        *,
+        storage_limit: int = 5368709120
+    ):
         """Create project then return the project data"""
 
-        response = self.api.create_project(*args, **kwargs)
+        response = self.api.create_project(name=name, public=public, storage_limit=storage_limit)
 
         if not response.ok:
             return response.json()
 
-        return self.api.get_project(kwargs['name']).json()
+        return self.api.get_project(project_id_or_name=name).json()
 
     def add_project_member(
             self,
@@ -178,7 +183,7 @@ class HarborAPI(registry.api_client.GenericAPI):
     def create_project(
             self,
             name: str,
-            is_public: bool = False,
+            public: bool = False,
             *,
             storage_limit: int = 5368709120,
     ):
@@ -188,7 +193,7 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         payload = {
             "project_name": name,
-            "public": is_public,
+            "public": public,
             "storage_limit": storage_limit,
         }
 

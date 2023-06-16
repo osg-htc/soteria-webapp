@@ -183,7 +183,15 @@ def get_projects(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
-    return flask.jsonify(registry.util.get_harbor_projects())
+    return flask.jsonify(
+        registry.util.get_harbor_projects(
+            owner=True,
+            maintainer=True,
+            developer=True,
+            guest=True,
+            temporary=True
+        )
+    )
 
 
 @bp.route("/webhooks/harbor", methods=["POST"])

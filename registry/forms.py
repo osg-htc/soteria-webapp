@@ -54,7 +54,7 @@ def validate_visibility(form, field):
     def project_is_public(project: dict):
         return project.get("metadata", "false").get("public", "false") == "true"
 
-    users_projects = get_harbor_projects()
+    users_projects = get_harbor_projects(owner=True)
 
     public_projects = list(filter(project_is_public, users_projects))
     private_projects = list(
