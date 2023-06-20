@@ -157,6 +157,7 @@ def nsf_report():
     """Returns a page detailing NSF Reporting statistics"""
 
     statistics = get_admin_harbor_api().get_statistics().json()
+    scanners = get_admin_harbor_api().get_all_scanners()
 
     return flask.render_template(
         "/admin/statistics.html",

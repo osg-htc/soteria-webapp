@@ -497,10 +497,25 @@ class HarborAPI(registry.api_client.GenericAPI):
 
         return self._get("/audit-logs", params=params)
 
-    def get_all_audit_logs(self, q: str = None, sort: str = None):
+    #
+    # Scanner
+    # ----------------------------------------------------------------------
+    #
+
+    def get_scanners(self, q: str = None, sort: str = None, page: int = 1, page_size: int = 10):
+        params = {
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get("/scanners", params=params)
+
+    def get_all_scanners(self, q: str = None, sort: str = None):
         params = {
             "q": q,
             "sort": sort
         }
 
-        return self._get_all("/audit-logs", params=params)
+        return self._get_all("/scanners", params=params)
