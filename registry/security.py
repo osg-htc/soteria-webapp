@@ -55,11 +55,11 @@ def admin_required(f):
                 flask.render_template(
                     "error.html",
                     code=403,
-                    message="You must be a admin to view this page."
+                    message="You must be an admin to view this page."
                 ),
                 403
             )
 
         return f()
 
-    return wrapper()
+    return wrapper

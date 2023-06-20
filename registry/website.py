@@ -14,7 +14,7 @@ import jinja2
 
 import registry.util
 from registry.util import is_soteria_affiliate, has_organizational_identity, get_admin_harbor_api
-from registry.security import researcher_required, registration_required
+from registry.security import researcher_required, registration_required, admin_required
 
 from .forms import CreateProjectForm, ResearcherApprovalForm, CreateStarterProjectForm, CreateRobotForm
 
@@ -153,6 +153,7 @@ def create_robot() -> flask.Response:
     return flask.make_response(html)
 
 @bp.route("/admin/statistics")
+@admin_required
 def nsf_report():
     """Returns a page detailing NSF Reporting statistics"""
 
