@@ -54,19 +54,6 @@ class Harbor:
 
         return self.api.get_project(project_id_or_name=name).json()
 
-    def add_project_member(
-            self,
-            project_id: int,
-            username: str,
-            role_id: int = 2,
-    ):
-        response = self.api.add_project_member(project_id, username, role_id)
-
-        if not response.ok:
-            return response.json()
-
-        return self.get_project_member(project_id, username)
-
     def search_for_user(self, email: str, subiss: str):
         """
         Returns a user with the given email address and "subiss".
@@ -232,11 +219,7 @@ class HarborAPI(registry.api_client.GenericAPI):
             },
         }
 
-        r = self._post(f"/projects/{project_id}/members", json=payload)
-
-        if not r.ok:
-            return r.json()
-        return self.get_project_member(project_id, username)
+        return self._post(f"/projects/{project_id}/members", json=payload)
 
     def create_project_member(
             self,

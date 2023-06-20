@@ -36,6 +36,14 @@ def project():
 
 
 @pytest.fixture()
+def clean_up_project():
+    response = api.delete_project(TEST_PROJECT_NAME)
+
+    if response.status_code != 200:
+        raise Exception(f"Error: Failed to delete project {TEST_PROJECT_NAME}")
+
+
+@pytest.fixture()
 def project_clean_up():
     """Cleans up a created project if the test fails"""
 
@@ -52,6 +60,25 @@ def robot_clean_up():
 
     test_robot = api.get_robots(q=f"name={TEST_ROBOT_NAME}").json()[0]
     api.delete_robot(test_robot['id'])
+
+
+class TestHarbor:
+    """Test the QOL harbor api wrapper"""
+
+    def test_create_project(self, project_clean_up):
+
+        project = harbor.create_project(TEST_PROJECT_NAME)
+
+        assert project['name'] == TEST_PROJECT_NAME
+
+    def test_search_for_user(self):
+        subiss = MOCK_OIDC_CLAIM['OIDC_CLAIM_sub'] + MOCK_OIDC_CLAIM['OIDC_CLAIM_iss']
+        email = MOCK_OIDC_CLAIM['OIDC_CLAIM_email']
+
+        user = harbor.search_for_user(subiss=subiss, email=email)
+
+        assert user['email'] == email
+        assert user['oidc_user_meta']['subiss'] == subiss
 
 
 class TestHarborApi:

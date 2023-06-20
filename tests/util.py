@@ -132,7 +132,6 @@ class TestUtil:
                 # Clean up as we go
                 comanage_api.delete_group(cogroup["Id"])
 
-
     def test_create_project(self, app):
         with app.test_request_context():
             project_name = "test-project-14"
