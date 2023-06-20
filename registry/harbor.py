@@ -4,7 +4,12 @@ Wrapper for Harbor's API.
 
 import enum
 import typing
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
+import secrets
+import datetime
+import time
+
+import requests
 
 import registry.api_client
 
@@ -16,6 +21,74 @@ class HarborRoleID(enum.IntEnum):
     DEVELOPER = 2
     GUEST = 3
     MAINTAINER = 4
+
+
+class Harbor:
+    """
+    QOL Wrapper around the Harbor API
+    """
+
+    def __init__(
+            self,
+            api_base_url: str = None,
+            basic_auth: Optional[Tuple[str, str]] = None,
+            harbor_api: "HarborAPI" = None
+    ):
+        if harbor_api is not None:
+            self.api = harbor_api
+        else:
+            self.api = HarborAPI(api_base_url=api_base_url, basic_auth=basic_auth)
+
+    def create_project(self,
+        name: str,
+        public: bool = False,
+        *,
+        storage_limit: int = 5368709120
+    ):
+        """Create project then return the project data"""
+
+        response = self.api.create_project(name=name, public=public, storage_limit=storage_limit)
+
+        if not response.ok:
+            return response.json()
+
+        return self.api.get_project(project_id_or_name=name).json()
+
+    def search_for_user(self, email: str, subiss: str):
+        """
+        Returns a user with the given email address and "subiss".
+        """
+        params = {
+            "q": f"email=~{email}",  # email addresses are not case sensitive
+        }
+
+        all_users = self.api.get_all_users(params=params)
+
+        for u in all_users:
+            user = self.api.get_user(u["user_id"])
+
+            if user.get("oidc_user_meta", {}).get("subiss", "") == subiss:
+                return user
+
+        return None
+
+    def get_users_who_uploaded_an_artifact(self):
+        """The number of unique individuals who have uploaded at least one container to the registry"""
+
+        start = time.time()
+        previous = start
+
+        users_who_uploaded_an_artifact = []
+        for user in self.api.get_all_users():
+            username = user['username']
+            uploaded_artifacts = self.api.get_audit_logs(q=f"operation=create,resource_type=artifact,username={username}").json()
+            if len(uploaded_artifacts) > 0:
+                users_who_uploaded_an_artifact.append(user)
+
+            print(f"Iteration {username}:\n\tSince Start: {time.time() - start}\n\tSince Previous: {time.time() - previous}")
+            previous = time.time()
+
+        return users_who_uploaded_an_artifact
 
 
 class HarborAPI(registry.api_client.GenericAPI):
@@ -31,16 +104,22 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         PAGE_SIZE = 100
 
-        info_response = self._get(route, params={'page_size': 1})
+        info_response = self._get(route, params={
+            'page_size': 1
+        })
         number_of_pages = (int(info_response.headers.get('x-total-count')) // PAGE_SIZE) + 1
 
         for i in range(1, number_of_pages + 1):
             values = self._get(route, **{
                 **kwargs,
-                'params': {'page': i, 'page_size': PAGE_SIZE, **kwargs.get("params", {})}
+                'params': {
+                    'page': i,
+                    'page_size': PAGE_SIZE, **kwargs.get("params", {})
+                }
             }).json()
             for value in values:
                 yield value
+
     #
     # ----------------------------------------------------------------------
     #
@@ -51,6 +130,16 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         return self._get(f"/users/{user_id}").json()
 
+    def get_users(self, q: str = None, sort: str = None, page: int = 1, page_size: int = 10):
+        params = {
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get("/users", params=params)
+
     def get_all_users(self, **kwargs) -> typing.Generator[dict, None, None]:
         """
         Returns a list of all users.
@@ -59,34 +148,31 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         return self._get_all("/users", **kwargs)
 
-    def search_for_user(self, email: str, subiss: str):
-        """
-        Returns a user with the given email address and "subiss".
-        """
+    #
+    # Repositories
+    # ----------------------------------------------------------------------
+    #
+
+    def get_repositories(self, project_name: str , q: str = None, sort: str = None, page: int = 1, page_size: int = 10):
         params = {
-            "page_size": 100,
-            "q": f"email=~{email}",  # email addresses are not case sensitive
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
         }
-        users = self._get("/users", params=params).json()
 
-        for u in users:
-            user = self.get_user(u["user_id"])
-
-            if user.get("oidc_user_meta", {}).get("subiss", "") == subiss:
-                return user
-
-        return None
+        return self._get(f"/projects/{project_name}/repositories", params=params)
 
     #
     # ----------------------------------------------------------------------
     #
 
     def create_project(
-        self,
-        name: str,
-        is_public: bool = False,
-        *,
-        storage_limit: int = 5368709120,
+            self,
+            name: str,
+            public: bool = False,
+            *,
+            storage_limit: int = 5368709120,
     ):
         # 5 GiB = 5368709120 bytes = 5 * 1024 * 1024 * 1024
         """
@@ -94,20 +180,18 @@ class HarborAPI(registry.api_client.GenericAPI):
         """
         payload = {
             "project_name": name,
-            "public": is_public,
+            "public": public,
             "storage_limit": storage_limit,
         }
-        r = self._post("/projects", json=payload)
 
-        if not r.ok:
-            return r.json()
-        return self.get_project(name)
+        return self._post("/projects", json=payload)
 
     def get_project(self, project_id_or_name: Union[int, str]):
         """
         Get a new project, either by ID or by name.
         """
-        return self._get(f"/projects/{project_id_or_name}").json()
+
+        return self._get(f"/projects/{project_id_or_name}")
 
     def get_all_projects(self, **kwargs) -> typing.Generator[dict, None, None]:
         """
@@ -123,42 +207,40 @@ class HarborAPI(registry.api_client.GenericAPI):
     #
 
     def add_project_member(
-        self,
-        project_id: int,
-        username: str,
-        role_id: int = 2,
+            self,
+            project_id: int,
+            username: str,
+            role_id: int = 2,
     ):
         payload = {
             "role_id": role_id,
-            "member_user": {"username": username},
+            "member_user": {
+                "username": username
+            },
         }
 
-        r = self._post(f"/projects/{project_id}/members", json=payload)
-
-        if not r.ok:
-            return r.json()
-        return self.get_project_member(project_id, username)
+        return self._post(f"/projects/{project_id}/members", json=payload)
 
     def create_project_member(
-        self,
-        project_id_or_name: str,
-        role: HarborRoleID,
-        *,
-        group_id: Optional[int] = None,
-        group_name: Optional[str] = None,
-        user_id: Optional[int] = None,
-        username: Optional[str] = None,
+            self,
+            project_id_or_name: str,
+            role: HarborRoleID,
+            *,
+            group_id: Optional[int] = None,
+            group_name: Optional[str] = None,
+            user_id: Optional[int] = None,
+            username: Optional[str] = None,
     ):
         """Add/Create a new project member ( user or group )"""
 
         if (
-            sum(
-                map(
-                    lambda x: x is not None,
-                    [group_name, group_id, username, user_id],
+                sum(
+                    map(
+                        lambda x: x is not None,
+                        [group_name, group_id, username, user_id],
+                    )
                 )
-            )
-            != 1
+                != 1
         ):
             raise ValueError(
                 "Exactly one of group_name, group_id, username, and user_id can be input."
@@ -166,14 +248,22 @@ class HarborAPI(registry.api_client.GenericAPI):
 
         data = {
             "role_id": role,
-            "member_group": {"group_name": group_name, "id": group_id},
-            "member_user": {"username": username, "user_id": user_id},
+            "member_group": {
+                "group_name": group_name,
+                "id": group_id
+            },
+            "member_user": {
+                "username": username,
+                "user_id": user_id
+            },
         }
 
         return self._post(f"/projects/{project_id_or_name}/members", json=data)
 
     def get_project_member(self, project_id: int, username: str):
-        params = {"entityname": username}
+        params = {
+            "entityname": username
+        }
 
         r = self._get(f"/projects/{project_id}/members", params=params).json()
 
@@ -196,3 +286,219 @@ class HarborAPI(registry.api_client.GenericAPI):
 
     def delete_usergroup(self, usergroup_id: int):
         return self._delete(f"/usergroups/{usergroup_id}")
+
+    #
+    # Robot Account
+    # ----------------------------------------------------------------------
+    #
+
+    def create_project_robot_account(
+            self, project_name: str, robot_name: str, level: str = None, duration: int = -1, description: str = None,
+            list_repository: bool = False, pull_repository: bool = False, push_repository: bool = False,
+            delete_repository: bool = False, list_artifact: bool = False, read_artifact: bool = False,
+            delete_artifact: bool = False,
+            create_artifact_label: bool = False, delete_artifact_label: bool = False, list_tag: bool = False,
+            create_tag: bool = False, delete_tag: bool = False, create_scan: bool = False, stop_scan: bool = False,
+            read_helm_chart: bool = False, create_helm_chart_version: bool = False,
+            delete_helm_chart_version: bool = False,
+            create_helm_chart_version_label: bool = False, delete_helm_chart_version_label: bool = False
+    ) -> Tuple[requests.Response, str]:
+
+        level = "system" if level is None else level
+        description = "" if description is None else description
+
+        data = {
+            "disable": False,
+            "name": robot_name,
+            "level": level,
+            "duration": duration,
+            "description": description,
+            "permissions": [{
+                "access": [],
+                "kind": "project",
+                "namespace": project_name
+            }]
+        }
+
+        access_list = data['permissions'][0]['access']
+
+        if list_repository:
+            access_list.append({
+                "action": "list",
+                "resource": "repository"
+            })
+
+        if pull_repository:
+            access_list.append({
+                "action": "pull",
+                "resource": "repository"
+            })
+
+        if push_repository:
+            access_list.append({
+                "action": "push",
+                "resource": "repository"
+            })
+
+        if delete_repository:
+            access_list.append({
+                "action": "delete",
+                "resource": "repository"
+            })
+
+        if list_artifact:
+            access_list.append({
+                "action": "list",
+                "resource": "artifact"
+            })
+
+        if read_artifact:
+            access_list.append({
+                "action": "read",
+                "resource": "artifact"
+            })
+
+        if delete_artifact:
+            access_list.append({
+                "action": "delete",
+                "resource": "artifact"
+            })
+
+        if create_artifact_label:
+            access_list.append({
+                "action": "create",
+                "resource": "artifact-label"
+            })
+
+        if delete_artifact_label:
+            access_list.append({
+                "action": "delete",
+                "resource": "artifact-label"
+            })
+
+        if list_tag:
+            access_list.append({
+                "action": "list",
+                "resource": "tag"
+            })
+
+        if create_tag:
+            access_list.append({
+                "action": "create",
+                "resource": "tag"
+            })
+
+        if delete_tag:
+            access_list.append({
+                "action": "delete",
+                "resource": "tag"
+            })
+
+        if create_scan:
+            access_list.append({
+                "action": "create",
+                "resource": "scan"
+            })
+
+        if stop_scan:
+            access_list.append({
+                "action": "stop",
+                "resource": "scan"
+            })
+
+        if read_helm_chart:
+            access_list.append({
+                "action": "read",
+                "resource": "helm-chart"
+            })
+
+        if create_helm_chart_version:
+            access_list.append({
+                "action": "create",
+                "resource": "helm-chart-version"
+            })
+
+        if delete_helm_chart_version:
+            access_list.append({
+                "action": "delete",
+                "resource": "helm-chart-version"
+            })
+
+        if create_helm_chart_version_label:
+            access_list.append({
+                "action": "create",
+                "resource": "helm-chart-version-label"
+            })
+
+        if delete_helm_chart_version_label:
+            access_list.append({
+                "action": "delete",
+                "resource": "helm-chart-version-label"
+            })
+
+        return self._post(f"/robots", json=data)
+
+    def get_robots(self, q: str = None, sort: str = None, page: int = None, page_size: int = None):
+        params = {
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get(f"/robots", params=params)
+
+    def delete_robot(self, robot_id: int):
+
+        return self._delete(f"/robots/{robot_id}")
+
+    def get_robot(self, robot_id: int):
+
+        return self._get(f"/robots/{robot_id}")
+
+    #
+    # Statistics
+    # ----------------------------------------------------------------------
+    #
+
+    def get_statistics(self):
+
+        return self._get("/statistics")
+
+    #
+    # Audit Logs
+    # ----------------------------------------------------------------------
+    #
+
+    def get_audit_logs(self, q: str = None, sort: str = None, page: int = 1, page_size: int = 10):
+        params = {
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get("/audit-logs", params=params)
+
+    #
+    # Scanner
+    # ----------------------------------------------------------------------
+    #
+
+    def get_scanners(self, q: str = None, sort: str = None, page: int = 1, page_size: int = 10):
+        params = {
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get("/scanners", params=params)
+
+    def get_all_scanners(self, q: str = None, sort: str = None):
+        params = {
+            "q": q,
+            "sort": sort
+        }
+
+        return self._get_all("/scanners", params=params)

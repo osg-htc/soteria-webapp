@@ -3,6 +3,16 @@ $secondary: #4aaed9;
 $light: lighten($secondary, 40%);
 
 $font-family-base: 'Helvetica Neue', 'Helvetica', sans-serif;
+
+$nav-link-padding-y: .2rem;
+$nav-link-padding-x: 1rem;
+
+$accordion-color:                         $primary;
+$accordion-button-focus-box-shadow:       none;
+$accordion-bg:                            transparent;
+
+$card-border-width:                 0;
+
 @import "bootstrap/bootstrap-grid";
 @import "bootstrap/bootstrap";
 @import "variables";
@@ -141,4 +151,21 @@ body.subpage {
   100% {
     background-position: 468px 0;
   }
+}
+
+.hover {
+  background-color: $light !important;
+  &:hover {
+    transition: background-color 300ms ease-out;
+    background-color: darken($light, 20)
+  }
+}
+
+.pre-bar::before {
+    content: "";
+    display: inline-block;
+    margin-right: 5px;
+    width: 5px;
+    border-radius: 50px;
+    background-color: #00364d;
 }

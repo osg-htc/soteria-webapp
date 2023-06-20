@@ -12,7 +12,7 @@ import flask_assets  # type: ignore[import]
 import registry.api.debug
 import registry.api.v1
 import registry.cli
-import registry.harbor_wrapper
+import registry.api.harbor
 import registry.public
 import registry.util
 import registry.website
@@ -52,7 +52,7 @@ def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
-    app.register_blueprint(registry.harbor_wrapper.bp, url_prefix="/harbor")
+    app.register_blueprint(registry.api.harbor.bp, url_prefix="/harbor")
     app.register_blueprint(registry.public.bp, url_prefix="/public")
 
     if app.config.get("SOTERIA_DEBUG"):
@@ -65,10 +65,6 @@ def define_assets(app: flask.Flask) -> None:
 
     if app.config["DEBUG"]:
         assets.config["LIBSASS_STYLE"] = "nested"
-        js_main = flask_assets.Bundle(
-            "js/bootstrap.js",
-            output="assets/js/main.js",
-        )
         js_registration = flask_assets.Bundle(
             "js/registration.js",
             output="assets/js/registration.js",
@@ -84,11 +80,6 @@ def define_assets(app: flask.Flask) -> None:
         assets.manifest = False
 
         assets.config["LIBSASS_STYLE"] = "compressed"
-        js_main = flask_assets.Bundle(
-            "js/bootstrap.js",
-            filters="rjsmin",
-            output="assets/js/main.min.js",
-        )
         js_registration = flask_assets.Bundle(
             "js/registration.js",
             filters="rjsmin",
@@ -106,7 +97,6 @@ def define_assets(app: flask.Flask) -> None:
         output="assets/css/style.css",
     )
 
-    assets.register("soteria_js_main", js_main)
     assets.register("soteria_js_registration", js_registration)
     assets.register("soteria_js_account", js_account)
     assets.register("soteria_css", css)
@@ -122,7 +112,12 @@ def add_context_processor(app: flask.Flask) -> None:
         flask.g.has_session_cookie = bool(cookie)
         flask.g.logout_url = f"{root_url}callback?logout={root_url}"
 
-        return {}
+        return {
+            "is_researcher": registry.util.is_soteria_researcher(),
+            "is_registered": registry.util.is_registered(),
+            "is_admin": registry.util.is_soteria_admin(),
+            "has_starter_project": registry.util.has_starter_project(),
+        }
 
 
 def create_app() -> flask.Flask:

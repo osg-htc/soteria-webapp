@@ -13,10 +13,10 @@ import flask
 import jinja2
 
 import registry.util
-from registry.util import is_soteria_affiliate, has_organizational_identity
+from registry.util import is_soteria_affiliate, has_organizational_identity, get_admin_harbor_api
 from registry.security import researcher_required, registration_required
 
-from .forms import CreateProjectForm, ResearcherApprovalForm
+from .forms import CreateProjectForm, ResearcherApprovalForm, CreateStarterProjectForm, CreateRobotForm
 
 __all__ = ["bp"]
 
@@ -67,14 +67,14 @@ def researcher_registration() -> flask.Response:
     if researcher_form.validate_on_submit():
         ticket_created = researcher_form.submit_request()
         html = flask.render_template(
-            "researcher-registration.html",
+            "user/researcher-registration.html",
             form=researcher_form,
             ticket_created=ticket_created,
         )
 
     else:
         html = flask.render_template(
-            "researcher-registration.html", form=researcher_form
+            "user/researcher-registration.html", form=researcher_form
         )
 
     return flask.make_response(html)
@@ -88,18 +88,81 @@ def create_project() -> flask.Response:
     if projects_creation_form.validate_on_submit():
         project_created = projects_creation_form.submit_request()
         html = flask.render_template(
-            "/user/create-project.html",
+            "/user/project/create.html",
             form=projects_creation_form,
             project_created=project_created,
         )
 
     else:
         html = flask.render_template(
-            "/user/create-project.html", form=projects_creation_form
+            "/user/project/create.html", form=projects_creation_form
         )
 
     return flask.make_response(html)
 
+@bp.route("/projects/starter", methods=["GET", "POST"])
+@registration_required
+def create_starter_project() -> flask.Response:
+    projects_creation_form = CreateStarterProjectForm(flask.request.form)
+
+    if projects_creation_form.validate_on_submit():
+        project_created = projects_creation_form.submit_request()
+        html = flask.render_template(
+            "/user/project/create-starter.html",
+            form=projects_creation_form,
+            project_created=project_created,
+        )
+
+    else:
+        html = flask.render_template(
+            "/user/project/create-starter.html", form=projects_creation_form
+        )
+
+    return flask.make_response(html)
+
+@bp.route("/robots/create", methods=["GET", "POST"])
+@researcher_required
+def create_robot() -> flask.Response:
+    robot_creation_form = CreateRobotForm(flask.request.form)
+
+    robot_creation_form.project_name.choices = [*map(lambda p: (p['name'], p['name']), registry.util.get_harbor_projects(owner=True))]
+
+    if robot_creation_form.validate_on_submit():
+        response = robot_creation_form.submit_request()
+        data = response.json()
+
+        if response.ok:
+            html = flask.render_template(
+                "/user/robot/create.html",
+                form=robot_creation_form,
+                secret=data['secret']
+            )
+        else:
+            html = flask.render_template(
+                "/user/robot/create.html",
+                form=robot_creation_form,
+                errors=data['errors']
+            )
+
+    else:
+        html = flask.render_template(
+            "/user/robot/create.html",
+            form=robot_creation_form
+        )
+
+    return flask.make_response(html)
+
+@bp.route("/admin/statistics")
+def nsf_report():
+    """Returns a page detailing NSF Reporting statistics"""
+
+    statistics = get_admin_harbor_api().get_statistics().json()
+    scanners = get_admin_harbor_api().get_all_scanners()
+
+    return flask.render_template(
+        "/admin/statistics.html",
+        statistics=statistics
+    )
 
 @bp.route("/status")
 def status() -> flask.Response:
@@ -113,7 +176,7 @@ def status() -> flask.Response:
 @registration_required
 def user_projects():
     return flask.render_template(
-        "/user/projects.html",
+        "/user/project/list.html",
         is_researcher=registry.util.is_soteria_researcher(),
         harbor_url=flask.current_app.config["HARBOR_HOMEPAGE_URL"],
     )

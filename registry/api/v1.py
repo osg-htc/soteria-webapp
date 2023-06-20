@@ -183,103 +183,14 @@ def get_projects(user_id: str):
     if user_id != "current":
         return make_error_response(400, "Malformed user ID")
 
-    return flask.jsonify(registry.util.get_harbor_projects())
-
-
-@bp.route("/users/<user_id>/starter_project", methods=["POST"])
-def create_user_starter_project(user_id: str):
-    """
-    Creates a "starter" repositories in Harbor for the current user.
-    """
-    if user_id != "current":
-        return make_error_response(400, "Malformed user ID")
-
-    api = registry.util.get_admin_harbor_api()
-    errors = []
-
-    orcid_id = registry.util.get_orcid_id()
-    harbor_user = registry.util.get_harbor_user()
-
-    if not orcid_id:
-        errors.append({"code": "PREREQUISITE", "message": "Missing ORCID iD"})
-    if not harbor_user:
-        errors.append(
-            {"code": "PREREQUISITE", "message": "Missing Harbor user"}
+    return flask.jsonify(
+        registry.util.get_harbor_projects(
+            owner=True,
+            maintainer=True,
+            developer=True,
+            guest=True,
+            temporary=True
         )
-    if errors:
-        return make_errors_response(errors)
-
-    projectname = registry.util.get_starter_project_name()
-
-    project = api.create_project(projectname, is_public=False)
-
-    if "errors" in project:
-        return make_errors_response(project["errors"])
-
-    coperson_id = registry.util.get_coperson_id()
-
-    project_expiration_date = datetime.datetime.now() + datetime.timedelta(
-        days=30
-    )
-
-    try:
-        registry.util.create_permission_group(
-            group_name=f"soteria-{projectname}-temporary",
-            project_name=projectname,
-            harbor_role_id=HarborRoleID.DEVELOPER,
-            comanage_person_id=coperson_id,
-            comanage_group_member=True,
-            comanage_group_owner=False,
-            valid_through=project_expiration_date,
-        )
-    except Exception as error:
-        return make_errors_response([{"code": "Error", "message": error}])
-
-    # Try to delete admin from project, but ignore if it doesn't work
-    harbor_admin_username = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
-    api.delete_project_member(project["project_id"], harbor_admin_username)
-
-    return make_ok_response({"project_name": project["name"]})
-
-
-@bp.route("/users/<user_id>/starter_project", methods=["GET"])
-def check_user_starter_project(user_id: str):
-    """
-    Return's the current user's "starter" project in Harbor, if any.
-    """
-    if user_id != "current":
-        return make_error_response(400, "Malformed user ID")
-
-    api = registry.util.get_admin_harbor_api()
-
-    harbor_user = registry.util.get_harbor_user() or {}
-    project_name = registry.util.get_starter_project_name()
-
-    if not harbor_user:
-        return make_error_response(
-            200,
-            f"Missing account on {flask.current_app.config['HARBOR_NAME']}",
-        )
-
-    orcid_id = registry.util.get_orcid_id()
-
-    if not orcid_id:
-        return make_error_response(200, "Missing ORCID iD")
-
-    response = api.get_project(project_name)
-
-    flask.current_app.logger.info(response)
-
-    harbor = {
-        "name": flask.current_app.config["HARBOR_NAME"],
-        "projects_url": flask.current_app.config["HARBOR_HOMEPAGE_URL"]
-        + "/harbor/projects",
-    }
-
-    if "errors" in response:
-        return make_ok_response({"verified": False})
-    return make_ok_response(
-        {"verified": True, "harbor": harbor, "project": response}
     )
 
 

@@ -130,7 +130,6 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;50
 
   &-link {
     box-shadow: none;
-    color: $link-color;
 
     &:hover,
     &:focus {
@@ -605,46 +604,6 @@ select.form-control {
 
 // Indicators
 
-.alert {
-  padding-right: 2.5rem;
-  border: none;
-
-  &,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: $white;
-  }
-
-  @each $color, $value in $theme-colors {
-    &-#{$color} {
-      @if $enable-gradients {
-        background: $value linear-gradient(180deg, mix($body-bg, $value, 15%), $value) repeat-x;
-      } @else {
-        background-color: $value;
-      }
-    }
-  }
-
-  a:not(.btn),
-  .alert-link {
-    color: $white;
-    font-weight: 700;
-  }
-
-  &-secondary,
-  &-light {
-    &,
-    a:not(.btn),
-    .alert-link {
-      color: $body-color;
-    }
-  }
-}
-
 .badge {
   &.bg-secondary,
   &.bg-light {
@@ -659,8 +618,6 @@ select.form-control {
 // Containers
 
 .card {
-  box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
-
   &.border-primary,
   &.border-secondary,
   &.border-success,

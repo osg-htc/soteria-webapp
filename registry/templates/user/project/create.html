@@ -1,4 +1,4 @@
-{% extends "layout/base.html" %}
+{% extends "user/layout.html" %}
 {% from "macros/layout/title.html" import title %}
 {% from "macros/card.html" import card %}
 {% macro form_element(element) %}
@@ -30,26 +30,22 @@
 {% block title %}Create Project{% endblock %}
 {% block page_class %}subpage{% endblock %}
 {% block body_class %}container{% endblock %}
-{% block body %}
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-xl-7">
-            {{ title("Create Project") }}
-            <form method="POST">
-                <p>
-                    Researchers can create 3 Public and 2 Private projects.
-                </p>
-                <hr>
-                <div class="mb-2">
-                    {{ form_element(form.project_name) }}
-                </div>
-                <div class="mb-2">
-                    {{ form_check_element(form.visibility) }}
-                </div>
-                <hr>
-                {{ form.submit(class="btn btn-primary") }}
-            </form>
+{% block nested_body %}
+    <h3>Create Project</h3>
+    <form method="POST">
+        <p>
+            Researchers can create 3 Public and 2 Private projects.
+        </p>
+        <hr>
+        <div class="mb-2">
+            {{ form_element(form.project_name) }}
         </div>
-    </div>
+        <div class="mb-2">
+            {{ form_check_element(form.visibility) }}
+        </div>
+        <hr>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
 
     {% if 'errors' not in project_created and project_created %}
         <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

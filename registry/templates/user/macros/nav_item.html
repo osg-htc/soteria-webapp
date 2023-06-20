@@ -1,0 +1,5 @@
+{% macro nav_item(endpoint, text) %}
+    <li class="nav-item hover rounded mb-1">
+        <a class="nav-link {% if request.path == endpoint %}active{% endif %}" href="{{ endpoint }}">{{ text }}</a>
+    </li>
+{% endmacro %}

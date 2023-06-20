@@ -17,7 +17,7 @@ import registry.comanage
 import registry.freshdesk
 import registry.harbor
 from registry.cache import cache
-from registry.harbor import HarborRoleID
+from registry.harbor import HarborRoleID, Harbor
 
 __all__ = [
     "configure_logging",
@@ -92,6 +92,7 @@ def update_request_environ() -> None:
         flask.request.environ.update(mock_oidc_claim)
 
 
+@cache.memoize(timeout=10)
 def get_comanage_groups():
     """
     Returns a list of the current user's groups in COmanage.
@@ -177,7 +178,7 @@ def get_harbor_user():
     )
 
     if not harbor_user and (email and subiss):
-        harbor_user = api.search_for_user(email=email, subiss=subiss)
+        harbor_user = Harbor(harbor_api=api).search_for_user(email=email, subiss=subiss)
 
     if not harbor_user:
         harbor_user = get_harbor_user_by_subiss(subiss)
@@ -198,7 +199,7 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
     return None
 
 
-def get_harbor_projects() -> Any:
+def get_harbor_projects(owner: bool = False, maintainer: bool = False, developer: bool = False, guest: bool = False, temporary: bool = False) -> Any:
     """Returns the users harbor projects - O(n)"""
 
     comanage_api = registry.util.get_admin_comanage_api()
@@ -209,34 +210,77 @@ def get_harbor_projects() -> Any:
     comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()["CoGroups"]
     comanage_group_names = map(lambda x: x['Name'], comanage_groups)
 
-    owner_pattern = re.compile("^soteria-(.*?)-owners")
-    temporary_pattern = re.compile("^soteria-(.*?)-temporary")
-    developer_pattern = re.compile("^soteria-(.*?)-developers")
-    maintainer_pattern = re.compile("^soteria-(.*?)-maintainers")
-    guest_pattern = re.compile("^soteria-(.*?)-guests")
+    patterns = []
 
-    patterns = [owner_pattern, temporary_pattern, developer_pattern, maintainer_pattern, guest_pattern]
+    if owner:
+        patterns.append(re.compile("^soteria-(.*?)-owners"))
 
-    project_names = []
+    if maintainer:
+        patterns.append(re.compile("^soteria-(.*?)-maintainers"))
+
+    if developer:
+        patterns.append(re.compile("^soteria-(.*?)-developers"))
+        
+    if guest:
+        patterns.append(re.compile("^soteria-(.*?)-guests"))
+
+    if temporary:
+        patterns.append(re.compile("^soteria-(.*?)-temporary"))
+
+    project_names = set()
     for group_name in comanage_group_names:
         for pattern in patterns:
             if pattern.match(group_name):
-                project_names.append(pattern.match(group_name).group(1))
+                project_names.add(pattern.match(group_name).group(1))
                 break
 
     projects = []
     for project_name in project_names:
-        projects.append(harbor_api.get_project(project_name))
+        projects.append(harbor_api.get_project(project_name).json())
 
     return projects
+
+
+def create_starter_project():
+    """Create a starter project"""
+
+    harbor_api = get_admin_harbor_api()
+    harbor = Harbor(harbor_api=get_admin_harbor_api())
+
+    projectname = registry.util.get_starter_project_name()
+
+    project = harbor.create_project(projectname, is_public=False)
+
+    coperson_id = registry.util.get_coperson_id()
+
+    project_expiration_date = datetime.datetime.now() + datetime.timedelta(
+        days=30
+    )
+
+    registry.util.create_permission_group(
+        group_name=f"soteria-{projectname}-temporary",
+        project_name=projectname,
+        harbor_role_id=HarborRoleID.DEVELOPER,
+        comanage_person_id=coperson_id,
+        comanage_group_member=True,
+        comanage_group_owner=False,
+        valid_through=project_expiration_date,
+    )
+
+    harbor_admin_username = flask.current_app.config["HARBOR_ADMIN_USERNAME"]
+    harbor_api.delete_project_member(project["project_id"], harbor_admin_username)
+
+    cache.delete_memoized(has_starter_project)
+
+    return project
 
 
 def create_project(name: str, public: bool):
     """Create a researcher project"""
 
-    harbor_api = get_admin_harbor_api()
+    harbor = Harbor(harbor_api=get_admin_harbor_api())
 
-    project = harbor_api.create_project(name, public)
+    project = harbor.create_project(name=name, public=public)
 
     if not ("name" in project and project["name"] == name):
         return project
@@ -431,6 +475,12 @@ def get_starter_project_name():
     return None
 
 
+@cache.memoize()
+def has_starter_project():
+    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name())
+    return not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
+
+
 def has_organizational_identity() -> bool:
     groups = get_comanage_groups()
 
@@ -469,6 +519,12 @@ def is_soteria_researcher() -> bool:
     return "CO:COU:SOTERIA-Researchers:members:active" in groups
 
 
+def is_soteria_admin() -> bool:
+    groups = get_comanage_groups()
+
+    return "CO:COU:SOTERIA-Admins:members:active" in groups
+
+
 #
 # --------------------------------------------------------------------------
 #
@@ -485,6 +541,11 @@ def get_admin_harbor_api() -> registry.harbor.HarborAPI:
             flask.current_app.config["HARBOR_ADMIN_PASSWORD"],
         ),
     )
+
+
+def get_harbor_api() -> registry.harbor.HarborAPI:
+    """Returns a Harbor API instance not authed"""
+    return registry.harbor.HarborAPI(flask.current_app.config["HARBOR_API_URL"])
 
 
 def get_admin_comanage_api():

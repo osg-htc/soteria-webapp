@@ -14,11 +14,12 @@ from pytest_mock import MockerFixture
 from registry import util
 from registry.app import create_app
 from registry.comanage import COmanageAPI
-from registry.harbor import HarborAPI, HarborRoleID
+from registry.harbor import Harbor, HarborAPI, HarborRoleID
 
 harbor_api = HarborAPI(
     HARBOR_API_URL, (HARBOR_ADMIN_USERNAME, HARBOR_ADMIN_PASSWORD)
 )
+harbor = Harbor(harbor_api=harbor_api)
 comanage_api = COmanageAPI(
     REGISTRY_API_URL,
     REGISTRY_CO_ID,
@@ -131,7 +132,6 @@ class TestUtil:
                 # Clean up as we go
                 comanage_api.delete_group(cogroup["Id"])
 
-
     def test_create_project(self, app):
         with app.test_request_context():
             project_name = "test-project-14"
@@ -140,7 +140,7 @@ class TestUtil:
 
             # Harbor
             ## Test that all the Harbor groups are appropriately allocated
-            project = harbor_api.get_project(project_name)
+            project = harbor_api.get_project(project_name).json()
 
             valid_group_names = {
                 f"soteria-{project_name}-owners",

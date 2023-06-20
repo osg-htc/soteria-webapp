@@ -1,0 +1,134 @@
+{% extends "user/layout.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% macro form_element(element) %}
+    <div class="pb-2">
+        {{ element.label(class="form-label mb-0") }}
+        <br><small>{{ element.description }}</small>
+        {% if element.errors %}
+            <div class="text-danger">{% for error in element.errors %}{{ error }}{% endfor %}</div>
+        {% endif %}
+        {{ element(class="form-control") }}
+    </div>
+{% endmacro %}
+{% macro form_check_element(element) %}
+    {% if element.errors %}
+        <div class="text-danger">{% for error in element.errors %}{{ error }}{% endfor %}</div>
+    {% endif %}
+    <div class="form-check">
+        {{ element(class='form-check-input') }}
+        {{ element.label(class='form-check-label') }}
+    </div>
+{% endmacro %}
+{% block js_extension %}
+    {% assets "soteria_js_account" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
+{% block title %}Create Project Robot{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block nested_body %}
+    <h3>Create Project Robot</h3>
+    <p>
+        Robot accounts should be used for automating any registry actions.
+    </p>
+    <form method="POST">
+        <hr>
+        <div class="mb-2">
+            {{ form.csrf_token }}
+
+            {{ form_element(form.project_name) }}
+            {{ form_element(form.robot_name) }}
+            {{ form_element(form.duration) }}
+            {{ form_element(form.description) }}
+
+            <h4>Robot Permissions</h4>
+            {{ form_check_element(form.list_repository) }}
+            {{ form_check_element(form.pull_repository) }}
+            {{ form_check_element(form.push_repository) }}
+            {{ form_check_element(form.list_artifact) }}
+            {{ form_check_element(form.read_artifact) }}
+            {{ form_check_element(form.create_artifact_label) }}
+            {{ form_check_element(form.list_tag) }}
+            {{ form_check_element(form.create_tag) }}
+            {{ form_check_element(form.read_helm_chart) }}
+            {{ form_check_element(form.create_helm_chart_version) }}
+            {{ form_check_element(form.create_helm_chart_version_label) }}
+
+        </div>
+        <hr>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+
+    {% if secret %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Success</h5>
+                        <a href="/account" class="btn-close"></a>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Your robot has been created, record the name and secret below. After you leave this page you
+                            will not be able to view the secret again.
+                        </p>
+                        <div>
+                            <label for="name" class="form-label">Name</label>
+                            <input id="name" disabled class="form-control text-dark mb-2" value="robot${{ form.project_name.data }}-{{ form.robot_name.data }}">
+                            <label for="secret" class="form-label">Secret</label>
+                            <input id="secret" disabled class="form-control text-dark" value="{{ secret }}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/account" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+    {% if errors %}
+        <div class="modal fade" id="success-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Error</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            We could not create your Robot Account.
+                        </p>
+                        <p class="text-danger">
+                        {% for error in errors %}
+                            <span class="text-red">{{ error['code'] }}: {{ error['message'] }}</span><br>
+                        {% endfor %}
+                        </p>
+                        <p>
+                            Please contact <a href="mailto:support@osg-htc.org">support@osg-htc.org</a> so that we
+                            can create the robot manually if this issue persists.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById('success-modal'), {
+                keyboard: false
+            })
+            myModal.toggle()
+        </script>
+    {% endif %}
+
+
+{% endblock %}

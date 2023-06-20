@@ -1,0 +1,141 @@
+{% extends "user/layout.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block title %}My Projects{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block nested_body %}
+    <h3>Statistics</h3>
+    <div>
+        <div class="card">
+            <div class="card-text m-3">
+                <div class="row gx-1">
+                    <div class="col-12 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Project Count</h5>
+                        <h6 class="ps-2">{{ statistics['total_project_count'] }}</h6>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Public Project Count</h5>
+                        <h6 class="ps-2">{{ statistics['public_project_count'] }}</h6>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Private Project Count</h5>
+                        <h6 class="ps-2">{{ statistics['private_project_count'] }}</h6>
+                    </div>
+                    <div class="col-12 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Repository Count</h5>
+                        <h6 class="ps-2">{{ statistics['total_repo_count'] }}</h6>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Public Repository Count</h5>
+                        <h6 class="ps-2">{{ statistics['public_repo_count'] }}</h6>
+                    </div>
+                    <div class="col-sm-6 col-lg-4 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Private Repository Count</h5>
+                        <h6 class="ps-2">{{ statistics['private_repo_count'] }}</h6>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <h5 class="bg-primary rounded text-light p-2">Total Storage Consumption</h5>
+                        <h6 class="ps-2">{{ (statistics['total_storage_consumption'] / 2**30) | round | int }} Gibibytes</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h3 class="mt-3">NSF Reporting</h3>
+        <div class="card">
+            <div class="card-text m-3">
+                <div class="row gx-1">
+                    <div class="col-12 mb-2">
+                        <div class="bg-primary rounded text-light p-2 mb-2">
+                            <h5 class="mb-0">M.1: Distinct users of container registry</h5>
+                            <small>Calculated by iterating users and tracking who created an artifact.</small>
+                        </div>
+                        <div  class="ps-2">
+                            <h6 id="m1-value">Calculating...</h6>
+                            <div id="progress">
+                                <progress id="m1-progress" max="100" value="0" style="height: 2rem;" class="w-100"></progress>
+                                <small id="m1-progress-report" class="text-center"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="bg-primary rounded text-light p-2 mb-2">
+                            <h5 class="mb-0">M.5: Number of image introspection analyses developed</h5>
+                            <small>Calculated by counting number of scanners registered.</small>
+                        </div>
+                        <div  class="ps-2">
+                            <h6 id="m5-value">Calculating...</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        let getUsers = async (page, pageSize) => {
+            let params = {
+                "page": page,
+                "page_size": pageSize
+            }
+
+            return await  fetch("/harbor/users?" + new URLSearchParams(params))
+        }
+
+        let getUserArtifactLogs = async (username) => {
+            let params = {
+                "q": `operation=create,resource_type=artifact,username=${username}`,
+                "page_size": 1
+            }
+
+            let response = await  fetch("/harbor/audit-logs?" + new URLSearchParams(params))
+            return await response.json()
+        }
+
+        const calculateM1 = async () => {
+
+            let distinctUsers = 0
+
+            const start = Date.now();
+
+            const value = document.getElementById("m1-value")
+            const progressDisplay = document.getElementById("progress")
+            const progressBar = document.getElementById("m1-progress")
+            const progressBarReport = document.getElementById("m1-progress-report")
+
+            let response = await getUsers(1,1)
+            let totalUsers = response.headers.get("x-total-count")
+            let maxPage = Math.ceil(totalUsers / 5)
+            let pageNumbers = Array.from(Array(maxPage).keys())
+
+            for(const pageNumber of pageNumbers){
+                let users = await (await getUsers(pageNumber, 5)).json()
+
+                progressBarReport.innerHTML = `Time elapsed: ${(Date.now() - start)/1000}s`
+
+                let logs = await Promise.all(users.map(user => getUserArtifactLogs(user['username'])))
+
+                logs.forEach(x => {
+                    if(x.length > 0){
+                        distinctUsers += 1
+                        value.innerText = distinctUsers.toString()
+                    }
+                })
+
+                progressBar.value = Math.round(((pageNumber + 1) / maxPage)*100)
+            }
+            progressDisplay.hidden = true
+        }
+
+        const calculatem5 = async () => {
+            const value = document.getElementById("m5-value")
+
+            let scanners = await (await fetch("/harbor/scanners/all")).json()
+            value.innerText = scanners.length
+        }
+
+        calculateM1()
+        calculatem5()
+    </script>
+{% endblock %}
