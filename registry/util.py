@@ -92,8 +92,8 @@ def update_request_environ() -> None:
         flask.request.environ.update(mock_oidc_claim)
 
 
-@cache.memoize(timeout=10)
-def get_comanage_groups():
+@cache.memoize(timeout=60)
+def get_comanage_groups_by_sub(sub: str):
     """
     Returns a list of the current user's groups in COmanage.
 
@@ -102,7 +102,6 @@ def get_comanage_groups():
     update_request_environ()
 
     groups = []
-    sub = flask.request.environ.get("OIDC_CLAIM_sub")
 
     if sub:
         ldap_url = flask.current_app.config["LDAP_URL"]
@@ -137,6 +136,17 @@ def get_comanage_groups():
     return groups
 
 
+def get_comanage_groups():
+
+    update_request_environ()
+
+    sub = flask.request.environ.get("OIDC_CLAIM_sub")
+
+    logging.debug(flask.request.environ)
+
+    return get_comanage_groups_by_sub(sub)
+
+
 def get_coperson_id():
     """Get the Comanage Person id for the current user"""
     comanage_api = get_admin_comanage_api()
@@ -149,7 +159,6 @@ def get_subiss() -> Optional[str]:
     """
     Returns the concatenation of the current user's `sub` and `iss`.
     """
-    update_request_environ()
 
     sub: str = flask.request.environ.get("OIDC_CLAIM_sub", "")
     iss: str = flask.request.environ.get("OIDC_CLAIM_iss", "")
@@ -159,7 +168,7 @@ def get_subiss() -> Optional[str]:
 
     return None
 
-
+@cache.memoize(timeout=10)
 def get_harbor_user():
     """
     Returns the current user's Harbor account.
@@ -220,7 +229,7 @@ def get_harbor_projects(owner: bool = False, maintainer: bool = False, developer
 
     if developer:
         patterns.append(re.compile("^soteria-(.*?)-developers"))
-        
+
     if guest:
         patterns.append(re.compile("^soteria-(.*?)-guests"))
 
