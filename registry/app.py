@@ -12,6 +12,7 @@ import flask_assets  # type: ignore[import]
 import registry.api.debug
 import registry.api.v1
 import registry.cli
+import registry.api.harbor_proxy
 import registry.api.harbor
 import registry.public
 import registry.util
@@ -50,9 +51,10 @@ def load_config(app: flask.Flask) -> None:
 
 def register_blueprints(app: flask.Flask) -> None:
     app.register_blueprint(registry.api.v1.bp, url_prefix="/api/v1")
+    app.register_blueprint(registry.api.harbor.bp, url_prefix="/api/v1/harbor")
     app.register_blueprint(registry.website.bp, url_prefix="/")
     app.register_blueprint(registry.cli.bp, cli_group="soteria")
-    app.register_blueprint(registry.api.harbor.bp, url_prefix="/harbor")
+    app.register_blueprint(registry.api.harbor_proxy.bp, url_prefix="/harbor")
     app.register_blueprint(registry.public.bp, url_prefix="/public")
 
     if app.config.get("SOTERIA_DEBUG"):

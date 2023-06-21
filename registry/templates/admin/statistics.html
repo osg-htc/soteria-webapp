@@ -80,7 +80,7 @@
                 "page_size": pageSize
             }
 
-            return await  fetch("/harbor/users?" + new URLSearchParams(params))
+            return await  fetch("/api/v1/harbor/users?" + new URLSearchParams(params))
         }
 
         let getUserArtifactLogs = async (username) => {
@@ -89,7 +89,7 @@
                 "page_size": 1
             }
 
-            let response = await  fetch("/harbor/audit-logs?" + new URLSearchParams(params))
+            let response = await  fetch("/api/v1/harbor/audit-logs?" + new URLSearchParams(params))
             return await response.json()
         }
 
@@ -98,7 +98,7 @@
             let distinctUsers = 0
 
             const start = Date.now();
-            const parallelLimit = 2
+            const parallelLimit = 5
 
             const value = document.getElementById("m1-value")
             const progressDisplay = document.getElementById("progress")
@@ -132,7 +132,7 @@
         const calculatem5 = async () => {
             const value = document.getElementById("m5-value")
 
-            let scanners = await (await fetch("/harbor/scanners/all")).json()
+            let scanners = await (await fetch("/api/v1/harbor/scanners/all")).json()
             value.innerText = scanners.length
         }
 
