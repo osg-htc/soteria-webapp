@@ -5,6 +5,7 @@ Wrapper around
 import flask
 import requests
 import json
+import logging
 
 import registry.harbor
 from registry.util import get_admin_harbor_api, get_harbor_api, is_soteria_admin
@@ -19,8 +20,10 @@ def get_api() -> registry.harbor.HarborAPI:
     """Prevents non admin users form accessing the admin harbor api"""
 
     if is_soteria_admin():
+        logging.debug("Provided Admin API")
         return get_admin_harbor_api()
     else:
+        logging.debug("Provided Base API")
         return get_harbor_api()
 
 @bp.route('/get/', defaults={'path': ''}, methods=["GET"])
