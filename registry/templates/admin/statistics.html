@@ -98,6 +98,7 @@
             let distinctUsers = 0
 
             const start = Date.now();
+            const parallelLimit = 2
 
             const value = document.getElementById("m1-value")
             const progressDisplay = document.getElementById("progress")
@@ -106,11 +107,11 @@
 
             let response = await getUsers(1,1)
             let totalUsers = response.headers.get("x-total-count")
-            let maxPage = Math.ceil(totalUsers / 5)
-            let pageNumbers = Array.from(Array(maxPage).keys())
+            let maxPage = Math.ceil(totalUsers / parallelLimit)
+            let pageNumbers = Array.from(Array(maxPage).keys()).map(i => i + 1)
 
             for(const pageNumber of pageNumbers){
-                let users = await (await getUsers(pageNumber, 5)).json()
+                let users = await (await getUsers(pageNumber, parallelLimit)).json()
 
                 progressBarReport.innerHTML = `Time elapsed: ${(Date.now() - start)/1000}s`
 
