@@ -163,6 +163,14 @@ class HarborAPI(registry.api_client.GenericAPI):
 
         return self._get(f"/projects/{project_name}/repositories", params=params)
 
+    def get_all_repositories(self, project_name: str, q: str = None, sort: str = None) -> typing.Generator[dict, None, None]:
+        params = {
+            "project_name": project_name,
+            "q": q,
+            "sort": sort
+        }
+        return self._get_all(f"/projects/{project_name}/repositories", params=params)
+
     #
     # ----------------------------------------------------------------------
     #
@@ -480,6 +488,14 @@ class HarborAPI(registry.api_client.GenericAPI):
 
         return self._get("/audit-logs", params=params)
 
+    def get_all_audit_logs(self, q: str = None, sort: str = None):
+        params = {
+            "q": q,
+            "sort": sort
+        }
+
+        return self._get_all("/audit-logs", params=params)
+
     #
     # Scanner
     # ----------------------------------------------------------------------
@@ -502,3 +518,30 @@ class HarborAPI(registry.api_client.GenericAPI):
         }
 
         return self._get_all("/scanners", params=params)
+
+    #
+    # Artifacts
+    # ----------------------------------------------------------------------
+    #
+
+    def get_artifacts(self, project_name: str, repository_name: str, q: str = None, sort: str = None, page: int = 1, page_size: int = 10,):
+        params = {
+            "project_name": project_name,
+            "repository_name": repository_name,
+            "q": q,
+            "sort": sort,
+            "page": page,
+            "page_size": page_size
+        }
+
+        return self._get(f"/projects/{project_name}/repositories/{repository_name}/artifacts", params=params)
+
+    def get_all_artifacts(self, project_name: str, repository_name: str, q: str = None, sort: str = None):
+        params = {
+            "project_name": project_name,
+            "repository_name": repository_name,
+            "q": q,
+            "sort": sort
+        }
+
+        return self._get_all(f"/projects/{project_name}/repositories/{repository_name}/artifacts", params=params)
