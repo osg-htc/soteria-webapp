@@ -82,7 +82,7 @@ class CreateStarterProjectForm(FlaskForm):
 
     def validate(self, extra_validators=None):
 
-        if not is_registered() or not has_starter_project():
+        if not is_registered() or has_starter_project():
             return False
 
         return True

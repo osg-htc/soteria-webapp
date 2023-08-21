@@ -249,7 +249,7 @@ def create_starter_project():
 
     projectname = registry.util.get_starter_project_name()
 
-    project = harbor.create_project(projectname, is_public=False)
+    project = harbor.create_project(projectname, public=False)
 
     coperson_id = registry.util.get_coperson_id()
 
@@ -477,7 +477,7 @@ def get_starter_project_name():
 
 @cache.memoize()
 def has_starter_project():
-    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name())
+    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name()).json()
     return not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
 
 
