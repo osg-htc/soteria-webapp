@@ -22,7 +22,7 @@ jobs:
       uses: docker/metadata-action@v4
       with:
         images: |
-          hub.opensciencegrid.org/brian.aydemir/soteria-webapp
+          hub.opensciencegrid.org/soteria/soteria-webapp
         tags: |
           type=ref,event=branch
           type=ref,event=pr
