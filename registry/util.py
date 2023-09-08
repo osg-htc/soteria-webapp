@@ -17,7 +17,7 @@ import registry.comanage
 import registry.freshdesk
 import registry.harbor
 from registry.cache import cache
-from registry.harbor import HarborRoleID, Harbor
+from registry.harbor import HarborRoleID, Harbor, GIBIBYTE
 
 __all__ = [
     "configure_logging",
@@ -220,7 +220,7 @@ def get_harbor_projects(owner: bool = False, maintainer: bool = False, developer
 
     if developer:
         patterns.append(re.compile("^soteria-(.*?)-developers"))
-        
+
     if guest:
         patterns.append(re.compile("^soteria-(.*?)-guests"))
 
@@ -280,7 +280,7 @@ def create_project(name: str, public: bool):
 
     harbor = Harbor(harbor_api=get_admin_harbor_api())
 
-    project = harbor.create_project(name=name, public=public)
+    project = harbor.create_project(name=name, public=public, storage_limit=100 * GIBIBYTE)
 
     if not ("name" in project and project["name"] == name):
         return project

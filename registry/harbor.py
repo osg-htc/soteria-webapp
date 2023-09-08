@@ -15,6 +15,7 @@ import registry.api_client
 
 __all__ = ["HarborAPI", "HarborRoleID"]
 
+GIBIBYTE = 2 ** 30
 
 class HarborRoleID(enum.IntEnum):
     PROJECT_ADMIN = 1
@@ -43,7 +44,7 @@ class Harbor:
         name: str,
         public: bool = False,
         *,
-        storage_limit: int = 5368709120
+        storage_limit: int = 5 * GIBIBYTE
     ):
         """Create project then return the project data"""
 
@@ -172,7 +173,7 @@ class HarborAPI(registry.api_client.GenericAPI):
             name: str,
             public: bool = False,
             *,
-            storage_limit: int = 5368709120,
+            storage_limit: int = 5 * GIBIBYTE,
     ):
         # 5 GiB = 5368709120 bytes = 5 * 1024 * 1024 * 1024
         """
