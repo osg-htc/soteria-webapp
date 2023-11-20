@@ -1,7 +1,0 @@
-{
-  "status": "error",
-  "errors": [{
-    "code": "200",
-    "message": "String to show to user"
-  }]
-}
