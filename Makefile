@@ -5,21 +5,21 @@ include .env
 
 .PHONY: all build clean local lint reformat
 
-PY_FILES := set_version.py wsgi.py registry/
-PY_WHEEL_BASENAME := soteria_webapp
+PY_PACKAGE_SRC := set_version.py wsgi.py registry/
+PY_PACKAGE_NAME := soteria_webapp
 
 all: reformat lint build
 
 #---------------------------------------------------------------------------
 
 reformat:
-	poetry run isort -q $(PY_FILES)
-	poetry run black -q $(PY_FILES)
+	poetry run isort -q $(PY_PACKAGE_SRC)
+	poetry run black -q $(PY_PACKAGE_SRC)
 
 lint:
-	-poetry run bandit -qr $(PY_FILES)
-	-poetry run mypy $(PY_FILES)
-	-poetry run pylint $(PY_FILES)
+	-poetry run bandit -qr $(PY_PACKAGE_SRC)
+	-poetry run mypy $(PY_PACKAGE_SRC)
+	-poetry run pylint $(PY_PACKAGE_SRC)
 
 requirements.txt: poetry.lock
 	poetry export > requirements.txt
@@ -31,8 +31,10 @@ build:
 
 clean:
 	rm -rf .mypy_cache/
-	rm -rf dist/$(PY_WHEEL_BASENAME)-*.tar.gz
-	rm -rf dist/$(PY_WHEEL_BASENAME)-*.whl
+	rm -rf dist/$(PY_PACKAGE_NAME)-*.tar.gz
+	rm -rf dist/$(PY_PACKAGE_NAME)-*.whl
+	-rmdir dist/
+
 	rm -rf instance/log
 	-docker image rm soteria-webapp:dev
 
