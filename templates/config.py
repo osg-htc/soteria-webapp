@@ -82,6 +82,12 @@ SOTERIA_ENROLLMENT_FOR_EXISTING_ORG_ID_URL = "https://registry.example.com/enrol
 SOTERIA_ENROLLMENT_FOR_NEW_ORG_ID_URL = "https://registry.example.com/enroll/new"
 
 #
+# The SOTERIA instance's homepage URL and API base URL.
+#
+SOTERIA_HOMEPAGE_URL = "https://soteria.example.com"
+SOTERIA_API_URL = f"{SOTERIA_HOMEPAGE_URL}/api/v1"
+
+#
 # Bearer token that must be presented to invoke the Harbor webhook.
 # An environment variable of the same name will override the value set here.
 #
