@@ -3,13 +3,14 @@ from functools import wraps
 import flask
 
 import registry.util
-from registry.util import is_registered, is_soteria_researcher, is_soteria_admin
+from registry.util import is_registered, is_soteria_admin, is_soteria_researcher
 
 __all__ = ["researcher_required"]
 
 
 def registration_required(f):
     """Check that the user has completed the registration flow"""
+
     @wraps(f)
     def wrapper():
         if not is_registered():
@@ -18,8 +19,9 @@ def registration_required(f):
                     "error.html",
                     code=403,
                     message="You must complete registration before accessing this page.<br>"
-                            "<a class='btn btn-primary mt-3' href='https://soteria.osg-htc.org/registration'>Register Now</a>"
-                ), 403
+                    "<a class='btn btn-primary mt-3' href='https://soteria.osg-htc.org/registration'>Register Now</a>",
+                ),
+                403,
             )
 
         return f()
@@ -29,6 +31,7 @@ def registration_required(f):
 
 def researcher_required(f):
     """Check that the user has researcher status"""
+
     @wraps(f)
     def wrapper():
         if not is_soteria_researcher():
@@ -37,8 +40,10 @@ def researcher_required(f):
                     "error.html",
                     code=403,
                     message="You must be a researcher to view this page, "
-                            "<a href='https://soteria.osg-htc.org/researcher-registration'>apply now!</a>"
-                ), 403)
+                    "<a href='https://soteria.osg-htc.org/researcher-registration'>apply now!</a>",
+                ),
+                403,
+            )
 
         return f()
 
@@ -53,11 +58,9 @@ def admin_required(f):
         if not is_soteria_admin():
             return flask.make_response(
                 flask.render_template(
-                    "error.html",
-                    code=403,
-                    message="You must be a admin to view this page."
+                    "error.html", code=403, message="You must be a admin to view this page."
                 ),
-                403
+                403,
             )
 
         return f()

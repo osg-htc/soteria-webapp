@@ -16,7 +16,6 @@ class FreshDeskAPI:
     """
 
     def __init__(self, api_key: str):
-
         self.session = requests.Session()
         self.api_key = api_key
 

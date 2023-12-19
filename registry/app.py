@@ -10,9 +10,9 @@ import flask
 import flask_assets  # type: ignore[import]
 
 import registry.api.debug
+import registry.api.harbor
 import registry.api.v1
 import registry.cli
-import registry.api.harbor
 import registry.public
 import registry.util
 import registry.website

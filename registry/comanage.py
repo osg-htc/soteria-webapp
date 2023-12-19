@@ -152,9 +152,7 @@ class COmanageAPI(registry.api_client.GenericAPI):
         coperson_id: Optional[int] = None,
     ):
         if co_group_id is not None and coperson_id is not None:
-            raise ValueError(
-                "co_group_id and coperson_id must be used exclusively"
-            )
+            raise ValueError("co_group_id and coperson_id must be used exclusively")
 
         params = {"cogroupid": co_group_id, "copersonid": coperson_id}
 

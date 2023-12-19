@@ -3,6 +3,8 @@ import logging
 import requests
 from flask_wtf import FlaskForm
 from wtforms import (
+    BooleanField,
+    IntegerField,
     RadioField,
     SelectField,
     SelectMultipleField,
@@ -10,8 +12,6 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     TimeField,
-    IntegerField,
-    BooleanField
 )
 from wtforms.validators import (
     URL,
@@ -27,14 +27,13 @@ from wtforms.validators import (
 from registry.util import (
     create_project,
     create_starter_project,
-    has_starter_project,
     get_admin_harbor_api,
     get_freshdesk_api,
     get_harbor_projects,
     get_harbor_user,
-    is_soteria_researcher,
+    has_starter_project,
     is_registered,
-    get_harbor_projects
+    is_soteria_researcher,
 )
 
 requirement_choices = [
@@ -57,14 +56,9 @@ def validate_visibility(form, field):
     users_projects = get_harbor_projects(owner=True)
 
     public_projects = list(filter(project_is_public, users_projects))
-    private_projects = list(
-        filter(lambda x: not project_is_public(x), users_projects)
-    )
+    private_projects = list(filter(lambda x: not project_is_public(x), users_projects))
 
-    if (
-        field.data == "private"
-        and len(private_projects) >= MAX_PRIVATE_PROJECTS
-    ):
+    if field.data == "private" and len(private_projects) >= MAX_PRIVATE_PROJECTS:
         raise ValidationError(
             f"You have reached the maximum allocation of Private Projects, contact support@osg-htc.org for more."
         )
@@ -81,7 +75,6 @@ class CreateStarterProjectForm(FlaskForm):
     submit = SubmitField("Create Starter")
 
     def validate(self, extra_validators=None):
-
         if not is_registered() or has_starter_project():
             return False
 
@@ -113,39 +106,25 @@ class CreateProjectForm(FlaskForm):
         return True
 
     def submit_request(self):
-        return create_project(
-            self.project_name.data, self.visibility.data == "public"
-        )
+        return create_project(self.project_name.data, self.visibility.data == "public")
 
 
 class ResearcherApprovalForm(FlaskForm):
-    email = StringField(
-        "Institute Affiliated Email", validators=[InputRequired()]
-    )
+    email = StringField("Institute Affiliated Email", validators=[InputRequired()])
     criteria = SelectField(
         "Requirement Met",
         choices=requirement_choices,
         validators=[InputRequired()],
     )
 
-    b_website_url = StringField(
-        "Website URL", validators=[URL(), InputRequired()]
-    )
-    b_publication_doi = StringField(
-        "Publication DOI", validators=[InputRequired()]
-    )
+    b_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
+    b_publication_doi = StringField("Publication DOI", validators=[InputRequired()])
 
     c_grant_number = StringField("Grant Number", validators=[InputRequired()])
-    c_funding_agency = StringField(
-        "Funding Agency", validators=[InputRequired()]
-    )
+    c_funding_agency = StringField("Funding Agency", validators=[InputRequired()])
 
-    d_website_url = StringField(
-        "Website URL", validators=[URL(), InputRequired()]
-    )
-    d_classification = StringField(
-        "Institution Classification", validators=[InputRequired()]
-    )
+    d_website_url = StringField("Website URL", validators=[URL(), InputRequired()])
+    d_classification = StringField("Institution Classification", validators=[InputRequired()])
 
     submit = SubmitField()
 
@@ -225,10 +204,13 @@ class ResearcherApprovalForm(FlaskForm):
 
 
 class CreateRobotForm(FlaskForm):
-
     project_name = SelectField("Project Name", validators=[InputRequired()])
     robot_name = StringField("Robot Name", validators=[InputRequired()])
-    duration = IntegerField("Expiration (Days)", description="Enter -1 for no expiration", validators=[InputRequired()])
+    duration = IntegerField(
+        "Expiration (Days)",
+        description="Enter -1 for no expiration",
+        validators=[InputRequired()],
+    )
     description = StringField("Description", validators=[InputRequired()])
 
     list_repository = BooleanField("List Repository")

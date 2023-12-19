@@ -2,12 +2,12 @@
 Assorted helper functions.
 """
 
+import datetime
 import logging
 import logging.config
 import logging.handlers
 import pathlib
 import re
-import datetime
 from typing import Any, Literal, Optional
 
 import flask
@@ -17,7 +17,7 @@ import registry.comanage
 import registry.freshdesk
 import registry.harbor
 from registry.cache import cache
-from registry.harbor import HarborRoleID, Harbor, GIBIBYTE
+from registry.harbor import GIBIBYTE, Harbor, HarborRoleID
 
 __all__ = [
     "configure_logging",
@@ -52,9 +52,7 @@ def configure_logging(filename: pathlib.Path) -> None:
     logging.config.dictConfig(
         {
             "version": 1,
-            "formatters": {
-                "default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}
-            },
+            "formatters": {"default": {"format": LOG_FORMAT, "datefmt": LOG_DATE_FORMAT}},
             "handlers": {
                 "rotating_file": {
                     "class": "logging.handlers.RotatingFileHandler",
@@ -82,6 +80,7 @@ def configure_logging(filename: pathlib.Path) -> None:
 #
 # --------------------------------------------------------------------------
 #
+
 
 def update_request_environ() -> None:
     """
@@ -140,9 +139,7 @@ def get_comanage_groups():
 def get_coperson_id():
     """Get the Comanage Person id for the current user"""
     comanage_api = get_admin_comanage_api()
-    return comanage_api.get_persons(identifier=get_sub()).json()["CoPeople"][0][
-        "Id"
-    ]
+    return comanage_api.get_persons(identifier=get_sub()).json()["CoPeople"][0]["Id"]
 
 
 def get_subiss() -> Optional[str]:
@@ -199,7 +196,13 @@ def get_harbor_user_by_subiss(subiss: str) -> Any:
     return None
 
 
-def get_harbor_projects(owner: bool = False, maintainer: bool = False, developer: bool = False, guest: bool = False, temporary: bool = False) -> Any:
+def get_harbor_projects(
+    owner: bool = False,
+    maintainer: bool = False,
+    developer: bool = False,
+    guest: bool = False,
+    temporary: bool = False,
+) -> Any:
     """Returns the users harbor projects - O(n)"""
 
     comanage_api = registry.util.get_admin_comanage_api()
@@ -208,7 +211,7 @@ def get_harbor_projects(owner: bool = False, maintainer: bool = False, developer
     coperson_id = registry.util.get_coperson_id()
 
     comanage_groups = comanage_api.get_groups(coperson_id=coperson_id).json()["CoGroups"]
-    comanage_group_names = map(lambda x: x['Name'], comanage_groups)
+    comanage_group_names = map(lambda x: x["Name"], comanage_groups)
 
     patterns = []
 
@@ -253,9 +256,7 @@ def create_starter_project():
 
     coperson_id = registry.util.get_coperson_id()
 
-    project_expiration_date = datetime.datetime.now() + datetime.timedelta(
-        days=30
-    )
+    project_expiration_date = datetime.datetime.now() + datetime.timedelta(days=30)
 
     registry.util.create_permission_group(
         group_name=f"soteria-{projectname}-temporary",
@@ -294,7 +295,7 @@ def create_project(name: str, public: bool):
             harbor_role_id=HarborRoleID.MAINTAINER,
             comanage_person_id=coperson_id,
             comanage_group_member=True,
-            comanage_group_owner=False
+            comanage_group_owner=False,
         )
         create_permission_group(
             group_name=f"soteria-{name}-maintainers",
@@ -302,7 +303,7 @@ def create_project(name: str, public: bool):
             harbor_role_id=HarborRoleID.MAINTAINER,
             comanage_person_id=coperson_id,
             comanage_group_member=True,
-            comanage_group_owner=True
+            comanage_group_owner=True,
         )
         create_permission_group(
             group_name=f"soteria-{name}-developers",
@@ -310,7 +311,7 @@ def create_project(name: str, public: bool):
             harbor_role_id=HarborRoleID.DEVELOPER,
             comanage_person_id=coperson_id,
             comanage_group_member=True,
-            comanage_group_owner=True
+            comanage_group_owner=True,
         )
         create_permission_group(
             group_name=f"soteria-{name}-guests",
@@ -318,7 +319,7 @@ def create_project(name: str, public: bool):
             harbor_role_id=HarborRoleID.GUEST,
             comanage_person_id=coperson_id,
             comanage_group_member=True,
-            comanage_group_owner=True
+            comanage_group_owner=True,
         )
     except Exception as error:
         flask.current_app.logger.error(error)
@@ -327,13 +328,13 @@ def create_project(name: str, public: bool):
 
 
 def create_permission_group(
-        group_name: str,
-        project_name: str,
-        harbor_role_id: HarborRoleID,
-        comanage_person_id: int,
-        comanage_group_member: bool,
-        comanage_group_owner: bool,
-        valid_through: Optional[datetime.datetime] = None
+    group_name: str,
+    project_name: str,
+    harbor_role_id: HarborRoleID,
+    comanage_person_id: int,
+    comanage_group_member: bool,
+    comanage_group_owner: bool,
+    valid_through: Optional[datetime.datetime] = None,
 ):
     """
     Creates a permissions group and assign provides access to the provided COmanage person
@@ -344,9 +345,7 @@ def create_permission_group(
 
     # Create Group in Harbor
     response = harbor_api.create_project_member(
-        project_id_or_name=project_name,
-        role=harbor_role_id,
-        group_name=group_name
+        project_id_or_name=project_name, role=harbor_role_id, group_name=group_name
     )
 
     if not response.ok:
@@ -366,7 +365,7 @@ def create_permission_group(
         comanage_person_id,
         member=comanage_group_member,
         owner=comanage_group_owner,
-        valid_through=valid_through
+        valid_through=valid_through,
     )
 
     if not response.ok:
@@ -380,11 +379,10 @@ def get_comanage_person():
     comanage_person = comanage_api.get_persons(identifier=get_sub()).json()
 
     if len(comanage_person["CoPeople"]) == 0:
-        raise LookupError(
-            "Could not find a Comanage account associated with this user"
-        )
+        raise LookupError("Could not find a Comanage account associated with this user")
 
     return comanage_person["CoPeople"][0]
+
 
 def get_email():
     """
@@ -419,7 +417,9 @@ def get_sub() -> Optional[str]:
     return flask.request.environ.get("OIDC_CLAIM_sub")
 
 
-def get_status() -> Literal["Researcher", "Member", "Affiliate", "Registration Incomplete", None]:
+def get_status() -> (
+    Literal["Researcher", "Member", "Affiliate", "Registration Incomplete", None]
+):
     if is_soteria_researcher():
         return "Researcher"
     elif is_soteria_member():
@@ -477,14 +477,21 @@ def get_starter_project_name():
 
 @cache.memoize()
 def has_starter_project():
-    starter_project = registry.util.get_admin_harbor_api().get_project(registry.util.get_starter_project_name()).json()
-    return not ('errors' in starter_project and starter_project['errors'][0]['code'] == 'NOT_FOUND')
+    starter_project = (
+        registry.util.get_admin_harbor_api()
+        .get_project(registry.util.get_starter_project_name())
+        .json()
+    )
+    return not (
+        "errors" in starter_project and starter_project["errors"][0]["code"] == "NOT_FOUND"
+    )
 
 
 def has_organizational_identity() -> bool:
     groups = get_comanage_groups()
 
     return "CO:members:all" in groups
+
 
 def is_registered() -> bool:
     orcid_id = get_orcid_id()
@@ -566,6 +573,4 @@ def get_freshdesk_api() -> registry.freshdesk.FreshDeskAPI:
     """
     Returns a Freshdesk API instance.
     """
-    return registry.freshdesk.FreshDeskAPI(
-        flask.current_app.config["FRESHDESK_API_KEY"]
-    )
+    return registry.freshdesk.FreshDeskAPI(flask.current_app.config["FRESHDESK_API_KEY"])

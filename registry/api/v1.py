@@ -66,9 +66,7 @@ def make_ok_response(data: DataObject) -> flask.Response:
 
 
 def make_error_response(code: int, message: str) -> flask.Response:
-    response = ErrorResponse(
-        "errors", [{"code": str(code), "message": message}]
-    )
+    response = ErrorResponse("errors", [{"code": str(code), "message": message}])
     if 400 <= code < 600:
         return flask.make_response(dataclasses.asdict(response), code)
     return flask.make_response(dataclasses.asdict(response))
@@ -99,9 +97,7 @@ def ping():
 
 @bp.route("/version")
 def version() -> flask.Response:
-    version_string = flask.current_app.config.get(
-        "SOTERIA_VERSION", "<not set>"
-    )
+    version_string = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")
 
     return make_ok_response({"version": version_string})
 
@@ -147,9 +143,7 @@ def check_user_harbor_id(user_id: str):
     flask.current_app.logger.info("Subiss Below:")
     flask.current_app.logger.info(registry.util.get_subiss())
 
-    cache.delete_memoized(
-        registry.util.get_harbor_user_by_subiss, registry.util.get_subiss()
-    )
+    cache.delete_memoized(registry.util.get_harbor_user_by_subiss, registry.util.get_subiss())
     harbor_user = registry.util.get_harbor_user()
 
     username = harbor_user["username"] if harbor_user else None
@@ -185,11 +179,7 @@ def get_projects(user_id: str):
 
     return flask.jsonify(
         registry.util.get_harbor_projects(
-            owner=True,
-            maintainer=True,
-            developer=True,
-            guest=True,
-            temporary=True
+            owner=True, maintainer=True, developer=True, guest=True, temporary=True
         )
     )
 
@@ -201,14 +191,11 @@ def webhook_for_harbor():
     if (
         auth
         and auth.type.lower() == "bearer"
-        and auth.token
-        == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
+        and auth.token == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
     ):
         payload = flask.request.get_json()
 
-        flask.current_app.logger.info(
-            f"Webhook called from Harbor: {json.dumps(payload)}"
-        )
+        flask.current_app.logger.info(f"Webhook called from Harbor: {json.dumps(payload)}")
 
         return make_ok_response({"message": "webhook completed succesfully"})
 
