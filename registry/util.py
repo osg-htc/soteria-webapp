@@ -174,10 +174,10 @@ def get_harbor_user():
         subiss,
     )
 
-    if not harbor_user and (email and subiss):
+    if not harbor_user and subiss and email:
         harbor_user = Harbor(harbor_api=api).search_for_user(email=email, subiss=subiss)
 
-    if not harbor_user:
+    if not harbor_user and subiss:
         harbor_user = get_harbor_user_by_subiss(subiss)
 
     return harbor_user
