@@ -84,10 +84,10 @@ TraceEnable Off
 
   ## Configure WSGI.
 
-  WSGIDaemonProcess WebApp display-name=WebApp processes=2 home=/srv
+  WSGIDaemonProcess WebApp display-name=WebApp processes=1 home=/srv  # limit to one Python interpreter
   WSGIProcessGroup WebApp
   WSGIScriptAlias / "/srv/wsgi.py"
-  WSGIPassAuthorization On
+  WSGIPassAuthorization On  # required by SOTERIA's webhooks
 
   ## Configure OIDC.
 
