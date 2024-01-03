@@ -83,11 +83,12 @@ TraceEnable Off
   SSLCertificateChainFile "/certs/tls.crt"
 
   ## Configure WSGI.
+  ## Limit to one Python interpreter. Pass auth info to webhooks.
 
-  WSGIDaemonProcess WebApp display-name=WebApp processes=1 home=/srv  # limit to one Python interpreter
+  WSGIDaemonProcess WebApp display-name=WebApp processes=1 home=/srv
   WSGIProcessGroup WebApp
   WSGIScriptAlias / "/srv/wsgi.py"
-  WSGIPassAuthorization On  # required by SOTERIA's webhooks
+  WSGIPassAuthorization On
 
   ## Configure OIDC.
 
