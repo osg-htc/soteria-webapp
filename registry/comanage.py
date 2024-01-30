@@ -1,6 +1,7 @@
 """
 Wrapper for COmanage's API.
 """
+
 import datetime
 from typing import Literal, Optional, Tuple
 
