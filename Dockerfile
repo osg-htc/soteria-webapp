@@ -44,7 +44,7 @@ RUN true \
     && dnf install -y \
         https://research.cs.wisc.edu/htcondor/repo/current/htcondor-release-current.el9.noarch.rpm \
     && dnf install -y \
-        condor \
+        condor python3-condor \
     && dnf clean all \
     && rm -rf /etc/httpd/conf.d/* /var/cache/dnf/* \
     #
