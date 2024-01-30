@@ -40,6 +40,7 @@ RUN true \
         procps \
         ${PY_PKG}-pip \
         ${PY_PKG}-mod_wsgi \
+        redis \
         supervisor \
     && dnf install -y \
         https://research.cs.wisc.edu/htcondor/repo/current/htcondor-release-current.el9.noarch.rpm \
