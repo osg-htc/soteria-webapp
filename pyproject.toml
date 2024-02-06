@@ -8,7 +8,7 @@ requires = ["poetry-core>=1.0.0"]
 
 [tool.black]
 line-length = 96
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312"]
 
 
 [tool.isort]
@@ -52,7 +52,7 @@ packages = [{ include = "registry" }]
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.10"
+python = "^3.9"
 Flask = "~3.0"
 Flask-Assets = "~2.1"
 Flask-Caching = "~2.1"
@@ -60,18 +60,17 @@ Flask-WTF = "~1.2"
 ldap3 = "~2.9"
 libsass = "~0.22"
 requests = "~2.31"
-typing-extensions = "~4.8"
+typing-extensions = "~4.9"
 
 
 [tool.poetry.group.dev.dependencies]
 bandit = "~1.7"
-black = "~23.11"
+black = "~24.1"
 docutils = "~0.20"
-isort = "~5.12"
-mypy = "~1.7"
-pre-commit = "~3.5"
+isort = "~5.13"
+mypy = "~1.8"
+pre-commit = "~3.6"
 pylint = "~3.0"
-"ruamel.yaml.cmd" = "~0.6"
 safety = "~2.3"
 types-requests = "~2.31"
 
