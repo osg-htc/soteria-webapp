@@ -52,7 +52,7 @@ TraceEnable Off
 
   ## ...but relax restrictions on public and static content...
 
-  <LocationMatch "^(/|/about)$">
+  <LocationMatch "^(/|/about|/health)$">
     Require all granted
     AuthType none
   </LocationMatch>
