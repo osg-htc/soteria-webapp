@@ -95,14 +95,6 @@ def ping():
     return make_ok_response({"message": "pong!"})
 
 
-@bp.route("/health")
-def health() -> flask.Response:
-    """
-    Confirms that the web application is functioning at some minimal level.
-    """
-    return make_ok_response({"health": "Responding to requests"})
-
-
 @bp.route("/version")
 def version() -> flask.Response:
     version_string = flask.current_app.config.get("SOTERIA_VERSION", "<not set>")

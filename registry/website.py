@@ -161,12 +161,12 @@ def nsf_report():
     return flask.render_template("/admin/statistics.html", statistics=statistics)
 
 
-@bp.route("/status")
-def status() -> flask.Response:
+@bp.route("/health")
+def health() -> flask.Response:
     """
     Checks the application's health and status.
     """
-    return flask.make_response("No-op ok!")
+    return flask.make_response("Ok!")
 
 
 @bp.route("/projects")
