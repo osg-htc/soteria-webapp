@@ -1,5 +1,5 @@
-# This Makefile is less a build system and more a means of making running
-# some development tasks more convenient.
+# This Makefile is less a build system and more a means of making
+# the running of some development tasks more convenient.
 
 include .env
 
