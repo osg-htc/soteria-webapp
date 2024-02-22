@@ -207,10 +207,15 @@ class HarborAPI(registry.api_client.GenericAPI):
 
     def get_project(self, project_id_or_name: Union[int, str]):
         """
-        Get a new project, either by ID or by name.
+        Get a project, either by ID or by name.
         """
-
         return self._get(f"/projects/{project_id_or_name}")
+
+    def get_project_summary(self, project_id_or_name: Union[int, str]):
+        """
+        Get a project's summary, either by ID or by name.
+        """
+        return self._get(f"/projects/{project_id_or_name}/summary")
 
     def get_all_projects(self, **kwargs) -> typing.Generator[dict, None, None]:
         """

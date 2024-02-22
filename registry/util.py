@@ -239,7 +239,10 @@ def get_harbor_projects(
 
     projects = []
     for project_name in project_names:
-        projects.append(harbor_api.get_project(project_name).json())
+        data = harbor_api.get_project(project_name).json()
+        summary = harbor_api.get_project_summary(project_name).json()
+        data["quota"] = summary["quota"]
+        projects.append(data)
 
     return projects
 

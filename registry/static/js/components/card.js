@@ -53,10 +53,43 @@ export const ProjectCard = ({
     update_time,
     chart_count,
     creation_time,
+    quota,
     ...props
 }) => {
     let localeUpdateTime = new Date(Date.parse(update_time)).toLocaleString("en-US")
     let localeCreationTime = new Date(Date.parse(creation_time)).toLocaleString("en-US")
+
+    let quotaDetails = null
+    let usedGiB = -1
+    let limitGiB = -1
+
+    if (quota && "used" in quota && "storage" in quota.used) {
+      let usedBytes = quota.used.storage
+      usedGiB = Math.round(usedBytes / 1024 / 1024 / 1024 * 100) / 100
+    }
+    if (quota && "hard" in quota && "storage" in quota.hard) {
+      let limitBytes = quota.hard.storage
+      limitGiB = Math.round(limitBytes / 1024 / 1024 / 1024 * 100) / 100
+    }
+
+    if (usedGiB > 0 && limitGiB > 0) {
+      quotaDetails = `Used ${usedGiB} GiB out of ${limitGiB} GiB`
+    }
+    else if (usedGiB > 0) {
+      quotaDetails = `Used ${usedGiB} GiB`
+    }
+
+    if (quotaDetails) {
+      quotaDetails = h("div", {className: "row gx-2"}, ...[
+                        h(ImageTextRow, {
+                            className: "col-auto",
+                            src: "/static/images/icons/database-fill.svg",
+                            alt: "Download Graphic",
+                            tag: "h6",
+                            text: quotaDetails,
+                        })
+                    ])
+    }
 
     return (
         h("a", {href: href, className:"text-decoration-none"},
@@ -102,7 +135,8 @@ export const ProjectCard = ({
                             tag: "h6",
                             text: `Created ${localeCreationTime}`
                         }),
-                    ])
+                    ]),
+                    quotaDetails
                 ])
             )
         )
