@@ -58,19 +58,19 @@ Flask-Assets = "~2.1"
 Flask-Caching = "~2.1"
 Flask-WTF = "~1.2"
 ldap3 = "~2.9"
-libsass = "~0.22"
+libsass = "~0.23"
 requests = "~2.31"
-typing-extensions = "~4.9"
+typing-extensions = "~4.10"
 
 
 [tool.poetry.group.dev.dependencies]
 bandit = "~1.7"
-black = "~24.2"
+black = "~24.3"
 docutils = "~0.20"
 isort = "~5.13"
-mypy = "~1.8"
-pre-commit = "~3.6"
-pylint = "~3.0"
+mypy = "~1.9"
+pre-commit = "~3.7"
+pylint = "~3.1"
 types-requests = "~2.31"
 
 

@@ -120,5 +120,5 @@ secrets/tls.crt secrets/tls.key:
 	  -subj "/CN=localhost" \
 	  -newkey rsa:4096 \
 	  -out secrets/tls.crt -keyout secrets/tls.key \
-	  -days 365 -nodes -sha256 \
+	  -days 1024 -nodes -sha256 \
 	  -extensions san -config secrets/tls.req
