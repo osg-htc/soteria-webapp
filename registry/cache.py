@@ -1,3 +1,9 @@
-from flask_caching import Cache
+"""
+Use a local Python dictionary as a cache.
+"""
 
-cache = Cache(config={"CACHE_TYPE": "SimpleCache"})
+import flask_caching
+
+__all__ = ["cache"]
+
+cache = flask_caching.Cache(config={"CACHE_TYPE": "SimpleCache"})

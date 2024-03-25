@@ -3,7 +3,7 @@ Base class for a wrapper around a REST API.
 """
 
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 
 import requests
 
@@ -21,10 +21,10 @@ class GenericAPI:
     def __init__(
         self,
         api_base_url: str,
-        basic_auth: Optional[Tuple[str, str]] = None,
+        basic_auth: Optional[tuple[str, str]] = None,
     ):
         """
-        Constructs a wrapper that uses the provided credentials.
+        Construct a wrapper that uses the provided credentials.
 
         If a username and password are provided via `basic_auth`, API calls
         will be made using Basic authentication.
@@ -47,7 +47,7 @@ class GenericAPI:
 
     def _request(self, method: str, url: str, **kwargs) -> requests.Response:
         """
-        Logs and sends an HTTP request.
+        Log and send an HTTP request.
 
         Keyword arguments are passed through unmodified to the `requests`
         library's `request` method. If the response contains an error
@@ -78,28 +78,33 @@ class GenericAPI:
 
     def _delete(self, route: str, **kwargs) -> requests.Response:
         """
-        Logs and sends an HTTP DELETE request for the given route.
+        Log and send an HTTP DELETE request for the given route.
         """
         self._renew_session()
-
         return self._request("DELETE", f"{self._api_base_url}{route}", **kwargs)
 
     def _get(self, route: str, **kwargs) -> requests.Response:
         """
-        Logs and sends an HTTP GET request for the given route.
+        Log and send an HTTP GET request for the given route.
         """
         return self._request("GET", f"{self._api_base_url}{route}", **kwargs)
 
     def _head(self, route: str, **kwargs) -> requests.Response:
         """
-        Logs and sends an HTTP HEAD request for the given route.
+        Log and send an HTTP HEAD request for the given route.
         """
         return self._request("HEAD", f"{self._api_base_url}{route}", **kwargs)
 
-    def _post(self, route: str, **kwargs) -> requests.Response:
+    def _patch(self, route: str, **kwargs) -> requests.Response:
         """
-        Logs and sends an HTTP POST request for the given route.
+        Log and send an HTTP PATCH request for the given route.
         """
         self._renew_session()
+        return self._request("PATCH", f"{self._api_base_url}{route}", **kwargs)
 
+    def _post(self, route: str, **kwargs) -> requests.Response:
+        """
+        Log and send an HTTP POST request for the given route.
+        """
+        self._renew_session()
         return self._request("POST", f"{self._api_base_url}{route}", **kwargs)
