@@ -35,6 +35,7 @@ clean:
 	rm -rf dist/$(PY_PACKAGE_NAME)-*.whl
 	-rmdir dist/
 
+	rm -rf instance/data
 	rm -rf instance/log
 	-docker image rm soteria-webapp:dev
 
@@ -46,6 +47,7 @@ local: \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
 
+	mkdir -p instance/data
 	mkdir -p instance/log
 
 	# Run `docker compose build --no-cache --pull` manually to ensure

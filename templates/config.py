@@ -11,6 +11,12 @@
 CONTACT_EMAIL = "someone@example.com"
 
 #
+# The directory to use for long-term storage of data.
+# An environment variable of the same name will override the value set here.
+#
+DATA_DIR = "/data"
+
+#
 # The base URL for SOTERIA's online documentation.
 #
 DOCS_URL = "https://soteria.example.com/documentation"

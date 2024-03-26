@@ -33,6 +33,7 @@ services:
         target: /certs/tls.key
 
     volumes:
+      - ${PWD}/instance/data:/data
       - ${PWD}/instance/log:/srv/instance/log
 
 secrets:

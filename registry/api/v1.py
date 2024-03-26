@@ -194,9 +194,11 @@ def webhook_for_harbor():
         and auth.token == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
     ):
         payload = flask.request.get_json()
+        payload_as_msg = json.dumps(payload, indent=2)
+        payload_as_text = json.dumps(payload, separators=(",", ":"))
 
-        flask.current_app.logger.info(f"Webhook called from Harbor: {json.dumps(payload)}")
-
+        flask.current_app.logger.info(f"Webhook called from Harbor: {payload_as_msg}")
+        registry.database.insert_new_payload(payload_as_text)
         return make_ok_response({"message": "webhook completed succesfully"})
 
     return make_error_response(401, "Missing authorization")

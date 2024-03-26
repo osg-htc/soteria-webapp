@@ -32,7 +32,6 @@ RUN true \
     && dnf update -y \
     && dnf install -y --allowerasing \
         ca-certificates \
-        curl \
         glibc-langpack-en \
         httpd \
         mod_auth_openidc \
@@ -40,6 +39,7 @@ RUN true \
         procps \
         ${PY_PKG}-pip \
         ${PY_PKG}-mod_wsgi \
+        sqlite \
         supervisor \
     && dnf install -y \
         https://research.cs.wisc.edu/htcondor/repo/current/htcondor-release-current.el9.noarch.rpm \
@@ -61,13 +61,18 @@ RUN ${PY_EXE} -m pip install --ignore-installed --no-cache-dir -r /srv/requireme
 COPY registry /srv/registry/
 COPY set_version.py wsgi.py /srv/
 
-RUN (cd /srv/ && env FLASK_APP="registry" ${PY_EXE} -m flask assets build) \
+RUN true \
     #
-    && find /srv/ -name ".*" -exec rm -rf {} \; -prune \
+    && pushd /srv \
+    && env DATA_DIR=/tmp FLASK_APP=registry ${PY_EXE} -m flask assets build \
+    && popd \
     #
     && rm -rf /srv/instance/* \
+    && rm -rf /tmp/* \
     && chown apache:apache /srv/instance/ \
-    && ${PY_EXE} /srv/set_version.py
+    #
+    && ${PY_EXE} /srv/set_version.py \
+    && true
 
 # Configure container startup.
 

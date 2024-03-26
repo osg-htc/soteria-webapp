@@ -7,12 +7,13 @@ import pathlib
 from typing import Any, Dict
 
 import flask
-import flask_assets  # type: ignore[import]
+import flask_assets  # type: ignore[import-untyped]
 
 import registry.api.debug
 import registry.api.harbor
 import registry.api.v1
 import registry.cli
+import registry.database
 import registry.public
 import registry.util
 import registry.website
@@ -32,15 +33,16 @@ def load_config(app: flask.Flask) -> None:
         app.config.from_pyfile(os.fspath(p))
 
     for key in [
+        "DATA_DIR",
         "FRESHDESK_API_KEY",
         "HARBOR_ADMIN_PASSWORD",
         "HARBOR_ADMIN_USERNAME",
-        "REGISTRY_API_USERNAME",
-        "REGISTRY_API_PASSWORD",
         "LDAP_BASE_DN",
         "LDAP_PASSWORD",
         "LDAP_URL",
         "LDAP_USERNAME",
+        "REGISTRY_API_PASSWORD",
+        "REGISTRY_API_USERNAME",
         "SECRET_KEY",
         "WEBHOOKS_HARBOR_BEARER_TOKEN",
     ]:
@@ -134,14 +136,9 @@ def create_app() -> flask.Flask:
     define_assets(app)
     add_context_processor(app)
 
+    registry.database.init(app)
     cache.init_app(app)
 
     app.logger.info("Created and configured app!")
 
     return app
-
-
-# Use to test locally
-if __name__ == "__main__":
-    app = create_app()
-    app.run(debug=True, use_reloader=True, port=9876)
