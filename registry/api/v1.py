@@ -3,7 +3,6 @@ SOTERIA API version 1.
 """
 
 import dataclasses
-import datetime
 import json
 from typing import Any, Dict, List, Optional, Union
 
@@ -12,7 +11,6 @@ from typing_extensions import Literal
 
 import registry.util
 from registry.cache import cache
-from registry.harbor import HarborRoleID
 
 __all__ = ["bp"]
 
@@ -186,6 +184,9 @@ def get_projects(user_id: str):
 
 @bp.route("/webhooks/harbor", methods=["POST"])
 def webhook_for_harbor():
+    """
+    Process a notification from the associated Harbor instance.
+    """
     auth = flask.request.authorization
 
     if (
@@ -194,11 +195,10 @@ def webhook_for_harbor():
         and auth.token == flask.current_app.config["WEBHOOKS_HARBOR_BEARER_TOKEN"]
     ):
         payload = flask.request.get_json()
-        payload_as_msg = json.dumps(payload, indent=2)
-        payload_as_text = json.dumps(payload, separators=(",", ":"))
+        payload_as_text = json.dumps(payload, indent=2)
 
-        flask.current_app.logger.info(f"Webhook called from Harbor: {payload_as_msg}")
-        registry.database.insert_new_payload(payload_as_text)
+        flask.current_app.logger.info(f"Webhook called from Harbor:\n{payload_as_text}")
+        registry.database.insert_new_payload(payload)
         return make_ok_response({"message": "webhook completed succesfully"})
 
-    return make_error_response(401, "Missing authorization")
+    return make_error_response(401, "Unauthorized")

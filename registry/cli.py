@@ -5,11 +5,15 @@ SOTERIA command-line interface.
 import click
 import flask
 
+import registry.database
 import registry.util
 
 __all__ = ["bp"]
 
 bp = flask.Blueprint("command_line_interface", __name__)
+
+
+# --------------------------------------------------------------------------
 
 
 @bp.cli.command("list-all-projects")
@@ -52,3 +56,18 @@ def set_all_project_webhooks() -> None:
 
     for p in api.get_all_projects():
         harbor.set_webhooks(p["project_id"])
+
+
+# --------------------------------------------------------------------------
+
+
+@bp.cli.command("reinitialize-database")
+def reinitialize_database() -> None:
+    """
+    (Re)Initialize the web application's database.
+
+    This should be necessary only in the event that the database was removed
+    after the application instance was created, e.g., during development and
+    testing.
+    """
+    registry.database.init(flask.current_app)

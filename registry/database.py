@@ -6,8 +6,12 @@ the associated Harbor instance, as well as a mechanism for tracking HTCondor
 jobs that process those payloads.
 """
 
+import enum
+import json
 import pathlib
 import sqlite3
+import time
+from typing import Any, Optional
 
 import flask
 
@@ -17,50 +21,126 @@ __all__ = [
     "insert_new_payload",
 ]
 
+# Path to the database file, relative to the web application's data directory.
 DB_FILE = "database/soteria.sqlite"
 
 
-def get_db_conn() -> sqlite3.Connection:
+class AccessKind(enum.Enum):
     """
-    Create a connection object to the database.
+    Categorize the resources listed in a webhook payload.
     """
-    return sqlite3.connect(pathlib.Path(flask.current_app.config["DATA_DIR"]) / DB_FILE)
+
+    private = "private"
+    public = "public"
+    public_and_tagged = "public+tagged"
+
+
+class State(enum.Enum):
+    """
+    Categorize how a webhook payload has been evaluated.
+    """
+
+    new = "new"
+    completed = "completed"
+    failed = "failed"
+    skipped = "skipped"
+
+
+# --------------------------------------------------------------------------
+
+
+def is_public(payload) -> bool:
+    """
+    Determine whether a webhook payload is for a public repository.
+    """
+    return bool("public" == payload["event_data"]["repository"]["repo_type"])
+
+
+def is_tagged_resource(resource_payload) -> bool:
+    """
+    Determine whether a resource in a webhook payload is "tagged."
+    """
+    tag = resource_payload["tag"]
+    return tag != "latest" and not tag.startswith("sha256:")
+
+
+def has_tagged_resource(payload) -> bool:
+    """
+    Determine whether a webhook payload has at least one tagged resource.
+    """
+    return any(is_tagged_resource(r) for r in payload["event_data"]["resources"])
+
+
+# --------------------------------------------------------------------------
+
+
+def get_db_file(app: Optional[flask.Flask] = None) -> pathlib.Path:
+    """
+    Return the path to the database file.
+    """
+    if not app:
+        app = flask.current_app
+    return pathlib.Path(app.config["DATA_DIR"]) / DB_FILE
+
+
+def get_db_conn(app: Optional[flask.Flask] = None) -> sqlite3.Connection:
+    """
+    Return a new connection object to the database.
+    """
+    return sqlite3.connect(get_db_file(app))
 
 
 def init(app: flask.Flask) -> None:
     """
     Ensure that the database exists and has the required tables and columns.
     """
-    db_file = pathlib.Path(app.config["DATA_DIR"]) / DB_FILE
+    db_file = get_db_file(app)
     db_file.parent.mkdir(parents=True, exist_ok=True)
 
     if not db_file.exists():
         db_file.touch()
-    with sqlite3.connect(db_file) as conn:
+    with get_db_conn(app) as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS webhook_payloads
             (
               id INTEGER PRIMARY KEY
             , payload TEXT
+            , access_kind TEXT
+            , state TEXT
+            , created_on INT
+            , updated_on INT
             )
             """,
         )
         conn.commit()
 
 
-def insert_new_payload(data: str) -> None:
+def insert_new_payload(payload: dict[Any, Any]) -> None:
     """
     Add a new webhook payload to the database.
     """
+    if is_public(payload):
+        if has_tagged_resource(payload):
+            access_kind = AccessKind.public_and_tagged
+        else:
+            access_kind = AccessKind.public
+    else:
+        access_kind = AccessKind.private
+
     with get_db_conn() as conn:
         conn.execute(
             """
             INSERT INTO webhook_payloads
-            ( payload )
+            ( payload, access_kind, state, created_on )
             VALUES
-            ( :payload )
+            ( :payload, :access_kind, :state, :created_on )
             """,
-            {"payload": data},
+            {
+                "payload": json.dumps(payload, separators=(",", ":")),
+                "access_kind": access_kind.value,
+                "state": State.new.value,
+                "created_on": int(time.time()),
+            },
         )
         conn.commit()
