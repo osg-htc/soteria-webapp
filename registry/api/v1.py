@@ -9,8 +9,10 @@ from typing import Any, Dict, List, Optional, Union
 import flask
 from typing_extensions import Literal
 
+import registry.database
 import registry.util
 from registry.cache import cache
+from registry.database import Source
 
 __all__ = ["bp"]
 
@@ -198,7 +200,7 @@ def webhook_for_harbor():
         payload_as_text = json.dumps(payload, indent=2)
 
         flask.current_app.logger.info(f"Webhook called from Harbor:\n{payload_as_text}")
-        registry.database.insert_new_payload(payload)
+        registry.database.insert_new_payload(payload, Source.harbor)
         return make_ok_response({"message": "webhook completed succesfully"})
 
     return make_error_response(401, "Unauthorized")

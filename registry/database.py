@@ -6,19 +6,28 @@ the associated Harbor instance, as well as a mechanism for tracking HTCondor
 jobs that process those payloads.
 """
 
+import dataclasses
 import enum
 import json
 import pathlib
 import sqlite3
 import time
+from collections.abc import Generator
 from typing import Any, Optional
 
 import flask
 
 __all__ = [
+    "AccessKind",
+    "Source",
+    "State",
+    "WebhookPayload",
+    #
     "get_db_conn",
+    "get_new_payloads",
     "init",
     "insert_new_payload",
+    "update_payload",
 ]
 
 # Path to the database file, relative to the web application's data directory.
@@ -35,6 +44,14 @@ class AccessKind(enum.Enum):
     public_and_tagged = "public+tagged"
 
 
+class Source(enum.Enum):
+    """
+    Categorize the source of a webhook payload.
+    """
+
+    harbor = "harbor"
+
+
 class State(enum.Enum):
     """
     Categorize how a webhook payload has been evaluated.
@@ -44,6 +61,31 @@ class State(enum.Enum):
     completed = "completed"
     failed = "failed"
     skipped = "skipped"
+
+
+@dataclasses.dataclass
+class WebhookPayload:
+    """
+    Represent one row in the 'webhook_payloads' table.
+    """
+
+    id_: int
+    payload: dict[Any, Any]
+    source: Source
+    access_kind: AccessKind
+    state: State
+    created_on: int
+    updated_on: int
+
+    def __post_init__(self):
+        """
+        Convert this dataclass instance from its database representation.
+        """
+        if isinstance(self.payload, str):  # type: ignore[unreachable]
+            self.payload = json.loads(self.payload)  # type: ignore[unreachable]
+        self.source = Source(self.source)
+        self.access_kind = AccessKind(self.access_kind)
+        self.state = State(self.state)
 
 
 # --------------------------------------------------------------------------
@@ -106,6 +148,7 @@ def init(app: flask.Flask) -> None:
             (
               id INTEGER PRIMARY KEY
             , payload TEXT
+            , source TEXT
             , access_kind TEXT
             , state TEXT
             , created_on INT
@@ -113,10 +156,16 @@ def init(app: flask.Flask) -> None:
             )
             """,
         )
+        conn.execute(
+            """
+            CREATE INDEX IF NOT EXISTS webhook_payloads_state_index
+            ON webhook_payloads (state)
+            """
+        )
         conn.commit()
 
 
-def insert_new_payload(payload: dict[Any, Any]) -> None:
+def insert_new_payload(payload: dict[Any, Any], source: Source) -> None:
     """
     Add a new webhook payload to the database.
     """
@@ -132,15 +181,52 @@ def insert_new_payload(payload: dict[Any, Any]) -> None:
         conn.execute(
             """
             INSERT INTO webhook_payloads
-            ( payload, access_kind, state, created_on )
+            ( payload, source, access_kind, state, created_on )
             VALUES
-            ( :payload, :access_kind, :state, :created_on )
+            ( :payload, :source, :access_kind, :state, :created_on )
             """,
             {
                 "payload": json.dumps(payload, separators=(",", ":")),
+                "source": source.value,
                 "access_kind": access_kind.value,
                 "state": State.new.value,
                 "created_on": int(time.time()),
+            },
+        )
+        conn.commit()
+
+
+def get_new_payloads() -> Generator[WebhookPayload, None, None]:
+    """
+    Iterate over any "new" webhook payloads in the database.
+    """
+    with get_db_conn() as conn:
+        rows = conn.execute(
+            """
+            SELECT *
+            FROM webhook_payloads
+            WHERE state = 'new'
+            """
+        ).fetchall()
+    for r in rows:
+        yield WebhookPayload(*r)
+
+
+def update_payload(id_: int, state: State) -> None:
+    """
+    Update the state of a webhook payload.
+    """
+    with get_db_conn() as conn:
+        conn.execute(
+            """
+            UPDATE webhook_payloads
+            SET state = :state, updated_on = :updated_on
+            WHERE id = :id
+            """,
+            {
+                "id": id_,
+                "state": state.value,
+                "updated_on": int(time.time()),
             },
         )
         conn.commit()
