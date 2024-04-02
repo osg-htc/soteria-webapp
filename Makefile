@@ -43,6 +43,7 @@ clean:
 
 local: \
 		secrets/config.py \
+		secrets/htcondor.conf secrets/idtoken \
 		secrets/httpd.conf \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
@@ -76,6 +77,18 @@ secrets/config.py:
 	cp templates/config.py $@
 	@echo
 	@echo "ERROR: Please update '$@' with the SOTERIA configuration to use."
+	@echo
+	@exit 1
+
+secrets/htcondor.conf:
+	@echo
+	@echo "ERROR: Please update '$@' with the HTCondor configuration to use."
+	@echo
+	@exit 1
+
+secrets/idtoken:
+	@echo
+	@echo "ERROR: Please update '$@' with the HTCondor IDTOKEN to use."
 	@echo
 	@exit 1
 

@@ -3,7 +3,7 @@ version: "3.0"
 
 services:
 
-  soteria-webapp:
+  soteria:
 
     build:
       context: .
@@ -23,6 +23,10 @@ services:
       - ${SOTERIA_WEBAPP_PORT}:8443
 
     secrets:
+      - source: htcondor-conf
+        target: /etc/condor/config.d/20-soteria.conf
+      - source: htcondor-idtoken
+        target: /tokens.d/idtoken
       - source: httpd-conf
         target: /etc/httpd/conf.d/httpd.conf
       - source: soteria-conf
@@ -37,6 +41,10 @@ services:
       - ${PWD}/instance/log:/srv/instance/log
 
 secrets:
+  htcondor-conf:
+    file: secrets/htcondor.conf
+  htcondor-idtoken:
+    file: secrets/idtoken
   httpd-conf:
     file: secrets/httpd.conf
   soteria-conf:

@@ -67,6 +67,7 @@ RUN true \
     && env DATA_DIR=/tmp FLASK_APP=registry ${PY_EXE} -m flask assets build \
     && popd \
     #
+    && mkdir /tokens.d \
     && rm -rf /srv/instance/* \
     && rm -rf /tmp/* \
     && chown apache:apache /srv/instance/ \
