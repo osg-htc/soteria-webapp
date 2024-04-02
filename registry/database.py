@@ -64,16 +64,17 @@ class State(enum.Enum):
 
 
 @dataclasses.dataclass
-class WebhookPayload:
+class WebhookPayload:  # pylint: disable=too-many-instance-attributes
     """
     Represent one row in the 'webhook_payloads' table.
     """
 
-    id_: int
-    payload: dict[Any, Any]
-    source: Source
+    id_: str
+    resource: str
     access_kind: AccessKind
     state: State
+    payload: dict[Any, Any]
+    source: Source
     created_on: int
     updated_on: int
 
@@ -83,9 +84,9 @@ class WebhookPayload:
         """
         if isinstance(self.payload, str):  # type: ignore[unreachable]
             self.payload = json.loads(self.payload)  # type: ignore[unreachable]
-        self.source = Source(self.source)
         self.access_kind = AccessKind(self.access_kind)
         self.state = State(self.state)
+        self.source = Source(self.source)
 
 
 # --------------------------------------------------------------------------
@@ -98,19 +99,11 @@ def is_public(payload) -> bool:
     return bool("public" == payload["event_data"]["repository"]["repo_type"])
 
 
-def is_tagged_resource(resource_payload) -> bool:
+def is_immutable_tag(tag: str) -> bool:
     """
-    Determine whether a resource in a webhook payload is "tagged."
+    Determine whether a resource's tag should be considered immutable.
     """
-    tag = resource_payload["tag"]
     return tag != "latest" and not tag.startswith("sha256:")
-
-
-def has_tagged_resource(payload) -> bool:
-    """
-    Determine whether a webhook payload has at least one tagged resource.
-    """
-    return any(is_tagged_resource(r) for r in payload["event_data"]["resources"])
 
 
 # --------------------------------------------------------------------------
@@ -146,11 +139,12 @@ def init(app: flask.Flask) -> None:
             """
             CREATE TABLE IF NOT EXISTS webhook_payloads
             (
-              id INTEGER PRIMARY KEY
-            , payload TEXT
-            , source TEXT
+              id TEXT PRIMARY KEY
+            , resource TEXT
             , access_kind TEXT
             , state TEXT
+            , payload TEXT
+            , source TEXT
             , created_on INT
             , updated_on INT
             )
@@ -169,30 +163,35 @@ def insert_new_payload(payload: dict[Any, Any], source: Source) -> None:
     """
     Add a new webhook payload to the database.
     """
-    if is_public(payload):
-        if has_tagged_resource(payload):
-            access_kind = AccessKind.public_and_tagged
-        else:
-            access_kind = AccessKind.public
-    else:
-        access_kind = AccessKind.private
-
     with get_db_conn() as conn:
-        conn.execute(
-            """
-            INSERT INTO webhook_payloads
-            ( payload, source, access_kind, state, created_on )
-            VALUES
-            ( :payload, :source, :access_kind, :state, :created_on )
-            """,
-            {
-                "payload": json.dumps(payload, separators=(",", ":")),
-                "source": source.value,
-                "access_kind": access_kind.value,
-                "state": State.new.value,
-                "created_on": int(time.time()),
-            },
-        )
+        for resource in payload["event_data"]["resources"]:
+            if is_public(payload):
+                if is_immutable_tag(resource["tag"]):
+                    access_kind = AccessKind.public_and_tagged
+                else:
+                    access_kind = AccessKind.public
+            else:
+                access_kind = AccessKind.private
+
+            payload_id = "+".join([source.value, resource["digest"], resource["tag"]])
+
+            conn.execute(
+                """
+                INSERT INTO webhook_payloads
+                ( id, resource, access_kind, state, payload, source, created_on )
+                VALUES
+                ( :id, :resource, :access_kind, :state, :payload, :source, :created_on )
+                """,
+                {
+                    "id": payload_id,
+                    "resource": resource["resource_url"],
+                    "access_kind": access_kind.value,
+                    "state": State.new.value,
+                    "payload": json.dumps(payload, separators=(",", ":")),
+                    "source": source.value,
+                    "created_on": int(time.time()),
+                },
+            )
         conn.commit()
 
 
@@ -208,11 +207,11 @@ def get_new_payloads() -> Generator[WebhookPayload, None, None]:
             WHERE state = 'new'
             """
         ).fetchall()
-    for r in rows:
-        yield WebhookPayload(*r)
+    for row in rows:
+        yield WebhookPayload(*row)
 
 
-def update_payload(id_: int, state: State) -> None:
+def update_payload(id_: str, state: State) -> None:
     """
     Update the state of a webhook payload.
     """

@@ -93,6 +93,7 @@ def run_polling_loop() -> None:
             for payload in registry.database.get_new_payloads():
                 if new_state := registry.processing.process(payload):
                     registry.database.update_payload(payload.id_, new_state)
+                    registry.processing.finalize_payload(payload)
 
             app.logger.debug("Finished iteration of polling loop")
             time.sleep(loop_delay)
