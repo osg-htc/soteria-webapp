@@ -35,6 +35,7 @@ clean:
 	rm -rf dist/$(PY_PACKAGE_NAME)-*.whl
 	-rmdir dist/
 
+	docker compose down
 	rm -rf instance/data
 	rm -rf instance/log
 	-docker image rm soteria-webapp:dev
@@ -48,6 +49,7 @@ local: \
 		secrets/oidc/id secrets/oidc/passphrase secrets/oidc/secret \
 		secrets/tls.crt secrets/tls.key
 
+	docker compose down
 	mkdir -p instance/data
 	mkdir -p instance/log
 
