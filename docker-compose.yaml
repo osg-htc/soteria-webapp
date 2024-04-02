@@ -13,7 +13,7 @@ services:
 
     image: soteria-webapp:dev
     platform: linux/amd64
-    container_name: soteria-webapp
+    container_name: soteria
     restart: always
 
     # Expose the container's web server on a non-standard port so that
