@@ -14,7 +14,7 @@ import registry.util
 __all__ = ["bp"]
 
 # Number of seconds to wait between iterations of the polling loop.
-LOOP_DELAY = 60
+LOOP_DELAY = 120
 
 bp = flask.Blueprint("command_line_interface", __name__)
 
@@ -85,15 +85,16 @@ def run_polling_loop() -> None:
     Periodically poll the web application's database.
     """
     app = flask.current_app
+    loop_delay = LOOP_DELAY if not app.config.get("SOTERIA_DEBUG") else 15
 
     try:
         while True:
-            app.logger.debug("Starting new iteration of polling loop")
+            app.logger.debug("Starting iteration of polling loop")
             for payload in registry.database.get_new_payloads():
                 if new_state := registry.processing.process(payload):
                     registry.database.update_payload(payload.id_, new_state)
 
             app.logger.debug("Finished iteration of polling loop")
-            time.sleep(LOOP_DELAY)
+            time.sleep(loop_delay)
     except Exception:  # pylint: disable=broad-except
         app.logger.exception("Uncaught exception")
