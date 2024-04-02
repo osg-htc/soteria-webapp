@@ -86,11 +86,14 @@ def run_polling_loop() -> None:
     """
     app = flask.current_app
 
-    while True:
-        app.logger.debug("Starting new iteration of polling loop")
-        for payload in registry.database.get_new_payloads():
-            if new_state := registry.processing.process(payload):
-                registry.database.update_payload(payload.id_, new_state)
+    try:
+        while True:
+            app.logger.debug("Starting new iteration of polling loop")
+            for payload in registry.database.get_new_payloads():
+                if new_state := registry.processing.process(payload):
+                    registry.database.update_payload(payload.id_, new_state)
 
-        app.logger.debug("Finished iteration of polling loop; Sleeping")
-        time.sleep(LOOP_DELAY)
+            app.logger.debug("Finished iteration of polling loop")
+            time.sleep(LOOP_DELAY)
+    except Exception:  # pylint: disable=broad-except
+        app.logger.exception("Uncaught exception")
