@@ -95,7 +95,7 @@ TraceEnable Off
   OIDCProviderMetadataURL https://{{ getenv "CILOGON_HOSTNAME" }}/.well-known/openid-configuration
   OIDCClientID {{ ds "secrets" "id" }}
   OIDCClientSecret {{ ds "secrets" "secret" }}
-  OIDCRedirectURI https://{{ getenv "EXTERNAL_HOSTNAME" }}/callback
+  OIDCRedirectURI /callback
 
   OIDCScope "openid profile email org.cilogon.userinfo"
 
