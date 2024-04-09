@@ -12,6 +12,7 @@ import json
 import pathlib
 import sqlite3
 import time
+import uuid
 from collections.abc import Generator
 from typing import Any, Optional
 
@@ -23,7 +24,8 @@ __all__ = [
     "State",
     "WebhookPayload",
     #
-    "get_db_conn",
+    "FINAL_STATES",
+    #
     "get_new_payloads",
     "init",
     "insert_new_payload",
@@ -63,6 +65,13 @@ class State(enum.Enum):
     skipped = "skipped"
 
 
+FINAL_STATES = [
+    State.completed,
+    State.failed,
+    State.skipped,
+]
+
+
 @dataclasses.dataclass
 class WebhookPayload:  # pylint: disable=too-many-instance-attributes
     """
@@ -75,6 +84,8 @@ class WebhookPayload:  # pylint: disable=too-many-instance-attributes
     state: State
     payload: dict[Any, Any]
     source: Source
+    project: str
+    repository: str
     created_on: int
     updated_on: int
 
@@ -145,6 +156,8 @@ def init(app: flask.Flask) -> None:
             , state TEXT
             , payload TEXT
             , source TEXT
+            , project TEXT
+            , repository TEXT
             , created_on INT
             , updated_on INT
             )
@@ -173,23 +186,26 @@ def insert_new_payload(payload: dict[Any, Any], source: Source) -> None:
             else:
                 access_kind = AccessKind.private
 
-            payload_id = "+".join([source.value, resource["digest"], resource["tag"]])
+            now = int(time.time())
 
             conn.execute(
                 """
                 INSERT INTO webhook_payloads
-                ( id, resource, access_kind, state, payload, source, created_on )
+                ( id, resource, access_kind, state, payload, source, project, repository, created_on, updated_on )
                 VALUES
-                ( :id, :resource, :access_kind, :state, :payload, :source, :created_on )
+                ( :id, :resource, :access_kind, :state, :payload, :source, :project, :repository, :created_on, :updated_on )
                 """,
                 {
-                    "id": payload_id,
+                    "id": str(uuid.uuid4()),
                     "resource": resource["resource_url"],
                     "access_kind": access_kind.value,
                     "state": State.new.value,
                     "payload": json.dumps(payload, separators=(",", ":")),
                     "source": source.value,
-                    "created_on": int(time.time()),
+                    "project": payload["event_data"]["repository"]["namespace"],
+                    "repository": payload["event_data"]["repository"]["name"],
+                    "created_on": now,
+                    "updated_on": now,
                 },
             )
         conn.commit()
@@ -205,6 +221,7 @@ def get_new_payloads() -> Generator[WebhookPayload, None, None]:
             SELECT *
             FROM webhook_payloads
             WHERE state = 'new'
+            ORDER BY created_on ASC
             """
         ).fetchall()
     for row in rows:
