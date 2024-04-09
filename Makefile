@@ -83,6 +83,7 @@ secrets/config.py:
 	@exit 1
 
 secrets/htcondor.conf:
+	cp templates/htcondor.conf $@
 	@echo
 	@echo "ERROR: Please update '$@' with the HTCondor configuration to use."
 	@echo
