@@ -86,6 +86,7 @@ class WebhookPayload:  # pylint: disable=too-many-instance-attributes
     source: Source
     project: str
     repository: str
+    tag: str
     created_on: int
     updated_on: int
 
@@ -158,6 +159,7 @@ def init(app: flask.Flask) -> None:
             , source TEXT
             , project TEXT
             , repository TEXT
+            , tag TEXT
             , created_on INT
             , updated_on INT
             )
@@ -191,9 +193,9 @@ def insert_new_payload(payload: dict[Any, Any], source: Source) -> None:
             conn.execute(
                 """
                 INSERT INTO webhook_payloads
-                ( id, resource, access_kind, state, payload, source, project, repository, created_on, updated_on )
+                ( id, resource, access_kind, state, payload, source, project, repository, tag, created_on, updated_on )
                 VALUES
-                ( :id, :resource, :access_kind, :state, :payload, :source, :project, :repository, :created_on, :updated_on )
+                ( :id, :resource, :access_kind, :state, :payload, :source, :project, :repository, :tag, :created_on, :updated_on )
                 """,
                 {
                     "id": str(uuid.uuid4()),
@@ -204,6 +206,7 @@ def insert_new_payload(payload: dict[Any, Any], source: Source) -> None:
                     "source": source.value,
                     "project": payload["event_data"]["repository"]["namespace"],
                     "repository": payload["event_data"]["repository"]["name"],
+                    "tag": resource["tag"],
                     "created_on": now,
                     "updated_on": now,
                 },

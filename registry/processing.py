@@ -119,15 +119,20 @@ def submit_htcondor_job(payload: WebhookPayload) -> classad.ClassAd:
     job = htcondor.Submit(
         {
             "executable": job_exe.name,
+            #
             "My.FROM_SOTERIA": True,
             "My.SOTERIA_ID": classad.quote(payload.id_),
             "My.SOTERIA_RESOURCE": classad.quote(payload.resource),
             "My.SOTERIA_PROJECT": classad.quote(payload.project),
             "My.SOTERIA_REPOSITORY": classad.quote(payload.repository),
+            "My.SOTERIA_TAG": classad.quote(payload.tag),
             #
             "request_cpus": "2",
             "request_memory": "4G",
             "request_disk": "50G",
+            #
+            "leave_in_queue": "(JobStatus == 4) && ((StageOutFinish =?= UNDEFINED) || (StageOutFinish == 0))",
+            "on_exit_hold": "(ExitCode != 0)",
             #
             "log": f"{job_exe.name}.log",
             "output": f"{job_exe.name}.out",
