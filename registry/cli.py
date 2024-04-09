@@ -14,7 +14,7 @@ import registry.util
 __all__ = ["bp"]
 
 # Number of seconds to wait between iterations of the polling loop.
-LOOP_DELAY = 120
+LOOP_DELAY = 300
 
 bp = flask.Blueprint("command_line_interface", __name__)
 
@@ -93,7 +93,8 @@ def run_polling_loop() -> None:
             for payload in registry.database.get_new_payloads():
                 if new_state := registry.processing.process(payload):
                     registry.database.update_payload(payload.id_, new_state)
-                    registry.processing.finalize_payload(payload)
+                    if new_state in registry.database.FINAL_STATES:
+                        registry.processing.finalize(payload)
 
             app.logger.debug("Finished iteration of polling loop")
             time.sleep(loop_delay)
