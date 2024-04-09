@@ -99,6 +99,11 @@ SOTERIA_API_URL = f"{SOTERIA_HOMEPAGE_URL}/api/v1"
 #
 WEBHOOKS_HARBOR_BEARER_TOKEN = "keep this a secret!"
 
+#
+# Regular expression for images to be processed by the Harbor webhook.
+#
+WEBHOOKS_HARBOR_RESOURCE_REGEX = r".*"
+
 
 # ======================
 # Optional Configuration
