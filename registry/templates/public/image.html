@@ -1,0 +1,16 @@
+{% extends "layout/base.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block title %}SOTERIA: Public Projects{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
+            {{ title("Tag Statistics") }}
+            <iframe src="https://atlas-kibana.mwt2.org:5601/s/soteria/app/dashboards?auth_provider_hint=anonymous1#/view/39fc9f20-4d9f-11ee-aeb0-9f90ba762c30?embed=true&_g=()&_a=(controlGroupInput:(chainingSystem:HIERARCHICAL,controlStyle:oneLine,ignoreParentSettings:(ignoreFilters:!f,ignoreQuery:!f,ignoreTimerange:!f,ignoreValidations:!f),panels:('0b9ed559-6ccf-4d20-aa66-129ac39538b6':(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),existsSelected:!t,fieldName:Hash,id:'0b9ed559-6ccf-4d20-aa66-129ac39538b6',selectedOptions:!(),singleSelect:!t,title:Hash),grow:!t,order:3,type:optionsListControl,width:medium),'68dae7ac-601b-4399-a607-9c9a10347225':(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),fieldName:Image_tag,id:'68dae7ac-601b-4399-a607-9c9a10347225',selectedOptions:!('{{ tag }}'),singleSelect:!t,title:Image_tag),grow:!t,order:2,type:optionsListControl,width:medium),'85da83db-b01d-49dc-af7b-b870a4d00ad8':(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),fieldName:Image_name,id:'85da83db-b01d-49dc-af7b-b870a4d00ad8',selectedOptions:!({{ repository }}),singleSelect:!t,title:Image_name),grow:!t,order:1,type:optionsListControl,width:medium),e05b51c0-a062-4d66-aec8-1a3eb62a07d1:(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),fieldName:Project,id:e05b51c0-a062-4d66-aec8-1a3eb62a07d1,selectedOptions:!({{ project }}),singleSelect:!t,title:Project),grow:!t,order:0,type:optionsListControl,width:medium))))&hide-filter-bar=true" height="600" width="800"></iframe>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "layout/base.html" %}
+{% from "macros/layout/title.html" import title %}
+{% from "macros/card.html" import card %}
+{% block title %}SOTERIA: Public Projects{% endblock %}
+{% block page_class %}subpage{% endblock %}
+{% block body_class %}container{% endblock %}
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-12 col-lg-11 col-xl-10 col-xxl-8">
+            {{ title(project + "/" + repository) }}
+            <iframe src="https://atlas-kibana.mwt2.org:5601/s/soteria/app/dashboards?auth_provider_hint=anonymous1#/view/f3339290-4da5-11ee-aeb0-9f90ba762c30?embed=true&_g=()&_a=(controlGroupInput:(chainingSystem:HIERARCHICAL,controlStyle:oneLine,ignoreParentSettings:(ignoreFilters:!f,ignoreQuery:!f,ignoreTimerange:!f,ignoreValidations:!f),panels:('9719ad97-0c87-4708-9f20-77ec43f51b56':(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),fieldName:Project,id:'9719ad97-0c87-4708-9f20-77ec43f51b56',selectedOptions:!({{ project }}),title:Project),grow:!t,order:0,type:optionsListControl,width:medium),c794eb11-d9f1-45d3-9b04-79da547f29d7:(explicitInput:(dataViewId:bfb237db-54b3-450a-8558-866d0d871631,enhancements:(),existsSelected:!f,fieldName:Image_name,id:c794eb11-d9f1-45d3-9b04-79da547f29d7,selectedOptions:!({{ repository }}),title:Image_name),grow:!t,order:1,type:optionsListControl,width:medium))))&hide-filter-bar=true" height="600" width="100%"></iframe>
+            <div id="tags"></div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+<script type="module" async>
+    import { h, Component, render } from 'https://cdn.skypack.dev/preact@10.4.7';
+    import { TagCard } from "/static/js/components/card.js";
+    import { HarborList} from "/static/js/components/list.js";
+
+    const TagList = () => {
+
+        return (
+            h(HarborList, {
+                url: "/harbor/get/projects/{{ project }}/repositories/{{ repository }}/artifacts",
+                card: TagCard,
+                cardOptions: (data) => {
+                    console.log(data)
+                    return {
+                    href: `/public/projects/${data['name']}/repositories`,
+                    project: '{{ project }}',
+                    repository: '{{ repository }}',
+                    ...data
+                }},
+                pageSize:10,
+                paginatorOptions: {
+                    className: "pt-3"
+                },
+                sortOptions: {
+                    "": "Default",
+                    "-update_time": "Recently Updated"
+                }
+            })
+        )
+    }
+
+    render(h(TagList, {}), document.getElementById("tags"))
+</script>
+{% endblock %}

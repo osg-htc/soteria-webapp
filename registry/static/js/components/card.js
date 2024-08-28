@@ -159,7 +159,7 @@ export const RepositoryCard = ({
     let [project, repository] = name.split("/")
 
     return (
-        h("a", {href: `https://hub.opensciencegrid.org/harbor/projects/${project_id}/repositories/${repository}`, className:"text-decoration-none"},
+        h("a", {href: `/public/projects/${project}/repositories/${repository}/tags`, className:"text-decoration-none"},
             h(
                 ImageCard,
                 {src: "/static/images/icons/Repo_Icon.svg", alt: "Building Graphic", className: "project-card  mb-1 mb-sm-2 p-3 rounded bg-light"},
@@ -202,6 +202,70 @@ export const RepositoryCard = ({
                             tag: "h6",
                             text: `Created ${localeCreationTime}`
                         }),
+                    ])
+                ])
+            )
+        )
+    )
+}
+
+export const TagCard = ({
+  project,
+  repository,
+  digest,
+  pull_time,
+  push_time,
+  tags
+}) => {
+    let localePushTime = new Date(Date.parse(push_time)).toLocaleString("en-US")
+    let localePullTime = new Date(Date.parse(pull_time)).toLocaleString("en-US")
+
+    if(tags === null) {
+        return null
+    }
+
+    return (
+        h("a", {href: `/public/projects/${project}/repositories/${repository}/tags/${tags?.[0].name}`, className:"text-decoration-none"},
+            h(
+                ImageCard,
+                {src: "/static/images/icons/tags-white.svg", alt: "Tag Graphic", className: "project-card  mb-1 mb-sm-2 p-3 rounded bg-light"},
+                h("div", {className: "description"}, ...[
+                    h("div", {className: "row gx-2"}, ...[
+                        h("h4", {className: "col-12 col-md-auto fw-bold mb-1"}, digest.substring(0, 10)),
+                    ]),
+                    h("div", {className: "row gx-2"}, ...[
+                        ... push_time ? [h(ImageTextRow, {
+                            className: "col-auto",
+                            src: "/static/images/icons/upload.svg",
+                            alt: "Repository Graphic",
+                            tag: "h6",
+                            "data-bs-toggle": "tooltip",
+                            "data-bs-placement": "top",
+                            title: `Push Time: ${localePushTime}`,
+                            text: `Push Time: ${localePushTime}`
+                        })] : [],
+                    ]),
+                    h("div", {className: "row gx-2  text-truncate"}, ...[
+                        ... push_time ? [h(ImageTextRow, {
+                            className: "col-auto",
+                            src: "/static/images/icons/download.svg",
+                            alt: "Repository Graphic",
+                            tag: "h6",
+                            "data-bs-toggle": "tooltip",
+                            "data-bs-placement": "top",
+                            title: `Pull Time: ${localePullTime}`,
+                            text: `Pull Time: ${localePullTime}`
+                        })] : [],
+                    ]),
+                    h("div", {className: "row gx-2  text-truncate"}, ...[
+                        ... tags ? [h(ImageTextRow, {
+                            className: "col-auto",
+                            src: "/static/images/icons/tags.svg",
+                            alt: "Download Graphic",
+                            tag: "h6",
+                            title: `${tags.length} Tags`,
+                            text: `${tags.length} Tags: ${tags.reverse().map(x => x.name).join(", ")}`
+                        })] : [],
                     ])
                 ])
             )
