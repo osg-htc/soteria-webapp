@@ -36,6 +36,9 @@
     {% if is_researcher %}
         {{ nav_item('/robots/create', "Create Robot") }}
     {% endif %}
+    {% if is_researcher %}
+        {{ nav_item('/assistant', "Soteria Assistant") }}
+    {% endif %}
     {% if is_admin %}
         <li id="adminSidebarItem" class="nav-item accordion mb-1">
             <div class="accordion-item border-0">

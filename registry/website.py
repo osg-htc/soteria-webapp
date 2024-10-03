@@ -122,6 +122,11 @@ def create_starter_project() -> flask.Response:
 
     return flask.make_response(html)
 
+@bp.route("/assistant", methods=["GET"])
+@registration_required
+def get_chatbot() -> flask.Response:
+    return flask.make_response(flask.render_template("/user/assistant.html"))
+
 
 @bp.route("/robots/create", methods=["GET", "POST"])
 @researcher_required
