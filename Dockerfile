@@ -42,7 +42,7 @@ RUN true \
         sqlite \
         supervisor \
     && dnf install -y \
-        https://htcss-downloads.chtc.wisc.edu/repo/23.0/el9/x86_64/release/condor-23.0.28-1.el9.x86_64.rpm \
+        https://htcss-downloads.chtc.wisc.edu/repo/23.0/htcondor-release-current.el9.noarch.rpm \
     && dnf install -y \
         condor python3-condor \
     && dnf clean all \
